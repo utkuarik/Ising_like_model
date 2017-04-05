@@ -2425,9 +2425,9 @@ namespace Gradproject
 
                                     count_red[2] = count_red[2] + 1;
 
-                                }
+                                } 
 
-
+                                 
 
                             }
 
