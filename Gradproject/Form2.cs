@@ -2445,6 +2445,7 @@ namespace Gradproject
                 for (int t = 0; t < yaxis/20; t++)
                 {
 
+
                     for (int k = 0; k < xaxis / 20; k++)
                     {
                         for (int i = 20*k; i < 20*k + 20; i++)
