@@ -2156,7 +2156,8 @@ namespace Gradproject
                 double ndf_sum21 = 0;
                 double ndf_sum22 = 0;
                 double ndf_sum23 = 0;
-                int count_empties = 0;
+                int count_empties = 0; 
+
                 int count_locals = 0;
                 int count_minors = 0;
                 for (int i = 0; i < xaxis; i++)  // NDF Calculations
