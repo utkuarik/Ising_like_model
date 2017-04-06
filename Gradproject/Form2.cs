@@ -15,7 +15,9 @@ using System.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Microsoft.Office.Interop.Excel;
 using MathNet.Numerics.Statistics;
-
+/// <summary>
+/// dwadawdawdawdaw
+/// </summary>
 namespace Gradproject
 {
 
