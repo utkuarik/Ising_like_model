@@ -68,7 +68,7 @@
             this.X_axis.Name = "X_axis";
             this.X_axis.Size = new System.Drawing.Size(43, 20);
             this.X_axis.TabIndex = 0;
-            this.X_axis.Text = "10";
+            this.X_axis.Text = "60";
             this.X_axis.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // Y_axis
@@ -77,7 +77,7 @@
             this.Y_axis.Name = "Y_axis";
             this.Y_axis.Size = new System.Drawing.Size(43, 20);
             this.Y_axis.TabIndex = 1;
-            this.Y_axis.Text = "10";
+            this.Y_axis.Text = "60";
             this.Y_axis.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // Population
@@ -86,7 +86,7 @@
             this.Population.Name = "Population";
             this.Population.Size = new System.Drawing.Size(100, 20);
             this.Population.TabIndex = 4;
-            this.Population.Text = "50";
+            this.Population.Text = "1800";
             this.Population.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label3
@@ -104,7 +104,7 @@
             this.Minority.Name = "Minority";
             this.Minority.Size = new System.Drawing.Size(100, 20);
             this.Minority.TabIndex = 6;
-            this.Minority.Text = "50";
+            this.Minority.Text = "1800";
             this.Minority.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // label4
@@ -319,7 +319,7 @@
             this.no_free_cells.Name = "no_free_cells";
             this.no_free_cells.Size = new System.Drawing.Size(33, 20);
             this.no_free_cells.TabIndex = 36;
-            this.no_free_cells.Text = "1";
+            this.no_free_cells.Text = "2";
             // 
             // label12
             // 

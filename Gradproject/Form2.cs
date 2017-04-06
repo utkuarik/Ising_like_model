@@ -102,9 +102,9 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
-            fract = new double[50,250];
-            count_green = new double[4];
-            count_red = new double[4];
+            fract = new double[50,3000];
+            count_green = new double[8];
+            count_red = new double[8];
 
 
 
@@ -2403,16 +2403,15 @@ namespace Gradproject
                     }
                 }
 
-
-                for (int t = 0; t < yaxis / 10; t++)
+                for (int t = 0; t < yaxis / 6; t++)
                 {
 
-                    for (int k = 0; k < xaxis / 10; k++)
+                    for (int k = 0; k < xaxis / 6; k++)
                     {
-                        for (int i = 10 * k; i < 10 * k + 10; i++)
+                        for (int i = 6 * k; i < 6 * k + 6; i++)
 
                         {
-                            for (int j = 10* t; j < 10 * t + 10; j++)
+                            for (int j = 6 * t; j < 6 * t + 6; j++)
                             {
 
                                 if (map[i, j] == 1)
@@ -2426,9 +2425,9 @@ namespace Gradproject
 
                                     count_red[2] = count_red[2] + 1;
 
-                                } 
+                                }
 
-                                 
+
 
                             }
 
@@ -2442,17 +2441,15 @@ namespace Gradproject
                     }
                 }
 
-
-                for (int t = 0; t < yaxis/20; t++)
+                for (int t = 0; t < yaxis / 8; t++)
                 {
 
-
-                    for (int k = 0; k < xaxis / 20; k++)
+                    for (int k = 0; k < xaxis / 8; k++)
                     {
-                        for (int i = 20*k; i < 20*k + 20; i++)
+                        for (int i = 8 * k; i < 8 * k + 8; i++)
 
                         {
-                            for (int j = 20*t; j < 20*t+20; j++)
+                            for (int j = 8 * t; j < 8 * t + 8; j++)
                             {
 
                                 if (map[i, j] == 1)
@@ -2472,17 +2469,172 @@ namespace Gradproject
 
                             }
 
-                           
+
                         }
                         frac_count = frac_count + 1;
 
-                        fract[a,frac_count] = count_green[3] / (count_green[3] * 1.00 + count_red[3]);
+                        fract[a, frac_count] = count_green[3] / (count_green[3] * 1.00 + count_red[3]);
                         count_red[3] = 0;
                         count_green[3] = 0;
                     }
                 }
 
 
+                for (int t = 0; t < yaxis / 10; t++)
+                {
+
+                    for (int k = 0; k < xaxis / 10; k++)
+                    {
+                        for (int i = 10 * k; i < 10 * k + 10; i++)
+
+                        {
+                            for (int j = 10* t; j < 10 * t + 10; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[4] = count_green[4] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[4] = count_red[4] + 1;
+
+                                } 
+
+                                 
+
+                            }
+
+
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a, frac_count] = count_green[4] / (count_green[4] * 1.00 + count_red[4]);
+                        count_red[4] = 0;
+                        count_green[4] = 0;
+                    }
+                }
+
+
+                for (int t = 0; t < yaxis/20; t++)
+                {
+
+
+                    for (int k = 0; k < xaxis / 20; k++)
+                    {
+                        for (int i = 20*k; i < 20*k + 20; i++)
+
+                        {
+                            for (int j = 20*t; j < 20*t+20; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[5] = count_green[5] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[5] = count_red[5] + 1;
+
+                                }
+
+
+
+                            }
+
+                           
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a,frac_count] = count_green[5] / (count_green[5] * 1.00 + count_red[5]);
+                        count_red[5] = 0;
+                        count_green[5] = 0;
+                    }
+                }
+
+                for (int t = 0; t < yaxis / 40; t++)
+                {
+
+
+                    for (int k = 0; k < xaxis / 40; k++)
+                    {
+                        for (int i = 40 * k; i < 40 * k + 40; i++)
+
+                        {
+                            for (int j = 40 * t; j < 40 * t + 40; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[6] = count_green[6] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[6] = count_red[6] + 1;
+
+                                }
+
+
+
+                            }
+
+
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
+                        count_red[6] = 0;
+                        count_green[6] = 0;
+                    }
+                }
+
+                for (int t = 0; t < yaxis / 60; t++)
+                {
+
+
+                    for (int k = 0; k < xaxis / 60; k++)
+                    {
+                        for (int i = 60 * k; i < 60* k + 60; i++)
+
+                        {
+                            for (int j = 60 * t; j < 60 * t + 60; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[7] = count_green[7] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[7] = count_red[7] + 1;
+
+                                }
+
+
+
+                            }
+
+
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
+                        count_red[7] = 0;
+                        count_green[7] = 0;
+                    }
+                }
 
 
 
@@ -2517,13 +2669,13 @@ namespace Gradproject
             min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(),3));
             sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(),3));
 
-            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet ws = (Worksheet)xla.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
+            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet ws = (Worksheet)xla.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
 
-            //rng.Value2 = fract;
-            //xla.Visible = true;
+            rng.Value2 = fract;
+            xla.Visible = true;
 
 
         }
