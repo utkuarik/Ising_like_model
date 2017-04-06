@@ -33,6 +33,7 @@ namespace Gradproject
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
+        public double upper_bound2 = 0.0;
         public int econ;
         public int no_free_cells;
         public int geo_value;
@@ -77,7 +78,8 @@ namespace Gradproject
 
         public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound,string lowerbound2,
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
-            string algo)
+            string algo, string upperbound2)
+
         {   // Get the values from previous form
 
             InitializeComponent();
@@ -91,6 +93,7 @@ namespace Gradproject
             lower_bound2 = Convert.ToDouble(lowerbound2);
             econ = Convert.ToInt32(eco);
             upper_bound = Convert.ToDouble(upperbound);
+            upper_bound2 = Convert.ToDouble(upperbound2);
             utility_check = Convert.ToInt32(utilitycheck);
             sim_value = Convert.ToInt32(sim);
             geo_value = Convert.ToInt32(geo);
@@ -104,9 +107,9 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
-            fract = new double[50,250];
-            count_green = new double[4];
-            count_red = new double[4];
+            fract = new double[50,3000];
+            count_green = new double[9];
+            count_red = new double[9];
 
 
 
@@ -918,7 +921,7 @@ namespace Gradproject
                         local_index = rnd2.Next(0, locals_num);
                         minor_index = rnd2.Next(0, min_num);
                         if ((Locals[local_index].rate < lower_bound || Locals[local_index].rate > upper_bound) &&
-                                (Minors[minor_index].rate < lower_bound || Minors[minor_index].rate > upper_bound))
+                                (Minors[minor_index].rate < lower_bound2 || Minors[minor_index].rate > upper_bound2))
                         {
 
 
@@ -1518,8 +1521,8 @@ namespace Gradproject
 
                 for (int j = 0; j < locals_num; j++)
                 {
-                    if ((Locals[j].rate < lower_bound && Locals[j].type == 1) ||
-                                     (Locals[j].rate < lower_bound2 && Locals[j].type == 2))
+                    if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                      ( (Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                     {
                         agents.Add(Locals[j]);
 
@@ -1530,8 +1533,8 @@ namespace Gradproject
                 }
                 for (int j = 0; j < min_num; j++)
                 {
-                    if ((Minors[j].rate < lower_bound2 && Minors[j].type == 2) ||
-                                (Minors[j].rate < lower_bound && Minors[j].type == 1))
+                    if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                      ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                     {
                         agents.Add(Minors[j]);
                     }
@@ -1549,7 +1552,7 @@ namespace Gradproject
 
 
                     dice = rnd3.Next(agents.Count);
-
+                   
                     if (agents[dice].type == 1)
                     {
                         map[agents[dice].xpos, agents[dice].ypos] = 2;
@@ -1561,8 +1564,8 @@ namespace Gradproject
                         rate_check_for_all(map);
                         for (int j = 0; j < locals_num; j++)
                         {
-                            if ((Locals[j].rate < lower_bound && Locals[j].type==1) || 
-                                    (Locals[j].rate < lower_bound2 && Locals[j].type == 2))
+                            if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                                ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                             {
                                 agents.Add(Locals[j]);
 
@@ -1573,8 +1576,8 @@ namespace Gradproject
                         }
                         for (int j = 0; j < min_num; j++)
                         {
-                            if ((Minors[j].rate < lower_bound2 && Minors[j].type==2) ||
-                                (Minors[j].rate < lower_bound && Minors[j].type == 1))
+                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                             {
                                 agents.Add(Minors[j]);
                             }
@@ -1594,8 +1597,8 @@ namespace Gradproject
 
                         for (int j = 0; j < locals_num; j++)
                         {
-                            if ((Locals[j].rate < lower_bound && Locals[j].type == 1) ||
-                                     (Locals[j].rate < lower_bound2 && Locals[j].type == 2))
+                            if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                                ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                             {
                                 agents.Add(Locals[j]);
 
@@ -1606,8 +1609,8 @@ namespace Gradproject
                         }
                         for (int j = 0; j < min_num; j++)
                         {
-                            if ((Minors[j].rate < lower_bound2 && Minors[j].type == 2) ||
-                                (Minors[j].rate < lower_bound && Minors[j].type == 1))
+                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                             {
                                 agents.Add(Minors[j]);
                             }
@@ -2008,8 +2011,8 @@ namespace Gradproject
 
                         if (Locals[i] != null)
                         {
-                            if (((Locals[i].rate < lower_bound && Locals[i].type==1) || (Locals[i].rate > upper_bound && Locals[i].type == 1)) ||
-                                    ((Locals[i].rate < lower_bound2 && Locals[i].type== 2)  || (Locals[i].rate >upper_bound && Locals[i].type ==2)))
+                            if (((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
+                                ((Locals[i].rate < lower_bound2 || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
                             {
                                 Locals[i].s = 1;
 
@@ -2026,8 +2029,8 @@ namespace Gradproject
                     {
                         if (Minors[j] != null)
                         {
-                            if (((Minors[j].rate < lower_bound2 && Minors[j].type == 2) || (Minors[j].rate > upper_bound && Minors[j].type == 2)) ||
-                                    ((Minors[j].rate < lower_bound && Minors[j].type == 1) || (Minors[j].rate > upper_bound && Minors[j].type == 1)))
+                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                             {
                                 Minors[j].s = 1;
 
@@ -2521,121 +2524,121 @@ namespace Gradproject
                 }
 
 
-                for (int t = 0; t < yaxis/20; t++)
-                {
+                //for (int t = 0; t < yaxis/20; t++)
+                //{
 
 
-                    for (int k = 0; k < xaxis / 20; k++)
-                    {
-                        for (int i = 20*k; i < 20*k + 20; i++)
+                //    for (int k = 0; k < xaxis / 20; k++)
+                //    {
+                //        for (int i = 20*k; i < 20*k + 20; i++)
 
-                        {
-                            for (int j = 20*t; j < 20*t+20; j++)
-                            {
+                //        {
+                //            for (int j = 20*t; j < 20*t+20; j++)
+                //            {
 
-                                if (map[i, j] == 1)
-                                {
+                //                if (map[i, j] == 1)
+                //                {
 
-                                    count_green[5] = count_green[5] + 1;
+                //                    count_green[5] = count_green[5] + 1;
 
-                                }
-                                else if (map[i, j] == 2)
-                                {
+                //                }
+                //                else if (map[i, j] == 2)
+                //                {
 
-                                    count_red[5] = count_red[5] + 1;
+                //                    count_red[5] = count_red[5] + 1;
 
-                                }
+                //                }
 
 
 
-                            }
+                //            }
 
                            
-                        }
-                        frac_count = frac_count + 1;
+                //        }
+                //        frac_count = frac_count + 1;
 
-                        fract[a,frac_count] = count_green[5] / (count_green[5] * 1.00 + count_red[5]);
-                        count_red[5] = 0;
-                        count_green[5] = 0;
-                    }
-                }
+                //        fract[a,frac_count] = count_green[5] / (count_green[5] * 1.00 + count_red[5]);
+                //        count_red[5] = 0;
+                //        count_green[5] = 0;
+                //    }
+                //}
 
-                for (int t = 0; t < yaxis / 40; t++)
-                {
-
-
-                    for (int k = 0; k < xaxis / 20; k++)
-                    {
-                        for (int i = 40 * k; i < 40 * k + 40; i++)
-
-                        {
-                            for (int j = 40 * t; j < 40 * t + 40; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[6] = count_green[6] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[6] = count_red[6] + 1;
-
-                                }
+                //for (int t = 0; t < yaxis / 40; t++)
+                //{
 
 
+                //    for (int k = 0; k < xaxis / 20; k++)
+                //    {
+                //        for (int i = 40 * k; i < 40 * k + 40; i++)
 
-                            }
+                //        {
+                //            for (int j = 40 * t; j < 40 * t + 40; j++)
+                //            {
 
+                //                if (map[i, j] == 1)
+                //                {
 
-                        }
-                        frac_count = frac_count + 1;
+                //                    count_green[6] = count_green[6] + 1;
 
-                        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
-                        count_red[6] = 0;
-                        count_green[6] = 0;
-                    }
-                }
-                for (int t = 0; t < yaxis / 60; t++)
-                {
+                //                }
+                //                else if (map[i, j] == 2)
+                //                {
 
+                //                    count_red[6] = count_red[6] + 1;
 
-                    for (int k = 0; k < xaxis / 60; k++)
-                    {
-                        for (int i = 60 * k; i < 60 * k + 60; i++)
-
-                        {
-                            for (int j = 60 * t; j < 60 * t + 60; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[7] = count_green[7] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[7] = count_red[7] + 1;
-
-                                }
+                //                }
 
 
 
-                            }
+                //            }
 
 
-                        }
-                        frac_count = frac_count + 1;
+                //        }
+                //        frac_count = frac_count + 1;
 
-                        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
-                        count_red[7] = 0;
-                        count_green[7] = 0;
-                    }
-                }
+                //        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
+                //        count_red[6] = 0;
+                //        count_green[6] = 0;
+                //    }
+                //}
+                //for (int t = 0; t < yaxis / 60; t++)
+                //{
+
+
+                //    for (int k = 0; k < xaxis / 60; k++)
+                //    {
+                //        for (int i = 60 * k; i < 60 * k + 60; i++)
+
+                //        {
+                //            for (int j = 60 * t; j < 60 * t + 60; j++)
+                //            {
+
+                //                if (map[i, j] == 1)
+                //                {
+
+                //                    count_green[7] = count_green[7] + 1;
+
+                //                }
+                //                else if (map[i, j] == 2)
+                //                {
+
+                //                    count_red[7] = count_red[7] + 1;
+
+                //                }
+
+
+
+                //            }
+
+
+                //        }
+                //        frac_count = frac_count + 1;
+
+                //        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
+                //        count_red[7] = 0;
+                //        count_green[7] = 0;
+                //    }
+                //}
 
 
 
@@ -2671,13 +2674,13 @@ namespace Gradproject
             min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(),3));
             sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(),3));
 
-            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet ws = (Worksheet)xla.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet ws = (Worksheet)xla.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
 
-            rng.Value2 = fract;
-            xla.Visible = true;
+            //rng.Value2 = fract;
+            //xla.Visible = true;
 
 
         }

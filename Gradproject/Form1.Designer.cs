@@ -60,6 +60,7 @@
             this.algo = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.lowerbound2 = new System.Windows.Forms.TextBox();
+            this.upperbound2 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // X_axis
@@ -172,7 +173,7 @@
             // 
             this.upperbound.Location = new System.Drawing.Point(290, 91);
             this.upperbound.Name = "upperbound";
-            this.upperbound.Size = new System.Drawing.Size(100, 20);
+            this.upperbound.Size = new System.Drawing.Size(34, 20);
             this.upperbound.TabIndex = 17;
             this.upperbound.Text = "1";
             // 
@@ -355,11 +356,19 @@
             this.lowerbound2.Size = new System.Drawing.Size(30, 20);
             this.lowerbound2.TabIndex = 40;
             // 
+            // upperbound2
+            // 
+            this.upperbound2.Location = new System.Drawing.Point(330, 92);
+            this.upperbound2.Name = "upperbound2";
+            this.upperbound2.Size = new System.Drawing.Size(30, 20);
+            this.upperbound2.TabIndex = 41;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(406, 463);
+            this.Controls.Add(this.upperbound2);
             this.Controls.Add(this.lowerbound2);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.algo);
@@ -433,6 +442,7 @@
         private System.Windows.Forms.TextBox algo;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox lowerbound2;
+        private System.Windows.Forms.TextBox upperbound2;
     }
 }
 
