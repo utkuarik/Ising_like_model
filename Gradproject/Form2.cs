@@ -2560,7 +2560,84 @@ namespace Gradproject
                     }
                 }
 
-               
+                for (int t = 0; t < yaxis / 40; t++)
+                {
+
+
+                    for (int k = 0; k < xaxis / 20; k++)
+                    {
+                        for (int i = 40 * k; i < 40 * k + 40; i++)
+
+                        {
+                            for (int j = 40 * t; j < 40 * t + 40; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[6] = count_green[6] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[6] = count_red[6] + 1;
+
+                                }
+
+
+
+                            }
+
+
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
+                        count_red[6] = 0;
+                        count_green[6] = 0;
+                    }
+                }
+                for (int t = 0; t < yaxis / 60; t++)
+                {
+
+
+                    for (int k = 0; k < xaxis / 60; k++)
+                    {
+                        for (int i = 60 * k; i < 60 * k + 60; i++)
+
+                        {
+                            for (int j = 60 * t; j < 60 * t + 60; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[7] = count_green[7] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[7] = count_red[7] + 1;
+
+                                }
+
+
+
+                            }
+
+
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
+                        count_red[7] = 0;
+                        count_green[7] = 0;
+                    }
+                }
+
+
 
 
 
