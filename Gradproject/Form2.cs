@@ -61,6 +61,7 @@ namespace Gradproject
         public double[] count_red;
         public double[,] fract;
         public int frac_count;
+        //End of universal variables
         public List<Agents> agents = new List<Agents>();
 
         Agents[] Locals;
@@ -84,7 +85,7 @@ namespace Gradproject
 
             InitializeComponent();
 
-
+            // Convert text variables
             locals_num = Convert.ToInt32(population);
             min_num = Convert.ToInt32(minority);
             xaxis = Convert.ToInt32(x_axis);
@@ -142,15 +143,16 @@ namespace Gradproject
 
 
         }
-        public MathNet.Numerics.LinearAlgebra.Matrix<double> execute() // Make the initial implanting and create agents
-                                                                       // and draw the initial world
-
+        public MathNet.Numerics.LinearAlgebra.Matrix<double> execute()
+        // Make the initial implanting and create agents
+        // and draw the initial world
         {
             Keep_arr = new int[10000];
             
 
             Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
 
+            // Check for world type///////////////////////////////////////////
             if (geo_value == 1)
             {
                 for (int k = 0; k < xaxis; k++)
@@ -175,10 +177,12 @@ namespace Gradproject
 
                     ja = ja + 1;
                 }
-            }
+            }//////////////////////////////////////////////////////////
 
             Random rnd = new Random();
 
+
+            /////// Attach local and minor agents' positions ///////////////////////
             for (int i = 0; i < locals_num; ++i)
             {
 
@@ -223,15 +227,14 @@ namespace Gradproject
                 {
                     xpos = x,
                     ypos = y,
-
-                    //map[Locals[i].xpos, Locals[i].ypos] = "full";
-                    // xpos = i + 1,
-                    //ypos = i + 5,
+                  
                 };
 
                 Minors[i].type = 2;
                 map[x, y] = 2;
             }
+
+            //////////////////////////////////////////////////////////////////
             Brush bbrush = (Brush)Brushes.Green;
             Brush cbrush = (Brush)Brushes.Red;
             Brush dbrush = (Brush)Brushes.Black;
@@ -240,6 +243,7 @@ namespace Gradproject
             Graphics g;
             g = this.CreateGraphics();
 
+            ///// Place the agetns in the map/////////////////////////////////
             for (int i = 0; i < locals_num; ++i)
             {
                 g.FillRectangle(bbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
@@ -249,6 +253,7 @@ namespace Gradproject
             {
                 g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
             }
+            //////////////////////////////////////////////////////////////////
 
             if (geo_value == 1)// If there is natural boundary horizontal
             {
@@ -258,7 +263,6 @@ namespace Gradproject
                     {
                         {
                             g.FillRectangle(dbrush, k * cellSize, l * cellSize, cellSize, cellSize);
-
 
                         }
 
@@ -509,7 +513,7 @@ namespace Gradproject
                     w[p, 2] = map2[row - 1, 3];
                     p = p + 1;
                     w[p, 2] = map2[row, 3];
-                }
+               } 
                 else if (column == xaxis - 1 && row == yaxis - 1)
                 {
                     r = r + 1;
@@ -1943,8 +1947,8 @@ namespace Gradproject
         {
 
             Matrix<double> map1 = map;
-            //Draw_World(xaxis, yaxis);
-            //update_map();
+            Draw_World(xaxis, yaxis);
+            update_map();
             map1 = continue_to(map);
 
             return map1;
@@ -2469,12 +2473,7 @@ namespace Gradproject
                                     count_red[3] = count_red[3] + 1;
 
                                 }
-
-
-
                             }
-
-
                         }
                         frac_count = frac_count + 1;
 
@@ -2483,8 +2482,6 @@ namespace Gradproject
                         count_green[3] = 0;
                     }
                 }
-
-
                 for (int t = 0; t < yaxis / 10; t++)
                 {
 
@@ -2507,13 +2504,8 @@ namespace Gradproject
 
                                     count_red[4] = count_red[4] + 1;
 
-                                } 
-
-                                 
-
+                                }                                
                             }
-
-
                         }
                         frac_count = frac_count + 1;
 
@@ -2522,123 +2514,98 @@ namespace Gradproject
                         count_green[4] = 0;
                     }
                 }
+                for (int t = 0; t < yaxis / 20; t++)
+                {
 
 
-                //for (int t = 0; t < yaxis/20; t++)
-                //{
+                    for (int k = 0; k < xaxis / 20; k++)
+                    {
+                        for (int i = 20 * k; i < 20 * k + 20; i++)
 
+                        {
+                            for (int j = 20 * t; j < 20 * t + 20; j++)
+                            {
 
-                //    for (int k = 0; k < xaxis / 20; k++)
-                //    {
-                //        for (int i = 20*k; i < 20*k + 20; i++)
+                                if (map[i, j] == 1)
+                                {
 
-                //        {
-                //            for (int j = 20*t; j < 20*t+20; j++)
-                //            {
+                                    count_green[5] = count_green[5] + 1;
 
-                //                if (map[i, j] == 1)
-                //                {
+                                }
+                                else if (map[i, j] == 2)
+                                {
 
-                //                    count_green[5] = count_green[5] + 1;
+                                    count_red[5] = count_red[5] + 1;
 
-                //                }
-                //                else if (map[i, j] == 2)
-                //                {
+                                }
+                            }
+                        }
+                        frac_count = frac_count + 1;
 
-                //                    count_red[5] = count_red[5] + 1;
+                        fract[a, frac_count] = count_green[5] / (count_green[5] * 1.00 + count_red[5]);
+                        count_red[5] = 0;
+                        count_green[5] = 0;
+                    }
+                }
 
-                //                }
+                for (int t = 0; t < yaxis / 40; t++)
+                {
+                    for (int k = 0; k < xaxis / 40; k++)
+                    {
+                        for (int i = 40 * k; i < 40 * k + 40; i++)
 
+                        {
+                            for (int j = 40 * t; j < 40 * t + 40; j++)
+                            {
 
+                                if (map[i, j] == 1)
+                                {
 
-                //            }
+                                    count_green[6] = count_green[6] + 1;
 
-                           
-                //        }
-                //        frac_count = frac_count + 1;
+                                }
+                                else if (map[i, j] == 2)
+                                {
 
-                //        fract[a,frac_count] = count_green[5] / (count_green[5] * 1.00 + count_red[5]);
-                //        count_red[5] = 0;
-                //        count_green[5] = 0;
-                //    }
-                //}
+                                    count_red[6] = count_red[6] + 1;
 
-                //for (int t = 0; t < yaxis / 40; t++)
-                //{
+                                }
+                            }
+                        }
+                        frac_count = frac_count + 1;
 
+                        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
+                        count_red[6] = 0;
+                        count_green[6] = 0;
+                    }
+                }
+                for (int t = 0; t < yaxis / 60; t++)
+                {
+                    for (int k = 0; k < xaxis / 60; k++)
+                    {
+                        for (int i = 60 * k; i < 60 * k + 60; i++)
 
-                //    for (int k = 0; k < xaxis / 20; k++)
-                //    {
-                //        for (int i = 40 * k; i < 40 * k + 40; i++)
+                        {
+                            for (int j = 60 * t; j < 60 * t + 60; j++)
+                            {
 
-                //        {
-                //            for (int j = 40 * t; j < 40 * t + 40; j++)
-                //            {
+                                if (map[i, j] == 1)
+                                {
+                                    count_green[7] = count_green[7] + 1;
+                                }
+                                else if (map[i, j] == 2)
+                                {
+                                    count_red[7] = count_red[7] + 1;
+                                }
+                           }
+                        }
+                        frac_count = frac_count + 1;
 
-                //                if (map[i, j] == 1)
-                //                {
-
-                //                    count_green[6] = count_green[6] + 1;
-
-                //                }
-                //                else if (map[i, j] == 2)
-                //                {
-
-                //                    count_red[6] = count_red[6] + 1;
-
-                //                }
-
-
-
-                //            }
-
-
-                //        }
-                //        frac_count = frac_count + 1;
-
-                //        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
-                //        count_red[6] = 0;
-                //        count_green[6] = 0;
-                //    }
-                //}
-                //for (int t = 0; t < yaxis / 60; t++)
-                //{
-
-
-                //    for (int k = 0; k < xaxis / 60; k++)
-                //    {
-                //        for (int i = 60 * k; i < 60 * k + 60; i++)
-
-                //        {
-                //            for (int j = 60 * t; j < 60 * t + 60; j++)
-                //            {
-
-                //                if (map[i, j] == 1)
-                //                {
-
-                //                    count_green[7] = count_green[7] + 1;
-
-                //                }
-                //                else if (map[i, j] == 2)
-                //                {
-
-                //                    count_red[7] = count_red[7] + 1;
-
-                //                }
-
-
-
-                //            }
-
-
-                //        }
-                //        frac_count = frac_count + 1;
-
-                //        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
-                //        count_red[7] = 0;
-                //        count_green[7] = 0;
-                //    }
-                //}
+                        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
+                        count_red[7] = 0;
+                        count_green[7] = 0;
+                    }
+                }
 
 
 
@@ -2651,7 +2618,7 @@ namespace Gradproject
 
 
 
-            
+
 
             ave_sim_neigh.Text = Convert.ToString(B / sim_value);
             ave_mix.Text = Convert.ToString(C / sim_value);
