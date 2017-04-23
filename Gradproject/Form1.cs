@@ -50,6 +50,8 @@ namespace Gradproject
                 lowerbound.Text,lowerbound2.Text,eco.Text,upperbound.Text,Utility_check.Text, sim.Text, 
                 geo.Text, no_free_cells.Text,algo.Text,upperbound2.Text);
             Form2.Show();
+
+           
     
         }
 

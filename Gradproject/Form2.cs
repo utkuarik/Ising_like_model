@@ -21,6 +21,8 @@ using MathNet.Numerics.Statistics;
 namespace Gradproject
 {
 
+    
+
     public partial class Form2 : Form
     {
 
@@ -73,7 +75,7 @@ namespace Gradproject
 
         public int sim_value = 0;
 
-        
+   
 
 
 
@@ -111,20 +113,16 @@ namespace Gradproject
             fract = new double[50,3000];
             count_green = new double[9];
             count_red = new double[9];
-
-
-
-
+           
         }
 
-
+       
 
 
         public void Draw_World(int x_axis, int y_axis) //Draw the initial empty world
 
         {
             Graphics g;
-
             Pen p = new Pen(Color.Black);
             Brush bBrush = (Brush)Brushes.Gray;
 
@@ -161,10 +159,7 @@ namespace Gradproject
                     {
                         {
                             map[k, l] = 3;
-
-
                         }
-
                     }
             }
             else if (geo_value == 2)
@@ -390,10 +385,6 @@ namespace Gradproject
                 }
 
             }
-
-
-
-
 
             s = 0;
             p = 0;
@@ -651,21 +642,16 @@ namespace Gradproject
                 {
                     count31 = count31 + 1;
 
-
-
                 }
                 else if (results[i, 2] == 2)
                 {
-
                     count32 = count32 + 1;
 
                 }
 
                 else if (results[i, 2] == 0)
                 {
-
                     count30 = count30 + 1;
-
                 }
 
             }
@@ -852,14 +838,11 @@ namespace Gradproject
 
                 else if (t[0, 0] == 0 && Minors[i].type == 1)
                 {
-
                     Minors[i].seperatist = 1;
-
                 }
                 else
                 {
                     Minors[i].seperatist = 0;
-
 
                 }
                 if (econ == 1)
@@ -877,7 +860,6 @@ namespace Gradproject
                     if (Minors[i].type == 2)
                     {
                         Minors[i].het_neigh = t[0, 0];
-
                     }
                     else
                     {
@@ -927,8 +909,6 @@ namespace Gradproject
                         if ((Locals[local_index].rate < lower_bound || Locals[local_index].rate > upper_bound) &&
                                 (Minors[minor_index].rate < lower_bound2 || Minors[minor_index].rate > upper_bound2))
                         {
-
-
 
 
                             lxpos = Locals[local_index].xpos;
@@ -1036,8 +1016,6 @@ namespace Gradproject
                             }
                         }
 
-
-
                         else
                         {
 
@@ -1104,8 +1082,6 @@ namespace Gradproject
                                     local_index = rnd2.Next(0, locals_num);
                                     minor_index = rnd2.Next(0, min_num);
 
-
-
                                 }
                                 else
                                 {
@@ -1114,8 +1090,6 @@ namespace Gradproject
 
                                     local_index = rnd2.Next(0, locals_num);
                                     minor_index = rnd2.Next(0, min_num);
-
-
 
                                 }
 
@@ -1167,8 +1141,6 @@ namespace Gradproject
                             }
                         }
 
-
-
                         else
                         {
 
@@ -1211,9 +1183,6 @@ namespace Gradproject
 
                     }
 
-
-
-
                 }
 
                 else if (algo_value == 3)
@@ -1235,8 +1204,6 @@ namespace Gradproject
                                     Keep_arr[index_loc] = j;
                                     index_loc = index_loc + 1;
                                 }
-
-
 
                             }
                             if (index_loc == 0)
@@ -1263,7 +1230,6 @@ namespace Gradproject
                                     xpos = lxpos,
                                     ypos = lypos,
 
-
                                 };
                                 Locals[local_index] = null;
 
@@ -1273,14 +1239,10 @@ namespace Gradproject
 
                                     break;
                                 }
-
-
                             }
                             else
                             {
                                 local_index = Keep_arr[local_index];
-
-
                             }
                         }
                         else
@@ -1294,9 +1256,6 @@ namespace Gradproject
                                     Keep_arr[index_min] = j;
                                     index_min = index_min + 1;
                                 }
-
-
-
                             }
                             if (index_min == 0)
                             {
@@ -1337,18 +1296,9 @@ namespace Gradproject
                             {
 
                                 minor_index = Keep_arr[minor_index];
-
-
-
                             }
                         }
-
-
-
                     }
-
-
-
                 }
 
                 else if (algo_value == 4)
@@ -1368,22 +1318,9 @@ namespace Gradproject
                                 map[Locals[local_index].xpos, Locals[local_index].ypos] = 2;
 
                             }
-
-
-
                         }
-
-
-
-
-                    }
-
-
-
-
+                    }                
                 }
-
-
             }
 
             else if (no_free_cells == 0)
@@ -1507,12 +1444,7 @@ namespace Gradproject
                             map[Minors[i].xpos, Minors[i].ypos] = 2;
                         }
 
-
-
                     }
-
-
-
                 }
 
             }
@@ -1532,8 +1464,6 @@ namespace Gradproject
 
                     }
 
-
-
                 }
                 for (int j = 0; j < min_num; j++)
                 {
@@ -1542,7 +1472,7 @@ namespace Gradproject
                     {
                         agents.Add(Minors[j]);
                     }
-                }
+                } 
                 int i = 0;
                 while (i < agents.Count)
                 {
@@ -1552,8 +1482,6 @@ namespace Gradproject
                     //if (dice == 0)
                     //{
                     local_index = rnd2.Next(0, locals_num);
-
-
 
                     dice = rnd3.Next(agents.Count);
                    
@@ -1575,8 +1503,6 @@ namespace Gradproject
 
                             }
 
-
-
                         }
                         for (int j = 0; j < min_num; j++)
                         {
@@ -1586,9 +1512,7 @@ namespace Gradproject
                                 agents.Add(Minors[j]);
                             }
                         }
-
-                       
-
+                    
                     }
 
                     else if (agents[dice].type == 2)
@@ -1607,8 +1531,6 @@ namespace Gradproject
                                 agents.Add(Locals[j]);
 
                             }
-
-
 
                         }
                         for (int j = 0; j < min_num; j++)
@@ -1672,14 +1594,8 @@ namespace Gradproject
                 //        Minors[minor_index].type = 2;
 
                 //    }
-
-
-
-
-            
-                    
-                }
-
+                            
+                }         
 
                 //for (int i = 0; i < locals_num; i++)
                 //{
@@ -1798,7 +1714,6 @@ namespace Gradproject
 
                     utility_value = Math.Sqrt(Math.Pow((upper_bound - lower_bound) / 2, 2) - Math.Pow(a - 0.5, 2));
 
-
                 }
                 else
                 {
@@ -1838,8 +1753,6 @@ namespace Gradproject
                 {
                     utility_value = 1 - a / 0.5;
                 }
-
-
 
             }
 
@@ -1898,7 +1811,6 @@ namespace Gradproject
                         {
                             g.FillRectangle(dbrush, k * cellSize, l * cellSize, cellSize, cellSize);
 
-
                         }
 
                     }
@@ -1926,9 +1838,6 @@ namespace Gradproject
                 g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
             }
 
-
-
-
         }
 
         public double economy_check(int xpos, int ypos)
@@ -1954,8 +1863,20 @@ namespace Gradproject
             return map1;
 
         }
+
+       Form3 otherform = new Form3();
         public void button1_Click(object sender, EventArgs l)
         {
+
+            
+
+
+      
+
+           
+
+      
+
 
             //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
             //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
@@ -2064,8 +1985,6 @@ namespace Gradproject
                         if (Minors[j] != null)
                             sum2 = sum2 + Minors[j].s;
 
-
-
                     }
 
                     Random rnd4 = new Random();
@@ -2124,14 +2043,9 @@ namespace Gradproject
 
                             }
 
-
                         }
 
-
-
-
                     }
-
 
                 }
 
@@ -2283,10 +2197,7 @@ namespace Gradproject
                     sum_8 = sum_8 + Minors[j].seperatist;
                 }
 
-                
-
-                
-
+                            
                 ave_sim_neigh.Text = Convert.ToString(1 - sum_7 / (locals_num + min_num));
                 ave_FSI.Text = Convert.ToString(sum_4 / (locals_num + min_num));
                 NDF_emp.Text = Convert.ToString(Math.Round(ndf_sum, 3));
@@ -2398,10 +2309,7 @@ namespace Gradproject
 
                                 }
 
-
-
                             }
-
 
                         }
                         frac_count = frac_count + 1;
@@ -2436,10 +2344,7 @@ namespace Gradproject
 
                                 }
 
-
-
                             }
-
 
                         }
                         frac_count = frac_count + 1;
@@ -2615,14 +2520,9 @@ namespace Gradproject
 
 
 
-
-
-
-
-
-            ave_sim_neigh.Text = Convert.ToString(B / sim_value);
-            ave_mix.Text = Convert.ToString(C / sim_value);
-            ave_FSI.Text = Convert.ToString(D / sim_value);
+            ave_sim_neigh.Text = Convert.ToString(Math.Round(B / sim_value,3));
+            ave_mix.Text = Convert.ToString(Math.Round(C / sim_value,3));
+            ave_FSI.Text = Convert.ToString(Math.Round(D / sim_value,3));
             NDF_emp.Text = Convert.ToString(Math.Round(E, 3) / sim_value);
             NDF_emp_2.Text = Convert.ToString(Math.Round(F, 3) / sim_value);
             NDF_emp_3.Text = Convert.ToString(Math.Round(G, 3) / sim_value);
@@ -2640,6 +2540,10 @@ namespace Gradproject
             minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
             min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(),3));
             sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(),3));
+
+            
+
+
 
             //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
             //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);

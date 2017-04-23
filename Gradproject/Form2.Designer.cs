@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Media.SolidColorBrush solidColorBrush1 = new System.Windows.Media.SolidColorBrush();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.ave_uti = new System.Windows.Forms.Label();
@@ -61,6 +62,7 @@
             this.var_fsi = new System.Windows.Forms.Label();
             this.min_var = new System.Windows.Forms.Label();
             this.sep_var = new System.Windows.Forms.Label();
+            this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
             this.SuspendLayout();
             // 
             // button1
@@ -362,11 +364,28 @@
             this.sep_var.TabIndex = 34;
             this.sep_var.Text = "0";
             // 
+            // cartesianChart1
+            // 
+            this.cartesianChart1.Hoverable = true;
+            this.cartesianChart1.Location = new System.Drawing.Point(430, 283);
+            this.cartesianChart1.Name = "cartesianChart1";
+            solidColorBrush1.Color = System.Windows.Media.Color.FromArgb(((byte)(30)), ((byte)(30)), ((byte)(30)), ((byte)(30)));
+            this.cartesianChart1.ScrollBarFill = solidColorBrush1;
+            this.cartesianChart1.ScrollHorizontalFrom = 0D;
+            this.cartesianChart1.ScrollHorizontalTo = 0D;
+            this.cartesianChart1.ScrollMode = LiveCharts.ScrollMode.None;
+            this.cartesianChart1.ScrollVerticalFrom = 0D;
+            this.cartesianChart1.ScrollVerticalTo = 0D;
+            this.cartesianChart1.Size = new System.Drawing.Size(8, 8);
+            this.cartesianChart1.TabIndex = 35;
+            this.cartesianChart1.Text = "cartesianChart1";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 457);
+            this.Controls.Add(this.cartesianChart1);
             this.Controls.Add(this.sep_var);
             this.Controls.Add(this.min_var);
             this.Controls.Add(this.var_fsi);
@@ -442,5 +461,6 @@
         private System.Windows.Forms.Label var_fsi;
         private System.Windows.Forms.Label min_var;
         private System.Windows.Forms.Label sep_var;
+        private LiveCharts.WinForms.CartesianChart cartesianChart1;
     }
 }
