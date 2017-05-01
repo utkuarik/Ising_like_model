@@ -31,7 +31,7 @@ namespace Gradproject
         public int xaxis;
         public int yaxis;
         public int utility_check;
-        public int cellSize = 5;
+        public int cellSize = 1;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
@@ -110,7 +110,7 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
-            fract = new double[50,3000];
+            fract = new double[50,25000];
             count_green = new double[9];
             count_red = new double[9];
            
@@ -128,15 +128,15 @@ namespace Gradproject
 
             g = this.CreateGraphics();
 
-            for (int y = 0; y < y_axis; ++y)
-            {
-                g.DrawLine(p, 0, y * cellSize, y_axis * cellSize, y * cellSize);
-            }
+            //for (int y = 0; y < y_axis; ++y)
+            //{
+            //    g.DrawLine(p, 0, y * cellSize, y_axis * cellSize, y * cellSize);
+            //}
 
-            for (int x = 0; x < x_axis; ++x)
-            {
-                g.DrawLine(p, x * cellSize, 0, x * cellSize, x_axis * cellSize);
-            }
+            //for (int x = 0; x < x_axis; ++x)
+            //{
+            //    g.DrawLine(p, x * cellSize, 0, x * cellSize, x_axis * cellSize);
+            //}
             exp_het = 2 * (locals_num / (locals_num + min_num * 1.00)) * (min_num / (locals_num + min_num * 1.00));
 
 
@@ -276,15 +276,15 @@ namespace Gradproject
                 }
 
             }
-            for (int y = 0; y < yaxis; ++y)
-            {
-                g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
-            }
+            //for (int y = 0; y < yaxis; ++y)
+            //{
+            //    g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
+            //}
 
-            for (int x = 0; x < xaxis; ++x)
-            {
-                g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
-            }
+            //for (int x = 0; x < xaxis; ++x)
+            //{
+            //    g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
+            //}
             return map;
 
         }   // end of execute function
@@ -1828,15 +1828,15 @@ namespace Gradproject
 
             }
 
-            for (int y = 0; y < yaxis; ++y)
-            {
-                g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
-            }
+            //for (int y = 0; y < yaxis; ++y)
+            //{
+            //    g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
+            //}
 
-            for (int x = 0; x < xaxis; ++x)
-            {
-                g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
-            }
+            //for (int x = 0; x < xaxis; ++x)
+            //{
+            //    g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
+            //}
 
         }
 
@@ -1856,15 +1856,15 @@ namespace Gradproject
         {
 
             Matrix<double> map1 = map;
-            Draw_World(xaxis, yaxis);
-            update_map();
+            //Draw_World(xaxis, yaxis);
+            //update_map();
             map1 = continue_to(map);
 
             return map1;
 
         }
 
-       Form3 otherform = new Form3();
+      
         public void button1_Click(object sender, EventArgs l)
         {
 
@@ -2285,6 +2285,43 @@ namespace Gradproject
 
                 agents.Clear();
 
+                for (int t = 0; t < yaxis / 2; t++)
+                {
+
+                    for (int k = 0; k < xaxis / 2; k++)
+                    {
+                        for (int i = 2 * k; i < 2 * k + 2; i++)
+
+                        {
+                            for (int j = 2 * t; j < 2 * t + 2; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green[8] = count_green[8] + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red[8] = count_red[8] + 1;
+
+                                }
+
+                            }
+
+                        }
+                        frac_count = frac_count + 1;
+
+                        fract[a, frac_count] = count_green[8] / (count_green[8] * 1.00 + count_red[8]);
+                        count_red[8] = 0;
+                        count_green[8] = 0;
+                    }
+                }
+
+
+
                 for (int t = 0; t < yaxis / 5; t++)
                 {
 
@@ -2541,17 +2578,17 @@ namespace Gradproject
             min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(),3));
             sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(),3));
 
-            
 
 
 
-            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet ws = (Worksheet)xla.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
 
-            //rng.Value2 = fract;
-            //xla.Visible = true;
+            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet ws = (Worksheet)xla.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
+
+            rng.Value2 = fract;
+            xla.Visible = true;
 
 
         }
