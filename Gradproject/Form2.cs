@@ -31,7 +31,7 @@ namespace Gradproject
         public int xaxis;
         public int yaxis;
         public int utility_check;
-        public int cellSize = 1;
+        public int cellSize = 3;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
@@ -59,10 +59,12 @@ namespace Gradproject
         public double variance_FSI;
         public double variance_MIX;
         public double variance_ASN;
-        public double[] count_green;
-        public double[] count_red;
+        public double count_green;
+        public double count_red;
         public double[,] fract;
         public int frac_count;
+        public double[,] prob_dist;
+        public int queue;
         //End of universal variables
         public List<Agents> agents = new List<Agents>();
 
@@ -111,8 +113,9 @@ namespace Gradproject
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
             fract = new double[50,25000];
-            count_green = new double[9];
-            count_red = new double[9];
+            prob_dist = new double[11, 1000];
+
+            
            
         }
 
@@ -2282,277 +2285,147 @@ namespace Gradproject
                 mino_number[a] = number_min*1.00;
                 number_loc = 0;
                 number_min = 0;
-
+                
                 agents.Clear();
+                queue = 0;
 
-                for (int t = 0; t < yaxis / 2; t++)
+                for (int z =2;  z <= yaxis/2;z++)//Square analysis counting
+
                 {
 
-                    for (int k = 0; k < xaxis / 2; k++)
+                    
+                    if( yaxis%z==0)
+
                     {
-                        for (int i = 2 * k; i < 2 * k + 2; i++)
-
+                        queue = queue + 1;
+                        for (int e = 0; e < yaxis / z; e++)
                         {
-                            for (int j = 2 * t; j < 2 * t + 2; j++)
+
+                            for (int k = 0; k < xaxis / z; k++)
                             {
+                                for (int i = z * k; i < z * k + z; i++)
 
-                                if (map[i, j] == 1)
                                 {
+                                    for (int j = z * e; j < z * e + z; j++)
+                                    {
 
-                                    count_green[8] = count_green[8] + 1;
+                                        if (map[i, j] == 1)
+                                        {
+
+                                            count_green = count_green + 1;
+
+                                        }
+                                        else if (map[i, j] == 2)
+                                        {
+
+                                            count_red = count_red + 1;
+
+                                        }
+
+                                    }
 
                                 }
-                                else if (map[i, j] == 2)
+                                frac_count = frac_count + 1;
+
+                                fract[a, frac_count] = count_green / (count_green * 1.00 + count_red);
+
+                                prob_dist[0, queue] = z;
+
+                                if (count_green / (count_green * 1.00 + count_red) >= 0 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.1)
+
                                 {
-
-                                    count_red[8] = count_red[8] + 1;
-
+                                    prob_dist[1, queue] = prob_dist[1, queue] + 1;
                                 }
-
-                            }
-
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[8] / (count_green[8] * 1.00 + count_red[8]);
-                        count_red[8] = 0;
-                        count_green[8] = 0;
-                    }
-                }
-
-
-
-                for (int t = 0; t < yaxis / 5; t++)
-                {
-
-                    for (int k = 0; k < xaxis / 5; k++)
-                    {
-                        for (int i = 5 * k; i < 5 * k + 5; i++)
-
-                        {
-                            for (int j = 5 * t; j < 5 * t + 5; j++)
-                            {
-
-                                if (map[i, j] == 1)
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.1 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.2)
                                 {
 
-                                    count_green[1] = count_green[1] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[1] = count_red[1] + 1;
+                                    prob_dist[2, queue] = prob_dist[2, queue] + 1;
 
                                 }
 
-                            }
-
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[1] / (count_green[1] * 1.00 + count_red[1]);
-                        count_red[1] = 0;
-                        count_green[1] = 0;
-                    }
-                }
-
-                for (int t = 0; t < yaxis / 6; t++)
-                {
-
-                    for (int k = 0; k < xaxis / 6; k++)
-                    {
-                        for (int i = 6 * k; i < 6 * k + 6; i++)
-
-                        {
-                            for (int j = 6 * t; j < 6 * t + 6; j++)
-                            {
-
-                                if (map[i, j] == 1)
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.2 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.3)
                                 {
 
-                                    count_green[2] = count_green[2] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[2] = count_red[2] + 1;
+                                    prob_dist[3, queue] = prob_dist[3, queue] + 1;
 
                                 }
 
-                            }
-
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[2] / (count_green[2] * 1.00 + count_red[2]);
-                        count_red[2] = 0;
-                        count_green[2] = 0;
-                    }
-                }
-
-                for (int t = 0; t < yaxis / 8; t++)
-                {
-
-                    for (int k = 0; k < xaxis / 8; k++)
-                    {
-                        for (int i = 8 * k; i < 8 * k + 8; i++)
-
-                        {
-                            for (int j = 8 * t; j < 8 * t + 8; j++)
-                            {
-
-                                if (map[i, j] == 1)
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.3 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.4)
                                 {
 
-                                    count_green[3] = count_green[3] + 1;
+                                    prob_dist[4, queue] = prob_dist[4, queue] + 1;
 
                                 }
-                                else if (map[i, j] == 2)
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.4 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.5)
                                 {
 
-                                    count_red[3] = count_red[3] + 1;
+                                    prob_dist[5, queue] = prob_dist[5, queue] + 1;
 
                                 }
-                            }
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[3] / (count_green[3] * 1.00 + count_red[3]);
-                        count_red[3] = 0;
-                        count_green[3] = 0;
-                    }
-                }
-                for (int t = 0; t < yaxis / 10; t++)
-                {
-
-                    for (int k = 0; k < xaxis / 10; k++)
-                    {
-                        for (int i = 10 * k; i < 10 * k + 10; i++)
-
-                        {
-                            for (int j = 10* t; j < 10 * t + 10; j++)
-                            {
-
-                                if (map[i, j] == 1)
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.5 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.6)
                                 {
 
-                                    count_green[4] = count_green[4] + 1;
+                                    prob_dist[6, queue] = prob_dist[6, queue] + 1;
 
                                 }
-                                else if (map[i, j] == 2)
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.6 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.7)
                                 {
 
-                                    count_red[4] = count_red[4] + 1;
+                                    prob_dist[7, queue] = prob_dist[7, queue] + 1;
 
-                                }                                
+                                }
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.7 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.8)
+                                {
+
+                                    prob_dist[8, queue] = prob_dist[8, queue] + 1;
+
+                                }
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.8 &&
+                                   count_green / (count_green * 1.00 + count_red) < 0.9)
+                                {
+
+                                    prob_dist[9, queue] = prob_dist[9, queue] + 1;
+
+                                }
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
+                                   count_green / (count_green * 1.00 + count_red) <=1)
+                                {
+
+                                    prob_dist[10, queue] = prob_dist[10, queue] + 1;
+
+                                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                count_red = 0;
+                                count_green = 0;
                             }
                         }
-                        frac_count = frac_count + 1;
 
-                        fract[a, frac_count] = count_green[4] / (count_green[4] * 1.00 + count_red[4]);
-                        count_red[4] = 0;
-                        count_green[4] = 0;
                     }
-                }
-                for (int t = 0; t < yaxis / 20; t++)
-                {
+                
+                }//end of square analysis counting
 
-
-                    for (int k = 0; k < xaxis / 20; k++)
-                    {
-                        for (int i = 20 * k; i < 20 * k + 20; i++)
-
-                        {
-                            for (int j = 20 * t; j < 20 * t + 20; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[5] = count_green[5] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[5] = count_red[5] + 1;
-
-                                }
-                            }
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[5] / (count_green[5] * 1.00 + count_red[5]);
-                        count_red[5] = 0;
-                        count_green[5] = 0;
-                    }
-                }
-
-                for (int t = 0; t < yaxis / 40; t++)
-                {
-                    for (int k = 0; k < xaxis / 40; k++)
-                    {
-                        for (int i = 40 * k; i < 40 * k + 40; i++)
-
-                        {
-                            for (int j = 40 * t; j < 40 * t + 40; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[6] = count_green[6] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[6] = count_red[6] + 1;
-
-                                }
-                            }
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[6] / (count_green[6] * 1.00 + count_red[6]);
-                        count_red[6] = 0;
-                        count_green[6] = 0;
-                    }
-                }
-                for (int t = 0; t < yaxis / 60; t++)
-                {
-                    for (int k = 0; k < xaxis / 60; k++)
-                    {
-                        for (int i = 60 * k; i < 60 * k + 60; i++)
-
-                        {
-                            for (int j = 60 * t; j < 60 * t + 60; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-                                    count_green[7] = count_green[7] + 1;
-                                }
-                                else if (map[i, j] == 2)
-                                {
-                                    count_red[7] = count_red[7] + 1;
-                                }
-                           }
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[7] / (count_green[7] * 1.00 + count_red[7]);
-                        count_red[7] = 0;
-                        count_green[7] = 0;
-                    }
-                }
-
-
-
-
-
+              
             }// end of simulations
 
 
@@ -2587,8 +2460,17 @@ namespace Gradproject
             Worksheet ws = (Worksheet)xla.ActiveSheet;
             Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
 
+            Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet wt = (Worksheet)xlb.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
+
             rng.Value2 = fract;
+            rngg.Value2 = prob_dist;
+
             xla.Visible = true;
+            xlb.Visible = true;
+
 
 
         }
