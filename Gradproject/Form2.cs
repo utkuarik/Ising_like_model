@@ -1859,8 +1859,8 @@ namespace Gradproject
         {
 
             Matrix<double> map1 = map;
-            //Draw_World(xaxis, yaxis);
-            //update_map();
+            Draw_World(xaxis, yaxis);
+            update_map();
             map1 = continue_to(map);
 
             return map1;
@@ -2050,6 +2050,46 @@ namespace Gradproject
 
                     }
 
+                    number_loc = 0;
+                    number_min = 0;
+                    for (int i = 0; i < locals_num; i++)  // Count the number of agent types
+                    {
+                        if (Locals[i].type == 1)
+                        {
+                            number_loc = number_loc + 1;
+
+
+                        }
+
+                        else if (Locals[i].type == 2)
+                        {
+
+                            number_min = number_min + 1;
+                        }
+
+
+                    }
+                    for (int i = 0; i < min_num; i++)
+                    {
+                        if (Minors[i].type == 1)
+                        {
+                            number_loc = number_loc + 1;
+
+
+                        }
+
+                        else if (Minors[i].type == 2)
+                        {
+
+                            number_min = number_min + 1;
+                        }
+
+
+                    }
+                    if (sum1 + sum2 < 1000)
+                    {
+                        //MessageBox.Show(Convert.ToString(number_loc), Convert.ToString(number_min));
+                    }
                 }
 
                 //for (int i = 0; i < 10000; i++)
