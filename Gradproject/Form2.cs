@@ -31,7 +31,7 @@ namespace Gradproject
         public int xaxis;
         public int yaxis;
         public int utility_check;
-        public int cellSize = 3;
+        public int cellSize = 2;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
@@ -112,7 +112,7 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
-            fract = new double[50,25000];
+            fract = new double[50,50000];
             prob_dist = new double[11, 1000];
 
             
@@ -1488,62 +1488,22 @@ namespace Gradproject
 
                     dice = rnd3.Next(agents.Count);
                    
-                    if (agents[dice].type == 1)
+                    if (agents[dice].type == 1 &&  (agents[dice].rate<lower_bound || agents[dice].rate >upper_bound) )
                     {
                         map[agents[dice].xpos, agents[dice].ypos] = 2;
                         agents[dice].type = 2;
                       
 
-                        agents.Clear();
-
-                        rate_check_for_all(map);
-                        for (int j = 0; j < locals_num; j++)
-                        {
-                            if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
-                                ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
-                            {
-                                agents.Add(Locals[j]);
-
-                            }
-
-                        }
-                        for (int j = 0; j < min_num; j++)
-                        {
-                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
-                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
-                            {
-                                agents.Add(Minors[j]);
-                            }
-                        }
+                       
                     
                     }
 
-                    else if (agents[dice].type == 2)
+                    else if (agents[dice].type == 2 && (agents[dice].rate < lower_bound2 || agents[dice].rate > upper_bound2))
                     {
                         map[agents[dice].xpos, agents[dice].ypos] = 1;
                         agents[dice].type = 1;
                       
-                        rate_check_for_all(map);
-                        agents.Clear();
-
-                        for (int j = 0; j < locals_num; j++)
-                        {
-                            if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
-                                ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
-                            {
-                                agents.Add(Locals[j]);
-
-                            }
-
-                        }
-                        for (int j = 0; j < min_num; j++)
-                        {
-                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
-                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
-                            {
-                                agents.Add(Minors[j]);
-                            }
-                        }
+                       
 
                     }
                     i = i +1;
@@ -1859,8 +1819,8 @@ namespace Gradproject
         {
 
             Matrix<double> map1 = map;
-            Draw_World(xaxis, yaxis);
-            update_map();
+            //Draw_World(xaxis, yaxis);
+            //update_map();
             map1 = continue_to(map);
 
             return map1;
