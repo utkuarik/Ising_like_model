@@ -112,7 +112,7 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
-            fract = new double[50,50000];
+            fract = new double[50,500000];
             prob_dist = new double[11, 1000];
 
             
@@ -2298,15 +2298,15 @@ namespace Gradproject
 
                     {
                         queue = queue + 1;
-                        for (int e = 0; e < yaxis / z; e++)
+                        for (int e = 0; e <= yaxis-z; e++)
                         {
 
-                            for (int k = 0; k < xaxis / z; k++)
+                            for (int k = 0; k <= xaxis - z; k++)
                             {
-                                for (int i = z * k; i < z * k + z; i++)
+                                for (int i =  k; i < z +k ; i++)
 
                                 {
-                                    for (int j = z * e; j < z * e + z; j++)
+                                    for (int j = e; j < z+e  ; j++)
                                     {
 
                                         if (map[i, j] == 1)
