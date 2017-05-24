@@ -113,7 +113,7 @@ namespace Gradproject
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
             fract = new double[50,500000];
-            prob_dist = new double[11, 1000];
+            prob_dist = new double[13, 1000];
 
             
            
@@ -2331,17 +2331,23 @@ namespace Gradproject
 
                                 prob_dist[0, queue] = z;
 
-                                if (count_green / (count_green * 1.00 + count_red) >= 0 &&
+                                if(count_green / (count_green * 1.00 + count_red) ==0)
+                                {
+
+                                    prob_dist[1, queue] = prob_dist[1, queue] + 1;
+                                }
+                                
+                                else if (count_green / (count_green * 1.00 + count_red) > 0 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.1)
 
                                 {
-                                    prob_dist[1, queue] = prob_dist[1, queue] + 1;
+                                    prob_dist[2, queue] = prob_dist[2, queue] + 1;
                                 }
                                 else if (count_green / (count_green * 1.00 + count_red) >= 0.1 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.2)
                                 {
 
-                                    prob_dist[2, queue] = prob_dist[2, queue] + 1;
+                                    prob_dist[3, queue] = prob_dist[3, queue] + 1;
 
                                 }
 
@@ -2349,7 +2355,7 @@ namespace Gradproject
                                    count_green / (count_green * 1.00 + count_red) < 0.3)
                                 {
 
-                                    prob_dist[3, queue] = prob_dist[3, queue] + 1;
+                                    prob_dist[4, queue] = prob_dist[4, queue] + 1;
 
                                 }
 
@@ -2357,52 +2363,58 @@ namespace Gradproject
                                    count_green / (count_green * 1.00 + count_red) < 0.4)
                                 {
 
-                                    prob_dist[4, queue] = prob_dist[4, queue] + 1;
+                                    prob_dist[5, queue] = prob_dist[5, queue] + 1;
 
                                 }
                                 else if (count_green / (count_green * 1.00 + count_red) >= 0.4 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.5)
                                 {
 
-                                    prob_dist[5, queue] = prob_dist[5, queue] + 1;
+                                    prob_dist[6, queue] = prob_dist[6, queue] + 1;
 
                                 }
                                 else if (count_green / (count_green * 1.00 + count_red) >= 0.5 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.6)
                                 {
 
-                                    prob_dist[6, queue] = prob_dist[6, queue] + 1;
+                                    prob_dist[7, queue] = prob_dist[7, queue] + 1;
 
                                 }
                                 else if (count_green / (count_green * 1.00 + count_red) >= 0.6 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.7)
                                 {
 
-                                    prob_dist[7, queue] = prob_dist[7, queue] + 1;
+                                    prob_dist[8, queue] = prob_dist[8, queue] + 1;
 
                                 }
                                 else if (count_green / (count_green * 1.00 + count_red) >= 0.7 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.8)
                                 {
 
-                                    prob_dist[8, queue] = prob_dist[8, queue] + 1;
+                                    prob_dist[9, queue] = prob_dist[9, queue] + 1;
 
                                 }
                                 else if (count_green / (count_green * 1.00 + count_red) >= 0.8 &&
                                    count_green / (count_green * 1.00 + count_red) < 0.9)
                                 {
 
-                                    prob_dist[9, queue] = prob_dist[9, queue] + 1;
-
-                                }
-                                else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
-                                   count_green / (count_green * 1.00 + count_red) <=1)
-                                {
-
                                     prob_dist[10, queue] = prob_dist[10, queue] + 1;
 
                                 }
+                                else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
+                                   count_green / (count_green * 1.00 + count_red) <1)
+                                {
 
+                                    prob_dist[11, queue] = prob_dist[11, queue] + 1;
+
+                                }
+                                else if (count_green / (count_green * 1.00 + count_red) == 1)
+                                  
+                                {
+
+                                    prob_dist[12, queue] = prob_dist[12, queue] + 1;
+
+                                }
 
 
 
