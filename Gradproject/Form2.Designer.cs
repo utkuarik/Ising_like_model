@@ -63,6 +63,8 @@
             this.min_var = new System.Windows.Forms.Label();
             this.sep_var = new System.Windows.Forms.Label();
             this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
+            this.unhloc = new System.Windows.Forms.Label();
+            this.unhmin = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -380,11 +382,31 @@
             this.cartesianChart1.TabIndex = 35;
             this.cartesianChart1.Text = "cartesianChart1";
             // 
+            // unhloc
+            // 
+            this.unhloc.AutoSize = true;
+            this.unhloc.Location = new System.Drawing.Point(745, 245);
+            this.unhloc.Name = "unhloc";
+            this.unhloc.Size = new System.Drawing.Size(35, 13);
+            this.unhloc.TabIndex = 36;
+            this.unhloc.Text = "label9";
+            // 
+            // unhmin
+            // 
+            this.unhmin.AutoSize = true;
+            this.unhmin.Location = new System.Drawing.Point(745, 271);
+            this.unhmin.Name = "unhmin";
+            this.unhmin.Size = new System.Drawing.Size(41, 13);
+            this.unhmin.TabIndex = 37;
+            this.unhmin.Text = "label10";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 457);
+            this.Controls.Add(this.unhmin);
+            this.Controls.Add(this.unhloc);
             this.Controls.Add(this.cartesianChart1);
             this.Controls.Add(this.sep_var);
             this.Controls.Add(this.min_var);
@@ -462,5 +484,7 @@
         private System.Windows.Forms.Label min_var;
         private System.Windows.Forms.Label sep_var;
         private LiveCharts.WinForms.CartesianChart cartesianChart1;
+        private System.Windows.Forms.Label unhloc;
+        private System.Windows.Forms.Label unhmin;
     }
 }

@@ -65,6 +65,8 @@ namespace Gradproject
         public int frac_count;
         public double[,] prob_dist;
         public int queue;
+        public int unhappyloc;
+        public int unhappymin;
         //End of universal variables
         public List<Agents> agents = new List<Agents>();
 
@@ -112,7 +114,7 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[locals_num];
             Minors = new Agents[min_num];
-            fract = new double[50,500000];
+            fract = new double[50,1500000];
             prob_dist = new double[13, 1000];
 
             
@@ -230,6 +232,13 @@ namespace Gradproject
 
                 Minors[i].type = 2;
                 map[x, y] = 2;
+
+
+               
+
+
+
+
             }
 
             //////////////////////////////////////////////////////////////////
@@ -288,6 +297,29 @@ namespace Gradproject
             //{
             //    g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
             //}
+
+
+            rate_check_for_all(map);
+            
+            for (int r = 0; r < xaxis * yaxis / 2; r++)
+            {
+                if (Locals[r].rate < lower_bound)
+                {
+                    unhappyloc++;
+
+                }
+                if (Minors[r].rate < lower_bound2)
+                {
+
+                    unhappymin++;
+
+                }
+
+
+
+            }
+
+
             return map;
 
         }   // end of execute function
@@ -2289,7 +2321,7 @@ namespace Gradproject
                 agents.Clear();
                 queue = 0;
 
-                for (int z =2;  z <= yaxis/2;z++)//Square analysis counting
+                for (int z =20;  z <= yaxis/2;z++)//Square analysis counting
 
                 {
 
@@ -2325,9 +2357,9 @@ namespace Gradproject
                                     }
 
                                 }
-                                frac_count = frac_count + 1;
+                                //frac_count = frac_count + 1;
 
-                                fract[a, frac_count] = count_green / (count_green * 1.00 + count_red);
+                                //fract[a, frac_count] = count_green / (count_green * 1.00 + count_red);
 
                                 prob_dist[0, queue] = z;
 
@@ -2462,25 +2494,27 @@ namespace Gradproject
             minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
             min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(),3));
             sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(),3));
+            unhloc.Text = Convert.ToString(unhappyloc / sim_value);
+            unhmin.Text = Convert.ToString(unhappymin / sim_value);
 
 
 
 
 
-            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet ws = (Worksheet)xla.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet ws = (Worksheet)xla.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
 
             Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
             Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
             Worksheet wt = (Worksheet)xlb.ActiveSheet;
             Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
 
-            rng.Value2 = fract;
+            //rng.Value2 = fract;
             rngg.Value2 = prob_dist;
 
-            xla.Visible = true;
+            //xla.Visible = true;
             xlb.Visible = true;
 
 
