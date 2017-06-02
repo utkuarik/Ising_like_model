@@ -31,7 +31,7 @@ namespace Gradproject
         public int xaxis;
         public int yaxis;
         public int utility_check;
-        public int cellSize = 2;
+        public int cellSize = 1;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
@@ -300,15 +300,18 @@ namespace Gradproject
 
 
             rate_check_for_all(map);
-            
-            for (int r = 0; r < xaxis * yaxis / 2; r++)
+
+            for (int r = 0; r < locals_num; r++)
             {
-                if (Locals[r].rate < lower_bound)
+                if (Locals[r].rate < lower_bound && Locals[r] != null)
                 {
                     unhappyloc++;
 
                 }
-                if (Minors[r].rate < lower_bound2)
+            }
+            for (int r = 0; r < min_num; r++)
+            { 
+                if (Minors[r].rate < lower_bound2 && Minors[r] != null)
                 {
 
                     unhappymin++;
@@ -2321,14 +2324,12 @@ namespace Gradproject
                 agents.Clear();
                 queue = 0;
 
-                for (int z =20;  z <= yaxis/2;z++)//Square analysis counting
+                for (int z =2;  z <= yaxis/2;z++)//Square analysis counting
 
                 {
 
                     
-                    if( yaxis%z==0)
-
-                    {
+                    
                         queue = queue + 1;
                         for (int e = 0; e <= yaxis-z; e++)
                         {
@@ -2448,6 +2449,8 @@ namespace Gradproject
 
                                 }
 
+                           
+
 
 
 
@@ -2465,8 +2468,12 @@ namespace Gradproject
                             }
                         }
 
+                    if (prob_dist[12, queue] + prob_dist[1, queue] == 0)
+                    {
+
+                        break;
                     }
-                
+
                 }//end of square analysis counting
 
               
