@@ -64,9 +64,12 @@ namespace Gradproject
         public double[,] fract;
         public int frac_count;
         public double[,] prob_dist;
+        public double[,] prob_dist1;
         public int queue;
+        public int queue1;
         public int unhappyloc;
         public int unhappymin;
+        public int[,] unhappy_array;
         //End of universal variables
         public List<Agents> agents = new List<Agents>();
 
@@ -116,9 +119,9 @@ namespace Gradproject
             Minors = new Agents[min_num];
             fract = new double[50,1500000];
             prob_dist = new double[13, 1000];
+            prob_dist1 = new double[13, 1000];
+            unhappy_array = new int[500, 50];
 
-            
-           
         }
 
        
@@ -146,6 +149,8 @@ namespace Gradproject
 
 
         }
+
+        
         public MathNet.Numerics.LinearAlgebra.Matrix<double> execute()
         // Make the initial implanting and create agents
         // and draw the initial world
@@ -299,33 +304,141 @@ namespace Gradproject
             //}
 
 
-            rate_check_for_all(map);
+            
 
+            queue1 = 0;
+            for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+
+            {
+
+
+
+                queue1 = queue1 + 1;
+                for (int e = 0; e <= yaxis - z; e++)
+                {
+
+                    for (int k = 0; k <= xaxis - z; k++)
+                    {
+                        for (int i = k; i < z + k; i++)
+
+                        {
+                            for (int j = e; j < z + e; j++)
+                            {
+
+                                if (map[i, j] == 1)
+                                {
+
+                                    count_green = count_green + 1;
+
+                                }
+                                else if (map[i, j] == 2)
+                                {
+
+                                    count_red = count_red + 1;
+
+                                }
+
+                            }
+
+                        }                   
+                        prob_dist1[0, queue1] = z;
+
+                        if (count_green / (count_green * 1.00 + count_red) == 0)
+                        {
+                            prob_dist1[1, queue1] = prob_dist1[1, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) > 0 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.1)
+                        {
+                            prob_dist1[2, queue1] = prob_dist1[2, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.1 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.2)
+                        {
+                            prob_dist1[3, queue1] = prob_dist1[3, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.2 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.3)
+                        {
+                            prob_dist1[4, queue1] = prob_dist1[4, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.3 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.4)
+                        {
+                            prob_dist1[5, queue1] = prob_dist1[5, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.4 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.5)
+                        {
+                            prob_dist1[6, queue1] = prob_dist1[6, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.5 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.6)
+                        {
+                            prob_dist1[7, queue1] = prob_dist1[7, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.6 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.7)
+                        {
+                            prob_dist1[8, queue1] = prob_dist1[8, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.7 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.8)
+                        {
+                            prob_dist1[9, queue1] = prob_dist1[9, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.8 &&
+                           count_green / (count_green * 1.00 + count_red) < 0.9)
+                        {
+                            prob_dist1[10, queue1] = prob_dist1[10, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
+                           count_green / (count_green * 1.00 + count_red) < 1)
+                        {
+                            prob_dist1[11, queue1] = prob_dist1[11, queue1] + 1;
+                        }
+                        else if (count_green / (count_green * 1.00 + count_red) == 1)
+                        {
+                            prob_dist1[12, queue1] = prob_dist1[12, queue1] + 1;
+                        }
+                        count_red = 0;
+                        count_green = 0;
+                    }
+                }
+            }
+
+                return map;
+
+        }   // end of execute function
+
+        public int[,] count_unhappy(Matrix<double> map, int kuar, int a)
+            //Count unhappy agents
+        {
+            rate_check_for_all(map);
+            unhappyloc = 0;
+            unhappymin = 0;
             for (int r = 0; r < locals_num; r++)
             {
-                if (Locals[r].rate < lower_bound && Locals[r] != null)
+                if ((Locals[r].rate < lower_bound && Locals[r] != null && Locals[r].type==1) ||
+                   (Minors[r].rate < lower_bound && Minors[r] !=null && Minors[r].type == 1))
                 {
                     unhappyloc++;
-
                 }
             }
             for (int r = 0; r < min_num; r++)
-            { 
-                if (Minors[r].rate < lower_bound2 && Minors[r] != null)
+            {
+                if ((Locals[r].rate < lower_bound2 && Locals[r] != null && Locals[r].type == 2) ||
+                   (Minors[r].rate < lower_bound2 && Minors[r] != null && Minors[r].type == 2))
                 {
-
                     unhappymin++;
-
                 }
-
-
-
             }
+            unhappy_array[kuar, 2 * a] = unhappyloc;
+            unhappy_array[kuar, 2 * a + 1] = unhappymin;
 
+            return unhappy_array;
 
-            return map;
-
-        }   // end of execute function
+        }//end of count unhappy agent function
         public Matrix<double> AdjacentElements(Matrix<double> map2, int row, int column)
         {
             // Collect neighbor cells' positions
@@ -1902,7 +2015,7 @@ namespace Gradproject
             {
                 Draw_World(xaxis, yaxis);
                 frac_count = 0;
-
+                kuar = 0;
                 Matrix<double> map = execute();
 
                 for (int j = 0; j < min_num; j++)
@@ -1925,10 +2038,11 @@ namespace Gradproject
                 {
                     rate_check_for_all(map);
 
-                    kuar = kuar + 1;
 
+                    count_unhappy(map, kuar, a);
                     map = continue_2(map);
-
+                   
+                    kuar = kuar + 1;
                     for (int i = 0; i < locals_num; i++)
                     {
 
@@ -2508,21 +2622,28 @@ namespace Gradproject
 
 
 
-            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet ws = (Worksheet)xla.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
+            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet ws = (Worksheet)xla.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
 
             Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
             Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
             Worksheet wt = (Worksheet)xlb.ActiveSheet;
             Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
 
-            //rng.Value2 = fract;
-            rngg.Value2 = prob_dist;
 
-            //xla.Visible = true;
+            Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet wf = (Worksheet)xlc.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
+
+            rng.Value2 = prob_dist1;
+            rngg.Value2 = prob_dist;
+            rngg1.Value2 = unhappy_array;
+            xla.Visible = true;
             xlb.Visible = true;
+            xlc.Visible = true;
 
 
 

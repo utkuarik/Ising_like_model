@@ -149,7 +149,7 @@
             this.lowerbound.Name = "lowerbound";
             this.lowerbound.Size = new System.Drawing.Size(34, 20);
             this.lowerbound.TabIndex = 13;
-            this.lowerbound.Text = "0.25";
+            this.lowerbound.Text = "0.5";
             // 
             // label7
             // 
@@ -355,6 +355,7 @@
             this.lowerbound2.Name = "lowerbound2";
             this.lowerbound2.Size = new System.Drawing.Size(30, 20);
             this.lowerbound2.TabIndex = 40;
+            this.lowerbound2.Text = "0.5";
             // 
             // upperbound2
             // 
@@ -362,6 +363,7 @@
             this.upperbound2.Name = "upperbound2";
             this.upperbound2.Size = new System.Drawing.Size(30, 20);
             this.upperbound2.TabIndex = 41;
+            this.upperbound2.Text = "1";
             // 
             // Form1
             // 
