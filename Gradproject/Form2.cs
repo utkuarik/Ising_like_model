@@ -71,6 +71,7 @@ namespace Gradproject
         public int unhappyloc;
         public int unhappymin;
         public int[,] unhappy_array;
+        public int w_size1;
         //End of universal variables
         public List<Agents> agents = new List<Agents>();
 
@@ -83,13 +84,13 @@ namespace Gradproject
 
         public int sim_value = 0;
 
-   
 
 
 
-        public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound,string lowerbound2,
+
+        public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound, string lowerbound2,
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
-            string algo, string upperbound2)
+            string algo, string upperbound2, string wsize)
 
         {   // Get the values from previous form
 
@@ -116,14 +117,14 @@ namespace Gradproject
             loc_number = new double[sim_value];
             mino_number = new double[sim_value];
             SEPAR = new double[sim_value];
-            Locals = new Agents[locals_num];
-            Minors = new Agents[min_num];
+            Locals = new Agents[xaxis * xaxis];
+            Minors = new Agents[xaxis * xaxis];
             fract = new double[50,1500000];
             prob_dist = new double[13, 1000];
             prob_dist1 = new double[13, 1000];
             prob_dist2 = new double[1000, 100];
             unhappy_array = new int[500, 50];
-
+            w_size1 = Convert.ToInt32(wsize);
         }
 
        
@@ -421,8 +422,8 @@ namespace Gradproject
             unhappymin = 0;
             for (int r = 0; r < locals_num; r++)
             {
-                if ((Locals[r].rate < lower_bound && Locals[r] != null && Locals[r].type==1) ||
-                   (Minors[r].rate < lower_bound && Minors[r] !=null && Minors[r].type == 1))
+                if ((Locals[r] != null && Locals[r].rate < lower_bound &&   Locals[r].type==1) ||
+                   (Minors[r] != null && Minors[r].rate < lower_bound &&   Minors[r].type == 1))
                 {
                     unhappyloc++;
                 }
@@ -452,286 +453,319 @@ namespace Gradproject
             int r = 0;
             int s = 0;
             int p = 0;
-            for (int j = row - 1; j <= row + 1; j++)
+            //for (int j = row - 1; j <= row + 1; j++)
+            //{
+            //    for (int i = column - 1; i <= column + 1; i++)
+            //    {
+            //        if (i >= 0 && j >= 0 && i < columns && j < rows && !(j == row && i == column))
+            //        {
+            //            w[r, 0] = map2[j, i];
+            //            r = r + 1;
+            //        }
+
+            //    }
+
+            //}
+            for (int j = row - w_size1; j <= row + w_size1; j++)
             {
-                for (int i = column - 1; i <= column + 1; i++)
+                for (int i = column - w_size1; i <= column + w_size1; i++)
                 {
-                    if (i >= 0 && j >= 0 && i < columns && j < rows && !(j == row && i == column))
+
+                    if (j >= 0 && i >= 0)
                     {
-                        w[r, 0] = map2[j, i];
+                        w[r, 0] = map2[j%xaxis, i%xaxis];
                         r = r + 1;
                     }
+                    else if (j >= 0 && i < 0)
+                    {
+                        w[r, 0] = map2[j%xaxis, i + xaxis];
+                        r = r + 1;
+
+                    }
+                    else if (j < 0 && i < 0)
+                    {
+                        w[r, 0] = map2[j + xaxis, i + xaxis ];
+                        r = r + 1;
+
+                    }
+                    else if (j < 0 && i >= 0)
+                    {
+                        w[r, 0] = map2[j + xaxis, i%xaxis ];
+                        r = r + 1;
+
+                    }
+
 
                 }
 
             }
 
-            for (int j = row - 2; j <= row + 2; j++)
-            {
+            //for (int j = row - 2; j <= row + 2; j++)
+            //{
 
-                if (j >= 0 && j < rows)
-                {
-                    if (column - 2 >= 0)
-                    {
-                        w[s, 1] = map2[j, column - 2];
-                        s = s + 1;
-                    }
-                    if (column + 2 < column)
-                    {
-                        w[s, 1] = map2[j, column + 2];
-                        s = s + 1;
-                    }
-                }
-            }
+            //    if (j >= 0 && j < rows)
+            //    {
+            //        if (column - 2 >= 0)
+            //        {
+            //            w[s, 1] = map2[j, column - 2];
+            //            s = s + 1;
+            //        }
+            //        if (column + 2 < column)
+            //        {
+            //            w[s, 1] = map2[j, column + 2];
+            //            s = s + 1;
+            //        }
+            //    }
+            //}
 
-            for (int i = column - 2; i <= column + 2; i++)
-            {
-                if (i >= 0 && i < rows)
-                {
-                    if (row - 2 >= 0)
-                    {
-                        w[s, 1] = map2[row - 2, i];
-                        s = s + 1;
-                    }
-                    if (row + 2 < rows)
-                    {
-                        w[s, 1] = map2[row + 2, i];
-                        s = s + 1;
-                    }
-                }
+            //for (int i = column - 2; i <= column + 2; i++)
+            //{
+            //    if (i >= 0 && i < rows)
+            //    {
+            //        if (row - 2 >= 0)
+            //        {
+            //            w[s, 1] = map2[row - 2, i];
+            //            s = s + 1;
+            //        }
+            //        if (row + 2 < rows)
+            //        {
+            //            w[s, 1] = map2[row + 2, i];
+            //            s = s + 1;
+            //        }
+            //    }
 
-            }
-
-
-            for (int j = row - 3; j <= row + 3; j++)
-            {
-
-                if (j >= 0 && j < rows)
-                {
-                    if (column - 3 >= 0)
-                    {
-                        w[p, 2] = map2[j, column - 3];
-                        p = p + 1;
-                    }
-                    if (column + 3 < columns)
-                    {
-                        w[p, 2] = map2[j, column + 3];
-                        p = p + 1;
-                    }
-                }
-            }
-
-            for (int i = column - 2; i <= column + 2; i++)
-            {
-                if (i >= 0 && i < rows)
-                {
-                    if (row - 3 >= rows)
-                    {
-                        w[p, 2] = map2[row - 3, i];
-                        p = p + 1;
-                    }
-                    if (row + 3 < rows)
-                    {
-                        w[p, 2] = map2[row + 3, i];
-                        p = p + 1;
-                    }
-                }
-
-            }
-
-            s = 0;
-            p = 0;
-            if (row == 0 || column == 0 || row == yaxis - 1 || column == xaxis - 1)
-                if (column == 0 && row == 0)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[row, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column];
+            //}
 
 
-                    w[s, 1] = map2[2, 0];
-                    s = s + 1;
-                    w[s, 1] = map2[2, 1];
-                    s = s + 1;
-                    w[s, 1] = map2[2, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[1, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[0, 2];
+            //for (int j = row - 3; j <= row + 3; j++)
+            //{
+
+            //    if (j >= 0 && j < rows)
+            //    {
+            //        if (column - 3 >= 0)
+            //        {
+            //            w[p, 2] = map2[j, column - 3];
+            //            p = p + 1;
+            //        }
+            //        if (column + 3 < columns)
+            //        {
+            //            w[p, 2] = map2[j, column + 3];
+            //            p = p + 1;
+            //        }
+            //    }
+            //}
+
+            //for (int i = column - 2; i <= column + 2; i++)
+            //{
+            //    if (i >= 0 && i < rows)
+            //    {
+            //        if (row - 3 >= rows)
+            //        {
+            //            w[p, 2] = map2[row - 3, i];
+            //            p = p + 1;
+            //        }
+            //        if (row + 3 < rows)
+            //        {
+            //            w[p, 2] = map2[row + 3, i];
+            //            p = p + 1;
+            //        }
+            //    }
+
+            //}
+
+            //s = 0;
+            //p = 0;
+            //if (row == 0 || column == 0 || row == yaxis - 1 || column == xaxis - 1)
+            //    if (column == 0 && row == 0)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[row, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + 1, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + yaxis - 1, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + yaxis - 1, column];
 
 
-                    w[p, 2] = map2[3, 0];
-                    p = p + 1;
-                    w[p, 2] = map2[3, 1];
-                    p = p + 1;
-                    w[p, 2] = map2[3, 2];
-                    p = p + 1;
-                    w[p, 2] = map2[3, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[2, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[1, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[0, 3];
-
-                }
-                else if (column == xaxis - 1 && row == 0)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[0, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column - (xaxis - 1)];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column - 1];
-
-                    w[s, 1] = map2[row, xaxis - 3];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 1, xaxis - 3];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 2, xaxis - 3];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 2, xaxis - 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 2, xaxis - 1];
+            //        w[s, 1] = map2[2, 0];
+            //        s = s + 1;
+            //        w[s, 1] = map2[2, 1];
+            //        s = s + 1;
+            //        w[s, 1] = map2[2, 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[1, 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[0, 2];
 
 
-                    w[p, 2] = map2[row, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 1, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 2, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 2];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 1];
-                }
-                else if (column == 0 && row == yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1 - 1, xaxis - 1];
+            //        w[p, 2] = map2[3, 0];
+            //        p = p + 1;
+            //        w[p, 2] = map2[3, 1];
+            //        p = p + 1;
+            //        w[p, 2] = map2[3, 2];
+            //        p = p + 1;
+            //        w[p, 2] = map2[3, 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[2, 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[1, 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[0, 3];
 
-                    w[s, 1] = map2[row - 2, 0];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, 1];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 1, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row, 2];
+            //    }
+            //    else if (column == xaxis - 1 && row == 0)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[1, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + yaxis - 1, column - (xaxis - 1)];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + yaxis - 1, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + yaxis - 1, column - 1];
 
-
-                    w[p, 2] = map2[row - 3, 0];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, 1];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, 2];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 2, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 1, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row, 3];
-               } 
-                else if (column == xaxis - 1 && row == yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[0, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[0, +xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column - 1 - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1 - 1, 0];
-
-                    w[s, 1] = map2[row - 2, column];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, column - 1];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, column - 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 1, column - 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row, column - 2];
+            //        w[s, 1] = map2[row, xaxis - 3];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row + 1, xaxis - 3];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row + 2, xaxis - 3];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row + 2, xaxis - 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row + 2, xaxis - 1];
 
 
-                    w[p, 2] = map2[row - 3, column];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, column - 1];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, column - 2];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, column - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 2, column - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 1, column - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row, column - 3];
-                }
-                else if (column == 0 && row != 0 && row != yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[row, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + 1, column + xaxis - 1];
-                }
-                else if (column != 0 && row == yaxis - 1 && column != xaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[0, column];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column + 1];
-                }
-                else if (column == xaxis - 1 && row != 0 && row != yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[row, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row + 1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row - 1, 0];
-                }
-                else if (column != 0 && column != xaxis - 1 && row == 0)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column + 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column - 1];
-                }
+            //        w[p, 2] = map2[row, xaxis - 4];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row + 1, xaxis - 4];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row + 2, xaxis - 4];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row + 3, xaxis - 4];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row + 3, xaxis - 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row + 3, xaxis - 2];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row + 3, xaxis - 1];
+            //    }
+            //    else if (column == 0 && row == yaxis - 1)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1 - 1, xaxis - 1];
+
+            //        w[s, 1] = map2[row - 2, 0];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row - 2, 1];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row - 2, 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row - 1, 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row, 2];
+
+
+            //        w[p, 2] = map2[row - 3, 0];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 3, 1];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 3, 2];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 3, 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 2, 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 1, 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row, 3];
+            //   } 
+            //    else if (column == xaxis - 1 && row == yaxis - 1)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, +xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, column - 1 - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1 - 1, 0];
+
+            //        w[s, 1] = map2[row - 2, column];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row - 2, column - 1];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row - 2, column - 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row - 1, column - 2];
+            //        s = s + 1;
+            //        w[s, 1] = map2[row, column - 2];
+
+
+            //        w[p, 2] = map2[row - 3, column];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 3, column - 1];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 3, column - 2];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 3, column - 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 2, column - 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row - 1, column - 3];
+            //        p = p + 1;
+            //        w[p, 2] = map2[row, column - 3];
+            //    }
+            //    else if (column == 0 && row != 0 && row != yaxis - 1)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[row, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row - 1, column + xaxis - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + 1, column + xaxis - 1];
+            //    }
+            //    else if (column != 0 && row == yaxis - 1 && column != xaxis - 1)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, column];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, column - 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[0, column + 1];
+            //    }
+            //    else if (column == xaxis - 1 && row != 0 && row != yaxis - 1)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[row, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row + 1, 0];
+            //        r = r + 1;
+            //        w[r, 0] = map2[row - 1, 0];
+            //    }
+            //    else if (column != 0 && column != xaxis - 1 && row == 0)
+            //    {
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1, column];
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1, column + 1];
+            //        r = r + 1;
+            //        w[r, 0] = map2[yaxis - 1, column - 1];
+            //    }
 
             return w;
         }// end of adjacent elements function
@@ -2671,35 +2705,35 @@ namespace Gradproject
 
 
 
-            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet ws = (Worksheet)xla.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet ws = (Worksheet)xla.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
 
-            Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wt = (Worksheet)xlb.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wt = (Worksheet)xlb.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
 
 
-            Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wf = (Worksheet)xlc.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wf = (Worksheet)xlc.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
 
-            Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
-            Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wg = (Worksheet)xld.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wg = (Worksheet)xld.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
 
-            rng.Value2 = prob_dist1;
-            rngg.Value2 = prob_dist;
-            rngg1.Value2 = unhappy_array;
-            rngg2.Value2 = prob_dist2;
-            xla.Visible = true;
-            xlb.Visible = true;
-            xlc.Visible = true;
-            xld.Visible = true;
+            //rng.Value2 = prob_dist1;
+            //rngg.Value2 = prob_dist;
+            //rngg1.Value2 = unhappy_array;
+            //rngg2.Value2 = prob_dist2;
+            //xla.Visible = true;
+            //xlb.Visible = true;
+            //xlc.Visible = true;
+            //xld.Visible = true;
 
 
         }

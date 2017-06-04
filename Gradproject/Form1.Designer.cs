@@ -61,6 +61,8 @@
             this.label13 = new System.Windows.Forms.Label();
             this.lowerbound2 = new System.Windows.Forms.TextBox();
             this.upperbound2 = new System.Windows.Forms.TextBox();
+            this.wsize = new System.Windows.Forms.TextBox();
+            this.w_size = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // X_axis
@@ -365,11 +367,29 @@
             this.upperbound2.TabIndex = 41;
             this.upperbound2.Text = "1";
             // 
+            // wsize
+            // 
+            this.wsize.Location = new System.Drawing.Point(366, 46);
+            this.wsize.Name = "wsize";
+            this.wsize.Size = new System.Drawing.Size(28, 20);
+            this.wsize.TabIndex = 42;
+            // 
+            // w_size
+            // 
+            this.w_size.AutoSize = true;
+            this.w_size.Location = new System.Drawing.Point(366, 30);
+            this.w_size.Name = "w_size";
+            this.w_size.Size = new System.Drawing.Size(39, 13);
+            this.w_size.TabIndex = 43;
+            this.w_size.Text = "w size:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(406, 463);
+            this.Controls.Add(this.w_size);
+            this.Controls.Add(this.wsize);
             this.Controls.Add(this.upperbound2);
             this.Controls.Add(this.lowerbound2);
             this.Controls.Add(this.label13);
@@ -445,6 +465,8 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox lowerbound2;
         private System.Windows.Forms.TextBox upperbound2;
+        private System.Windows.Forms.TextBox wsize;
+        private System.Windows.Forms.Label w_size;
     }
 }
 
