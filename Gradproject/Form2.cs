@@ -65,6 +65,7 @@ namespace Gradproject
         public int frac_count;
         public double[,] prob_dist;
         public double[,] prob_dist1;
+        public double[,] prob_dist2;
         public int queue;
         public int queue1;
         public int unhappyloc;
@@ -120,6 +121,7 @@ namespace Gradproject
             fract = new double[50,1500000];
             prob_dist = new double[13, 1000];
             prob_dist1 = new double[13, 1000];
+            prob_dist2 = new double[1000, 100];
             unhappy_array = new int[500, 50];
 
         }
@@ -2039,9 +2041,56 @@ namespace Gradproject
                     rate_check_for_all(map);
 
 
+                  
+
+                    queue = 0;
+
+                    for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+                    {
+                        queue = queue + 1;
+                        for (int e = 0; e <= yaxis - z; e++)
+                        {
+
+                            for (int k = 0; k <= xaxis - z; k++)
+                            {
+                                for (int i = k; i < z + k; i++)
+                                {
+                                    for (int j = e; j < z + e; j++)
+                                    {
+                                        if (map[i, j] == 1)
+                                        {
+                                            count_green = count_green + 1;
+                                        }
+                                        else if (map[i, j] == 2)
+                                        {
+                                            count_red = count_red + 1;
+                                        }
+                                   }
+                                }
+                             
+                                prob_dist2[0, queue] = z;
+                                if (count_green / (count_green * 1.00 + count_red) == 0)
+                                {
+                                    prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                                }                        
+                                else if (count_green / (count_green * 1.00 + count_red) == 1)
+                                {
+                                    prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                                }
+                                count_red = 0;
+                                count_green = 0;
+                            }
+                        }
+
+                        if (prob_dist2[kuar, queue]  == 0)
+                        {
+
+                            break;
+                        }
+
+                    }
                     count_unhappy(map, kuar, a);
                     map = continue_2(map);
-                   
                     kuar = kuar + 1;
                     for (int i = 0; i < locals_num; i++)
                     {
@@ -2638,13 +2687,19 @@ namespace Gradproject
             Worksheet wf = (Worksheet)xlc.ActiveSheet;
             Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
 
+            Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
+            Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet wg = (Worksheet)xld.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
+
             rng.Value2 = prob_dist1;
             rngg.Value2 = prob_dist;
             rngg1.Value2 = unhappy_array;
+            rngg2.Value2 = prob_dist2;
             xla.Visible = true;
             xlb.Visible = true;
             xlc.Visible = true;
-
+            xld.Visible = true;
 
 
         }
