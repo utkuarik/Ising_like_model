@@ -808,37 +808,52 @@ namespace Gradproject
 
             dice = rnd3.Next(0, 2);
 
-            for (int j = 0; j < agents.Count; ++j)
+            //for (int j = 0; j < agents.Count; ++j)
+            //{
+            //    for (i = 0; i < agents.Count; ++i)
+            //    {
+            //        int randomIndex = rnd2.Next(agents.Count);
+            //        var temp = agents[randomIndex];
+            //        agents[randomIndex] = agents[i];
+            //        agents[i] = temp;
+            //    }
+            //}
+
+
+
+
+            while (i < agents.Count)
             {
-                for (i = 0; i < agents.Count; ++i)
+                dice = rnd3.Next(0, 2);
+
+
+                //if (dice == 0)
+                //{
+                local_index = rnd2.Next(0, locals_num);
+
+                dice = rnd3.Next(agents.Count);
+
+                if (agents[dice].type == 1 && (agents[dice].rate < lower_bound || agents[dice].rate > upper_bound))
                 {
-                    int randomIndex = rnd2.Next(agents.Count);
-                    var temp = agents[randomIndex];
-                    agents[randomIndex] = agents[i];
-                    agents[i] = temp;
-                }
-            }
+                    map[agents[dice].xpos, agents[dice].ypos] = 2;
+                    agents[dice].type = 2;
+                    agents.RemoveAt(dice);
+                    agents.RemoveAll(item => item == null);
 
 
-
-
-
-            for (i = 0; i < agents.Count; i++)
-            {
-                if (agents[i].type == 1 && (agents[i].rate < lower_bound || agents[i].rate > upper_bound))
-                {
-                    map[agents[i].xpos, agents[dice].ypos] = 2;
-                    agents[i].type = 2;
 
                 }
 
-                else if (agents[i].type == 2 && (agents[i].rate < lower_bound2 || agents[i].rate > upper_bound2))
+                else if (agents[dice].type == 2 && (agents[dice].rate < lower_bound2 || agents[dice].rate > upper_bound2))
                 {
-                    map[agents[i].xpos, agents[i].ypos] = 1;
-                    agents[i].type = 1;
+                    map[agents[dice].xpos, agents[dice].ypos] = 1;
+                    agents[dice].type = 1;
+                    agents.RemoveAt(dice);
+                    agents.RemoveAll(item => item == null);
+
 
                 }
-
+                i = i + 1;
             }///
 
 
