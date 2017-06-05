@@ -75,7 +75,7 @@ namespace Gradproject
         public int w_size1;
         //End of universal variables
         public List<Agents> agents = new List<Agents>();
-
+        public List<Agents> agents2 = new List<Agents>();
         Agents[] Locals;
 
         Agents[] Minors;
@@ -782,123 +782,67 @@ namespace Gradproject
                 double chance;
                 local_index = rnd2.Next(0, locals_num);
                 minor_index = rnd2.Next(0, min_num);
-               
-
-               
-
-                    for (int i = 0; i < xaxis * yaxis; i++)
-                    {
-                        chance = rnd1.Next(0, index_loc + index_min);
 
 
-                        if (chance <= index_loc)
-                        {
-                            index_loc = 0;
-
-                            for (int j = 0; j < locals_num; j++)
-                            {
-                                if (Locals[j] != null)
-                                {
-                                    Keep_arr[index_loc] = j;
-                                    index_loc = index_loc + 1;
-                                }
-
-                            }
-                            if (index_loc == 0)
-                            {
-
-                                break;
-                            }
-
-                            local_index = rnd2.Next(0, index_loc);
-
-                            local_index = Keep_arr[local_index];
-
-                            if (Locals[local_index].rate < lower_bound)
-
-                            {
-                                lxpos = Locals[local_index].xpos;
-                                lypos = Locals[local_index].ypos;
-
-                                map[lxpos, lypos] = 2;
-                                // locals_num = locals_num - 1;
-                                min_num = min_num + 1;
-                                Minors[min_num] = new Agents()
-                                {
-                                    xpos = lxpos,
-                                    ypos = lypos,
-
-                                };
-                                Locals[local_index] = null;
 
 
-                                if (locals_num < 0)
-                                {
+            for (int j = 0; j < locals_num; j++)
+            {
+                if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                  ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                {
+                    agents.Add(Locals[j]);
 
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                local_index = Keep_arr[local_index];
-                            }
-                        }
-                        else
-                        {
-                            index_min = 0;
-                            minor_index = rnd2.Next(0, min_num);
-                            for (int j = 0; j < min_num; j++)
-                            {
-                                if (Minors[j] != null)
-                                {
-                                    Keep_arr[index_min] = j;
-                                    index_min = index_min + 1;
-                                }
-                            }
-                            if (index_min == 0)
-                            {
+                }
 
-                                break;
-                            }
+            }
+            for (int j = 0; j < min_num; j++)
+            {
+                if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                  ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                {
+                    agents.Add(Minors[j]);
+                }
+            }
+            int i = 0;
 
-                            minor_index = rnd2.Next(0, index_min);
-                            minor_index = Keep_arr[minor_index];
+            dice = rnd3.Next(0, 2);
 
-                            if (Minors[minor_index].rate < lower_bound)
-                            {
-                                mxpos = Minors[minor_index].xpos;
-                                mypos = Minors[minor_index].ypos;
-
-                                map[mxpos, mypos] = 1;
-                                locals_num = locals_num + 1;
-                                //min_num = min_num - 1;
-
-                                Locals[locals_num] = new Agents()
-                                {
-                                    xpos = mxpos,
-                                    ypos = mypos,
+            for (int j = 0; j < agents.Count; ++j)
+            {
+                for (i = 0; i < agents.Count; ++i)
+                {
+                    int randomIndex = rnd2.Next(agents.Count);
+                    var temp = agents[randomIndex];
+                    agents[randomIndex] = agents[i];
+                    agents[i] = temp;
+                }
+            }
 
 
-                                };
-                                Minors[minor_index] = null;
-                                index_min = 0;
 
-                                if (minor_index < 0)
-                                {
 
-                                    break;
-                                }
 
-                            }
-                            else
-                            {
+            for (i = 0; i < agents.Count; i++)
+            {
+                if (agents[i].type == 1 && (agents[i].rate < lower_bound || agents[i].rate > upper_bound))
+                {
+                    map[agents[i].xpos, agents[dice].ypos] = 2;
+                    agents[i].type = 2;
 
-                                minor_index = Keep_arr[minor_index];
-                            }
-                        }
-                    }
-                                                         
-                return map;
+                }
+
+                else if (agents[i].type == 2 && (agents[i].rate < lower_bound2 || agents[i].rate > upper_bound2))
+                {
+                    map[agents[i].xpos, agents[i].ypos] = 1;
+                    agents[i].type = 1;
+
+                }
+
+            }///
+
+
+            return map;
             }// end of continue function, it  basically includes the main algorithm of the code
           
         public void update_map()// update the visual map
@@ -1403,37 +1347,39 @@ namespace Gradproject
 
 
 
-            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet ws = (Worksheet)xla.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
+            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet ws = (Worksheet)xla.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
 
-            Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wt = (Worksheet)xlb.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
+            ////Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
+            ////Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+            ////Worksheet wt = (Worksheet)xlb.ActiveSheet;
+            ////Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
+            ////rngg.Value2 = prob_dist;
 
+            //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wf = (Worksheet)xlc.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
 
-            Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wf = (Worksheet)xlc.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
-
-            Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
-            Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wg = (Worksheet)xld.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
-
-            rng.Value2 = prob_dist1;
-            rngg.Value2 = prob_dist;
-            rngg1.Value2 = unhappy_array;
-            rngg2.Value2 = prob_dist2;
-            xla.Visible = true;
-            xlb.Visible = true;
-            xlc.Visible = true;
-            xld.Visible = true;
+            //Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wg = (Worksheet)xld.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
 
 
+
+            //rng.Value2 = prob_dist1;
+            //rngg1.Value2 = unhappy_array;
+            //rngg2.Value2 = prob_dist2;
+
+
+            //xla.Visible = true;
+            //xlc.Visible = true;
+            //xld.Visible = true;
+
+            //xlb.Visible = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
