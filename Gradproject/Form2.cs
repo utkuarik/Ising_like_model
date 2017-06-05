@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MathNet;
@@ -309,106 +310,106 @@ namespace Gradproject
 
             
 
-            queue1 = 0;
-            for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+            //queue1 = 0;
+            //for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
 
-            {
+            //{
 
 
 
-                queue1 = queue1 + 1;
-                for (int e = 0; e <= yaxis - z; e++)
-                {
+            //    queue1 = queue1 + 1;
+            //    for (int e = 0; e <= yaxis - z; e++)
+            //    {
 
-                    for (int k = 0; k <= xaxis - z; k++)
-                    {
-                        for (int i = k; i < z + k; i++)
+            //        for (int k = 0; k <= xaxis - z; k++)
+            //        {
+            //            for (int i = k; i < z + k; i++)
 
-                        {
-                            for (int j = e; j < z + e; j++)
-                            {
+            //            {
+            //                for (int j = e; j < z + e; j++)
+            //                {
 
-                                if (map[i, j] == 1)
-                                {
+            //                    if (map[i, j] == 1)
+            //                    {
 
-                                    count_green = count_green + 1;
+            //                        count_green = count_green + 1;
 
-                                }
-                                else if (map[i, j] == 2)
-                                {
+            //                    }
+            //                    else if (map[i, j] == 2)
+            //                    {
 
-                                    count_red = count_red + 1;
+            //                        count_red = count_red + 1;
 
-                                }
+            //                    }
 
-                            }
+            //                }
 
-                        }                   
-                        prob_dist1[0, queue1] = z;
+            //            }                   
+            //            prob_dist1[0, queue1] = z;
 
-                        if (count_green / (count_green * 1.00 + count_red) == 0)
-                        {
-                            prob_dist1[1, queue1] = prob_dist1[1, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) > 0 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.1)
-                        {
-                            prob_dist1[2, queue1] = prob_dist1[2, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.1 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.2)
-                        {
-                            prob_dist1[3, queue1] = prob_dist1[3, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.2 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.3)
-                        {
-                            prob_dist1[4, queue1] = prob_dist1[4, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.3 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.4)
-                        {
-                            prob_dist1[5, queue1] = prob_dist1[5, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.4 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.5)
-                        {
-                            prob_dist1[6, queue1] = prob_dist1[6, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.5 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.6)
-                        {
-                            prob_dist1[7, queue1] = prob_dist1[7, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.6 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.7)
-                        {
-                            prob_dist1[8, queue1] = prob_dist1[8, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.7 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.8)
-                        {
-                            prob_dist1[9, queue1] = prob_dist1[9, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.8 &&
-                           count_green / (count_green * 1.00 + count_red) < 0.9)
-                        {
-                            prob_dist1[10, queue1] = prob_dist1[10, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
-                           count_green / (count_green * 1.00 + count_red) < 1)
-                        {
-                            prob_dist1[11, queue1] = prob_dist1[11, queue1] + 1;
-                        }
-                        else if (count_green / (count_green * 1.00 + count_red) == 1)
-                        {
-                            prob_dist1[12, queue1] = prob_dist1[12, queue1] + 1;
-                        }
-                        count_red = 0;
-                        count_green = 0;
-                    }
-                }
-            }
+            //            if (count_green / (count_green * 1.00 + count_red) == 0)
+            //            {
+            //                prob_dist1[1, queue1] = prob_dist1[1, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) > 0 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.1)
+            //            {
+            //                prob_dist1[2, queue1] = prob_dist1[2, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.1 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.2)
+            //            {
+            //                prob_dist1[3, queue1] = prob_dist1[3, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.2 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.3)
+            //            {
+            //                prob_dist1[4, queue1] = prob_dist1[4, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.3 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.4)
+            //            {
+            //                prob_dist1[5, queue1] = prob_dist1[5, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.4 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.5)
+            //            {
+            //                prob_dist1[6, queue1] = prob_dist1[6, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.5 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.6)
+            //            {
+            //                prob_dist1[7, queue1] = prob_dist1[7, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.6 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.7)
+            //            {
+            //                prob_dist1[8, queue1] = prob_dist1[8, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.7 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.8)
+            //            {
+            //                prob_dist1[9, queue1] = prob_dist1[9, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.8 &&
+            //               count_green / (count_green * 1.00 + count_red) < 0.9)
+            //            {
+            //                prob_dist1[10, queue1] = prob_dist1[10, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
+            //               count_green / (count_green * 1.00 + count_red) < 1)
+            //            {
+            //                prob_dist1[11, queue1] = prob_dist1[11, queue1] + 1;
+            //            }
+            //            else if (count_green / (count_green * 1.00 + count_red) == 1)
+            //            {
+            //                prob_dist1[12, queue1] = prob_dist1[12, queue1] + 1;
+            //            }
+            //            count_red = 0;
+            //            count_green = 0;
+            //        }
+            //    }
+            //}
 
                 return map;
 
@@ -445,7 +446,7 @@ namespace Gradproject
         public Matrix<double> AdjacentElements(Matrix<double> map2, int row, int column)
         {
             // Collect neighbor cells' positions
-            Matrix<double> w = Matrix<double>.Build.Dense(25, 3, 5);
+            Matrix<double> w = Matrix<double>.Build.Dense(100, 3, 5);
 
             int rows = map2.RowCount;
             int columns = map2.ColumnCount;
@@ -2077,53 +2078,53 @@ namespace Gradproject
 
                   
 
-                    queue = 0;
+                    //queue = 0;
 
-                    for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
-                    {
-                        queue = queue + 1;
-                        for (int e = 0; e <= yaxis - z; e++)
-                        {
+                    //for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+                    //{
+                    //    queue = queue + 1;
+                    //    for (int e = 0; e <= yaxis - z; e++)
+                    //    {
 
-                            for (int k = 0; k <= xaxis - z; k++)
-                            {
-                                for (int i = k; i < z + k; i++)
-                                {
-                                    for (int j = e; j < z + e; j++)
-                                    {
-                                        if (map[i, j] == 1)
-                                        {
-                                            count_green = count_green + 1;
-                                        }
-                                        else if (map[i, j] == 2)
-                                        {
-                                            count_red = count_red + 1;
-                                        }
-                                   }
-                                }
+                    //        for (int k = 0; k <= xaxis - z; k++)
+                    //        {
+                    //            for (int i = k; i < z + k; i++)
+                    //            {
+                    //                for (int j = e; j < z + e; j++)
+                    //                {
+                    //                    if (map[i, j] == 1)
+                    //                    {
+                    //                        count_green = count_green + 1;
+                    //                    }
+                    //                    else if (map[i, j] == 2)
+                    //                    {
+                    //                        count_red = count_red + 1;
+                    //                    }
+                    //               }
+                    //            }
                              
-                                prob_dist2[0, queue] = z;
-                                if (count_green / (count_green * 1.00 + count_red) == 0)
-                                {
-                                    prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
-                                }                        
-                                else if (count_green / (count_green * 1.00 + count_red) == 1)
-                                {
-                                    prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
-                                }
-                                count_red = 0;
-                                count_green = 0;
-                            }
-                        }
+                    //            prob_dist2[0, queue] = z;
+                    //            if (count_green / (count_green * 1.00 + count_red) == 0)
+                    //            {
+                    //                prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                    //            }                        
+                    //            else if (count_green / (count_green * 1.00 + count_red) == 1)
+                    //            {
+                    //                prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                    //            }
+                    //            count_red = 0;
+                    //            count_green = 0;
+                    //        }
+                    //    }
 
-                        if (prob_dist2[kuar, queue]  == 0)
-                        {
+                    //    if (prob_dist2[kuar, queue]  == 0)
+                    //    {
 
-                            break;
-                        }
+                    //        break;
+                    //    }
 
-                    }
-                    count_unhappy(map, kuar, a);
+                    //}
+                    //count_unhappy(map, kuar, a);
                     map = continue_2(map);
                     kuar = kuar + 1;
                     for (int i = 0; i < locals_num; i++)
@@ -2705,35 +2706,35 @@ namespace Gradproject
 
 
 
-            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet ws = (Worksheet)xla.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
+            Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet ws = (Worksheet)xla.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
 
-            //Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet wt = (Worksheet)xlb.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
+            Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet wt = (Worksheet)xlb.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0));
 
 
-            //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet wf = (Worksheet)xlc.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
+            Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet wf = (Worksheet)xlc.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0));
 
-            //Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet wg = (Worksheet)xld.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
+            Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();
+            Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+            Worksheet wg = (Worksheet)xld.ActiveSheet;
+            Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0));
 
-            //rng.Value2 = prob_dist1;
-            //rngg.Value2 = prob_dist;
-            //rngg1.Value2 = unhappy_array;
-            //rngg2.Value2 = prob_dist2;
-            //xla.Visible = true;
-            //xlb.Visible = true;
-            //xlc.Visible = true;
-            //xld.Visible = true;
+            rng.Value2 = prob_dist1;
+            rngg.Value2 = prob_dist;
+            rngg1.Value2 = unhappy_array;
+            rngg2.Value2 = prob_dist2;
+            xla.Visible = true;
+            xlb.Visible = true;
+            xlc.Visible = true;
+            xld.Visible = true;
 
 
         }
