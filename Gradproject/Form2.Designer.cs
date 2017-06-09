@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Media.SolidColorBrush solidColorBrush1 = new System.Windows.Media.SolidColorBrush();
+            System.Windows.Media.SolidColorBrush solidColorBrush2 = new System.Windows.Media.SolidColorBrush();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.ave_uti = new System.Windows.Forms.Label();
@@ -69,7 +69,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(525, 148);
+            this.button1.Location = new System.Drawing.Point(525, 153);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -371,8 +371,8 @@
             this.cartesianChart1.Hoverable = true;
             this.cartesianChart1.Location = new System.Drawing.Point(430, 283);
             this.cartesianChart1.Name = "cartesianChart1";
-            solidColorBrush1.Color = System.Windows.Media.Color.FromArgb(((byte)(30)), ((byte)(30)), ((byte)(30)), ((byte)(30)));
-            this.cartesianChart1.ScrollBarFill = solidColorBrush1;
+            solidColorBrush2.Color = System.Windows.Media.Color.FromArgb(((byte)(30)), ((byte)(30)), ((byte)(30)), ((byte)(30)));
+            this.cartesianChart1.ScrollBarFill = solidColorBrush2;
             this.cartesianChart1.ScrollHorizontalFrom = 0D;
             this.cartesianChart1.ScrollHorizontalTo = 0D;
             this.cartesianChart1.ScrollMode = LiveCharts.ScrollMode.None;
@@ -404,7 +404,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(832, 457);
+            this.ClientSize = new System.Drawing.Size(860, 404);
             this.Controls.Add(this.unhmin);
             this.Controls.Add(this.unhloc);
             this.Controls.Add(this.cartesianChart1);
