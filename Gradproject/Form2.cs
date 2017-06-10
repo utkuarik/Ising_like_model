@@ -339,16 +339,16 @@ namespace Gradproject
             unhappymin = 0;
             for (int r = 0; r < locals_num; r++)
             {
-                if ((Locals[r] != null && Locals[r].rate < lower_bound &&   Locals[r].type==1) ||
-                   (Minors[r] != null && Minors[r].rate < lower_bound &&   Minors[r].type == 1))
+                if ((Locals[r] != null && (Locals[r].rate < lower_bound || Locals[r].rate > upper_bound) &&   Locals[r].type==1) ||
+                   (Minors[r] != null && (Minors[r].rate < lower_bound || Minors[r].rate > upper_bound) &&   Minors[r].type == 1))
                 {
                     unhappyloc++;
                 }
             }
             for (int r = 0; r < min_num; r++)
             {
-                if ((Locals[r].rate < lower_bound2 && Locals[r] != null && Locals[r].type == 2) ||
-                   (Minors[r].rate < lower_bound2 && Minors[r] != null && Minors[r].type == 2))
+                if (((Locals[r].rate < lower_bound2 || Locals[r].rate > upper_bound2) && Locals[r] != null && Locals[r].type == 2) ||
+                   ((Minors[r].rate < lower_bound2 || Minors[r].rate > upper_bound2) && Minors[r] != null && Minors[r].type == 2))
                 {
                     unhappymin++;
                 }
@@ -1129,7 +1129,7 @@ namespace Gradproject
 
 
 
-                   // update_map();
+                    update_map();
                    
                     
 
