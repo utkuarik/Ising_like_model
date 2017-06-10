@@ -387,31 +387,32 @@ namespace Gradproject
             {
                 for (int i = column - w_size1; i <= column + w_size1; i++)
                 {
-
-                    if (j >= 0 && i >= 0)
+                    if (!(j == row && i == column))
                     {
-                        w[r, 0] = map2[j%xaxis, i%xaxis];
-                        r = r + 1;
-                    }
-                    else if (j >= 0 && i < 0)
-                    {
-                        w[r, 0] = map2[j%xaxis, i+xaxis];
-                        r = r + 1;
+                        if (j >= 0 && i >= 0)
+                        {
+                            w[r, 0] = map2[j % xaxis, i % xaxis];
+                            r = r + 1;
+                        }
+                        else if (j >= 0 && i < 0)
+                        {
+                            w[r, 0] = map2[j % xaxis, i + xaxis];
+                            r = r + 1;
 
-                    }
-                    else if (j < 0 && i < 0)
-                    {
-                        w[r, 0] = map2[j+xaxis, i+xaxis ];
-                        r = r + 1;
+                        }
+                        else if (j < 0 && i < 0)
+                        {
+                            w[r, 0] = map2[j + xaxis, i + xaxis];
+                            r = r + 1;
 
-                    }
-                    else if (j < 0 && i >= 0)
-                    {
-                        w[r, 0] = map2[j+xaxis, i%xaxis ];
-                        r = r + 1;
+                        }
+                        else if (j < 0 && i >= 0)
+                        {
+                            w[r, 0] = map2[j + xaxis, i % xaxis];
+                            r = r + 1;
 
+                        }
                     }
-
 
                 }
 
@@ -1129,7 +1130,7 @@ namespace Gradproject
 
 
 
-                    update_map();
+                   update_map();
                    
                     
 
