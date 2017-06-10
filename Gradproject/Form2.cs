@@ -125,7 +125,7 @@ namespace Gradproject
             prob_dist = new double[13, 1000];
             prob_dist1 = new double[13, 1000];
             prob_dist2 = new double[1000, 100];
-            unhappy_array = new int[1000, 100];
+            unhappy_array = new int[10000, 100];
             w_size1 = Convert.ToInt32(wsize);
         }
 
@@ -767,12 +767,12 @@ namespace Gradproject
             //    }
             //}
 
-            for (dice = 0; dice < agents.Count; dice++)
+            for (dice1 = 0; dice1 < agents.Count; dice1++)
 
 
             {
 
-                dice1 = rnd3.Next(0, agents.Count);
+                dice = rnd3.Next(0, agents.Count);
 
                 if (agents[dice] != null&& rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<lower_bound
                     || rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map) > upper_bound)
@@ -1372,7 +1372,8 @@ namespace Gradproject
 
 
 
-
+            local_number.Text = Convert.ToString(loc_number.Sum() / sim_value);
+            minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
 
 
 
@@ -1386,7 +1387,7 @@ namespace Gradproject
             //Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
             //Worksheet wt = (Worksheet)xlb.ActiveSheet;
             //Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
-          
+
 
             //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
             //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
