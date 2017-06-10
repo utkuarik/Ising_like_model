@@ -498,6 +498,7 @@ namespace Gradproject
             a = new int[3, 3];
             a[0, 0] = count1;
             a[1, 0] = count2;
+
             a[2, 0] = count3;
             a[0, 1] = count21;
             a[1, 1] = count22;
@@ -508,40 +509,48 @@ namespace Gradproject
             return a;
 
         }// end of rate_check func.
-        public double rate_check_for_one(int lxpos, int lypos, int mxpos, int mypos, Matrix<double> map)
+        public double rate_check_for_one(int lxpos, int lypos, Matrix<double> map)
         {
             int[,] a;
             int[,] b;
-            double rate_sum;
-            double rate1;
-            double rate2;
+           
+            double rate1=0;
+          
             double c = 1.00;
             a = rate_check(lxpos, lypos, map);
 
-            if (a[0, 0] == 0)
+            if (map[lxpos, lypos] == 1)
             {
-                rate1 = 0;
-            }
-            else
-            {
-                rate1 = a[0, 0] / c / (a[1, 0] + a[0, 0]);
-            }
-
-
-
-            b = rate_check(mxpos, mypos, map);
-            if (b[1, 0] == 0)
-            {
-                rate2 = 0;
-            }
-            else
-            {
-                rate2 = b[1, 0] / c / (b[1, 0] + b[0, 0]);
+                if (a[0, 0] == 0)
+                {
+                    rate1 = 0;
+                }
+                else
+                {
+                    rate1 = a[0, 0] / c / (a[1, 0] + a[0, 0]);
+                }
             }
 
-            rate_sum = rate1 + rate2;
+            else if (map[lxpos, lypos] == 2)
+            {
+                if (a[1, 0] == 0)
+                {
+                    rate1 = 0;
+                }
+                else
+                {
+                    rate1 = a[1, 0] / c / (a[1, 0] + a[0, 0]);
+                }
 
-            return rate_sum;
+
+            }
+
+            //uti_map[Minors[i].xpos, Minors[i].ypos] = a;
+          
+            
+                  
+
+            return rate1;
         }
 
         public Matrix<double> rate_check_for_all(Matrix<double> map)//Compute neigbors rate for all agents and statistics
@@ -706,6 +715,7 @@ namespace Gradproject
             Random rnd3 = new Random();
             int x;
             int y;
+            int dice1;
 
             
 
@@ -744,7 +754,7 @@ namespace Gradproject
             }
             int i = 0;
 
-            dice = rnd3.Next(0, 2);
+           
 
             //for (int j = 0; j < agents.Count; ++j)
             //{
@@ -756,30 +766,39 @@ namespace Gradproject
             //        agents[i] = temp;
             //    }
             //}
-            for( dice = 0;dice<agents.Count;dice++)
+
+            for (dice = 0; dice < agents.Count; dice++)
+
 
             {
-                if (agents[dice].type == 1 && (agents[dice].rate < lower_bound || agents[dice].rate > upper_bound))
+
+                dice1 = rnd3.Next(0, agents.Count);
+
+                if (agents[dice] != null&& rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<lower_bound
+                    || rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map) > upper_bound)
                 {
-                    map[agents[dice].xpos, agents[dice].ypos] = 2;
-                    agents[dice].type = 2;
-                    
+                    if (agents[dice].type == 1 && (agents[dice].rate < lower_bound || agents[dice].rate > upper_bound))
+                    {
+                        map[agents[dice].xpos, agents[dice].ypos] = 2;
+                        agents[dice].type = 2;
+                        agents.RemoveAt(dice);
 
 
+
+
+                    }
+
+                    else if (agents[dice].type == 2 && (agents[dice].rate < lower_bound2 || agents[dice].rate > upper_bound2))
+                    {
+                        map[agents[dice].xpos, agents[dice].ypos] = 1;
+                        agents[dice].type = 1;
+                        agents.RemoveAt(dice);
+
+                    }
 
                 }
-
-                else if (agents[dice].type == 2 && (agents[dice].rate < lower_bound2 || agents[dice].rate > upper_bound2))
-                {
-                    map[agents[dice].xpos, agents[dice].ypos] = 1;
-                    agents[dice].type = 1;
-                
-
-                }
-
-
-
             }
+         
             agents.Clear();
 
 
@@ -963,7 +982,7 @@ namespace Gradproject
                 double sum1 = 100000;
                 double sum2 = 100000;
 
-                while (sum1 + sum2 > xaxis*xaxis/10000)
+                while (sum1 + sum2 > 1)//xaxis*xaxis/10000)
                 {
 
 
@@ -972,52 +991,52 @@ namespace Gradproject
 
 
 
-                    queue = 0;
+                    //queue = 0;
 
-                    for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
-                    {
-                        queue = queue + 1;
-                        for (int e = 0; e <= yaxis - z; e++)
-                        {
+                    //for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+                    //{
+                    //    queue = queue + 1;
+                    //    for (int e = 0; e <= yaxis - z; e++)
+                    //    {
 
-                            for (int k = 0; k <= xaxis - z; k++)
-                            {
-                                for (int i = k; i < z + k; i++)
-                                {
-                                    for (int j = e; j < z + e; j++)
-                                    {
-                                        if (map[i, j] == 1)
-                                        {
-                                            count_green = count_green + 1;
-                                        }
-                                        else if (map[i, j] == 2)
-                                        {
-                                            count_red = count_red + 1;
-                                        }
-                                    }
-                                }
+                    //        for (int k = 0; k <= xaxis - z; k++)
+                    //        {
+                    //            for (int i = k; i < z + k; i++)
+                    //            {
+                    //                for (int j = e; j < z + e; j++)
+                    //                {
+                    //                    if (map[i, j] == 1)
+                    //                    {
+                    //                        count_green = count_green + 1;
+                    //                    }
+                    //                    else if (map[i, j] == 2)
+                    //                    {
+                    //                        count_red = count_red + 1;
+                    //                    }
+                    //                }
+                    //            }
 
-                                prob_dist2[0, queue] = z;
-                                if (count_green / (count_green * 1.00 + count_red) == 0)
-                                {
-                                    prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
-                                }
-                                else if (count_green / (count_green * 1.00 + count_red) == 1)
-                                {
-                                    prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
-                                }
-                                count_red = 0;
-                                count_green = 0;
-                            }
-                        }
+                    //            prob_dist2[0, queue] = z;
+                    //            if (count_green / (count_green * 1.00 + count_red) == 0)
+                    //            {
+                    //                prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                    //            }
+                    //            else if (count_green / (count_green * 1.00 + count_red) == 1)
+                    //            {
+                    //                prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                    //            }
+                    //            count_red = 0;
+                    //            count_green = 0;
+                    //        }
+                    //    }
 
-                        if (prob_dist2[kuar, queue] == 0)
-                        {
+                    //    if (prob_dist2[kuar, queue] == 0)
+                    //    {
 
-                            break;
-                        }
+                    //        break;
+                    //    }
 
-                    }
+                    //}
                     count_unhappy(map, kuar, a);
                     map = continue_2(map);
                     kuar = kuar + 1;
@@ -1130,7 +1149,7 @@ namespace Gradproject
 
 
 
-                   update_map();
+                  // update_map();
                    
                     
 
@@ -1362,37 +1381,37 @@ namespace Gradproject
             //Worksheet ws = (Worksheet)xla.ActiveSheet;
             //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(prob_dist1.GetLength(0));
 
-            Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
-            Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wt = (Worksheet)xlb.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
+            //Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
+            //Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wt = (Worksheet)xlb.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
           
 
-            Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wf = (Worksheet)xlc.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
+            //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wf = (Worksheet)xlc.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
 
-            Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
-            Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wg = (Worksheet)xld.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0), prob_dist2.GetLength(1));
-
-
+            //Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+            //Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wg = (Worksheet)xld.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0), prob_dist2.GetLength(1));
 
 
-            rngg1.Value2 = unhappy_array;
-            rngg2.Value2 = prob_dist2;
-            rngg.Value2 = prob_dist;
 
 
-            xlc.Visible = true;
-            xld.Visible = true;
+            //rngg1.Value2 = unhappy_array;
+            //rngg2.Value2 = prob_dist2;
+            //rngg.Value2 = prob_dist;
 
-            xlb.Visible = true;
-            xlb.WindowState = XlWindowState.xlMaximized;
-            xlc.WindowState = XlWindowState.xlMaximized;
-            xld.WindowState = XlWindowState.xlMaximized;
+
+            //xlc.Visible = true;
+            //xld.Visible = true;
+
+            //xlb.Visible = true;
+            //xlb.WindowState = XlWindowState.xlMaximized;
+            //xlc.WindowState = XlWindowState.xlMaximized;
+            //xld.WindowState = XlWindowState.xlMaximized;
         }
 
         private void button2_Click(object sender, EventArgs e)
