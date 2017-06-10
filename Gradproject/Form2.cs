@@ -1215,6 +1215,7 @@ namespace Gradproject
 
                 }
                 loc_number[a] = number_loc * 1.00;
+                mino_number[a] = number_min * 1.00;
                 number_loc = 0;
                 number_min = 0;
                 
