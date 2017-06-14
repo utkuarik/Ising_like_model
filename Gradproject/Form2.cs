@@ -74,12 +74,14 @@ namespace Gradproject
         public int unhappymin;
         public int[,] unhappy_array;
         public int w_size1;
+        int red;
+        int green;
         //End of universal variables
-        public List<Agents> agents = new List<Agents>();
-        public List<Agents> agents2 = new List<Agents>();
-        Agents[] Locals;
+        public static List<Agents> agents = new List<Agents>();
+        
+        static Agents[] Locals;
 
-        Agents[] Minors;
+        static Agents[] Minors;
 
         
 
@@ -99,8 +101,7 @@ namespace Gradproject
             InitializeComponent();
 
             // Convert text variables
-            locals_num = Convert.ToInt32(population);
-            min_num = Convert.ToInt32(minority);
+           
             xaxis = Convert.ToInt32(x_axis);
             yaxis = Convert.ToInt32(y_axis);
             lower_bound = Convert.ToDouble(lowerbound);
@@ -127,6 +128,8 @@ namespace Gradproject
             prob_dist2 = new double[1000, 100];
             unhappy_array = new int[1000, 100];
             w_size1 = Convert.ToInt32(wsize);
+            locals_num = xaxis * xaxis / 2;
+            min_num = xaxis * xaxis / 2;
         }
 
        
@@ -171,7 +174,7 @@ namespace Gradproject
         // Make the initial implanting and create agents
         // and draw the initial world
         {
-            Keep_arr = new int[10000];
+            
             Pen bluePen = new Pen(Color.Blue, 2);
             Pen orangePen = new Pen(Color.Orange, 2);
             Pen aquqPen = new Pen(Color.Aqua, 2);
@@ -182,19 +185,21 @@ namespace Gradproject
             
 
             Random rnd = new Random();
-
+            Random rndd = new Random();
+            int numero;
+            int x, y;
 
             /////// Attach local and minor agents' positions ///////////////////////
             for (int i = 0; i < locals_num; ++i)
             {
 
 
-                int x = rnd.Next(0, xaxis);
-                int y = rnd.Next(0, yaxis);
+                 x = rnd.Next(0, xaxis);
+                 y = rnd.Next(0, yaxis);
 
 
 
-                while (map[x, y] == 1 || map[x, y] == 3)
+                while (map[x, y] == 1 ||  map[x,y] ==2 ||map[x, y] == 3 )
                 {
                     x = rnd.Next(0, xaxis);
                     y = rnd.Next(0, yaxis);
@@ -208,16 +213,27 @@ namespace Gradproject
 
 
                 };
-                Locals[i].type = 1;
+                //numero= rnd.Next(1, 3);
+                //Locals[i].type = numero;
+                //map[x, y] = numero;
+
+                Locals[i].type =1;
                 map[x, y] = 1;
+                //if (numero == 1)
+                //{
+                //    green++;
+
+                //}
+                //else { red++; }
+
             }
             for (int i = 0; i < min_num; ++i)
             {
 
 
 
-                int x = rnd.Next(0, xaxis);
-                int y = rnd.Next(0, yaxis);
+                 x = rnd.Next(0, xaxis);
+                 y = rnd.Next(0, yaxis);
 
                 while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
                 {
@@ -232,8 +248,19 @@ namespace Gradproject
                   
                 };
 
+                //numero = rnd.Next(1, 3);
+                //Minors[i].type = numero;
+                //map[x, y] = numero;
+
                 Minors[i].type = 2;
                 map[x, y] = 2;
+
+                //if (numero==1)
+                //{
+                //    green++;
+
+                //}
+                //else { red++; }
 
 
                
@@ -362,14 +389,13 @@ namespace Gradproject
         public Matrix<double> AdjacentElements(Matrix<double> map2, int row, int column)
         {
             // Collect neighbor cells' positions
-            Matrix<double> w = Matrix<double>.Build.Dense(200, 3, 5);
+            Matrix<double> w = Matrix<double>.Build.Dense(250, 3, 5);
 
             int rows = map2.RowCount;
             int columns = map2.ColumnCount;
 
             int r = 0;
-            int s = 0;
-            int p = 0;
+   
             //for (int j = row - 1; j <= row + 1; j++)
             //{
             //    for (int i = column - 1; i <= column + 1; i++)
@@ -512,7 +538,6 @@ namespace Gradproject
         public double rate_check_for_one(int lxpos, int lypos, Matrix<double> map)
         {
             int[,] a;
-            int[,] b;
            
             double rate1=0;
           
@@ -713,21 +738,15 @@ namespace Gradproject
             Random rnd1 = new Random();
             Random rnd2 = new Random();
             Random rnd3 = new Random();
-            int x;
-            int y;
+           
+ 
             int dice1;
 
             
 
                 int local_index;
                 int minor_index;
-                int lxpos;
-                int lypos;
-                int mxpos;
-                int mypos;
-                double rate_sum;
-                double rate_sum1;
-                double chance;
+                            
                 local_index = rnd2.Next(0, locals_num);
                 minor_index = rnd2.Next(0, min_num);
 
@@ -752,7 +771,7 @@ namespace Gradproject
                     agents.Add(Minors[j]);
                 }
             }
-            int i = 0;
+           
 
            
 
@@ -950,23 +969,9 @@ namespace Gradproject
             //Worksheet ws = (Worksheet)xla.ActiveSheet;
             //xla.Visible = true;
 
-            double A = 0;
-            double B = 0;
-            double C = 0;
-            double D = 0;
-            double E = 0;
-            double F = 0;
-            double G = 0;
-            double H = 0;
-            double I = 0;
-            double J = 0;
-            double K = 0;
-            double L = 0;
-            double M = 0;
-            double N = 0;
 
             int kuar = 0;
-            int say = 0;
+        
             for (int a = 0; a <= sim_value - 1; a++)
             {
                 Draw_World(xaxis, yaxis);
@@ -1000,6 +1005,7 @@ namespace Gradproject
 
 
                     queue = 0;
+
 
                     for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
                     {
@@ -1105,14 +1111,8 @@ namespace Gradproject
                     }
 
                     Random rnd4 = new Random();
-                    int candidate_number;
-                    int mypos;
-                    int mxpos;
-                    int lxpos;
-                    int lypos;
-
-                   
-
+              
+                  
                     number_loc = 0;
                     number_min = 0;
                     for (int i = 0; i < locals_num; i++)  // Count the number of agent types
@@ -1380,13 +1380,13 @@ namespace Gradproject
 
 
 
-            local_number.Text = Convert.ToString(loc_number.Sum() / sim_value);
-            minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
+            local_number.Text = Convert.ToString(green/sim_value );
+            minor_number.Text = Convert.ToString(red /sim_value);
 
 
 
 
-           
+
 
             Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
             Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
