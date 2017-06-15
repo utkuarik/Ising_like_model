@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using MathNet;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics;
+using MathNet.Numerics.Random;
+using MathNet.Numerics.Distributions;
 using System.Timers;
 using System.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
@@ -87,7 +89,7 @@ namespace Gradproject
 
 
         public int sim_value = 0;
-
+        public int dix;
 
 
 
@@ -128,8 +130,8 @@ namespace Gradproject
             prob_dist2 = new double[1000, 100];
             unhappy_array = new int[1000, 100];
             w_size1 = Convert.ToInt32(wsize);
-            locals_num = xaxis * xaxis / 2;
-            min_num = xaxis * xaxis / 2;
+            locals_num = Convert.ToInt16(population);
+            min_num = Convert.ToInt16(minority);
         }
 
        
@@ -174,101 +176,146 @@ namespace Gradproject
         // Make the initial implanting and create agents
         // and draw the initial world
         {
-            
+
             Pen bluePen = new Pen(Color.Blue, 2);
             Pen orangePen = new Pen(Color.Orange, 2);
             Pen aquqPen = new Pen(Color.Aqua, 2);
 
             Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
+            double[] samples = SystemRandomSource.Doubles(1000000, 100);
 
             // Check for world type///////////////////////////////////////////
-            
 
-            Random rnd = new Random();
+
+            Random rnd3 = new Random();
             Random rndd = new Random();
-            int numero;
+            Random rnd = new Random();
+            int numero = 1;
             int x, y;
 
             /////// Attach local and minor agents' positions ///////////////////////
+
+            //for (int i = 0; i < locals_num; i++)
+            //{
+
+            //    dix = rndd.Next(0, 2);
+
+            //    if (dix == 1)
+            //    {
+            //        green++;
+            //        Locals[i] = new Agents()
+            //        {
+            //            type = 1
+
+            //        };
+
+
+            //    }
+            //    else
+            //    {
+            //        red++;
+            //        Locals[i] = new Agents()
+            //        {
+            //            type = 2
+
+            //        };
+
+            //    }
+
+            //    numero++;
+
+            //}
+
+
+
+
+            //for (int i = 0; i < min_num; i++)
+            //{
+
+            //    dix = rndd.Next(0, 2);
+            //    if (dix == 1)
+            //    {
+            //        green++;
+            //        Minors[i] = new Agents()
+            //        {
+            //            type = 1,
+
+            //        };
+
+
+            //    }
+            //    else
+            //    {
+            //        red++;
+            //        Minors[i] = new Agents()
+            //        {
+            //            type = 2,
+
+            //        };
+
+
+            //    }
+
+            //    numero++;
+
+            //}
             for (int i = 0; i < locals_num; ++i)
             {
 
-
-                 x = rnd.Next(0, xaxis);
-                 y = rnd.Next(0, yaxis);
-
-
-
-                while (map[x, y] == 1 ||  map[x,y] ==2 ||map[x, y] == 3 )
+                Locals[i] = new Agents()
                 {
-                    x = rnd.Next(0, xaxis);
-                    y = rnd.Next(0, yaxis);
+                    type = 1,
+
+                };
+                x = rndd.Next(0, xaxis);
+                y = rndd.Next(0, yaxis);
+
+
+
+                while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
+                {
+                    x = rndd.Next(0, xaxis);
+                    y = rndd.Next(0, yaxis);
 
                 }
 
-                Locals[i] = new Agents()
-                {
-                    xpos = x,
-                    ypos = y,
+
+                Locals[i].xpos = x;
+                Locals[i].ypos = y;
 
 
-                };
-                //numero= rnd.Next(1, 3);
-                //Locals[i].type = numero;
-                //map[x, y] = numero;
 
-                Locals[i].type =1;
-                map[x, y] = 1;
-                //if (numero == 1)
-                //{
-                //    green++;
-
-                //}
-                //else { red++; }
-
+                map[x, y] = Locals[i].type;
             }
             for (int i = 0; i < min_num; ++i)
             {
 
 
+                Minors[i] = new Agents()
+                {
+                    type = 2,
 
-                 x = rnd.Next(0, xaxis);
-                 y = rnd.Next(0, yaxis);
+                };
+                x = rndd.Next(0, xaxis);
+                y = rndd.Next(0, yaxis);
 
                 while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
                 {
-                    x = rnd.Next(0, xaxis);
-                    y = rnd.Next(0, yaxis);
+                    x = rndd.Next(0, xaxis);
+                    y = rndd.Next(0, yaxis);
 
                 }
-                Minors[i] = new Agents()
-                {
-                    xpos = x,
-                    ypos = y,
-                  
-                };
 
-                //numero = rnd.Next(1, 3);
-                //Minors[i].type = numero;
-                //map[x, y] = numero;
+                Minors[i].xpos = x;
+                Minors[i].ypos = y;
 
-                Minors[i].type = 2;
-                map[x, y] = 2;
-
-                //if (numero==1)
-                //{
-                //    green++;
-
-                //}
-                //else { red++; }
-
-
-               
-
-
-
-
+                map[x, y] = Minors[i].type;
             }
+
+            numero = 0;
+            //MessageBox.Show(Convert.ToString(map));
+
+
 
             //////////////////////////////////////////////////////////////////
             Brush bbrush = (Brush)Brushes.Green;
@@ -334,7 +381,7 @@ namespace Gradproject
             //{
             //    g.DrawLine(p, x * cellSize, 0, x * cellSize, x_axis * cellSize);
             //}
-           
+
 
 
             g.DrawRectangle(bluePen, rect);
@@ -352,7 +399,10 @@ namespace Gradproject
 
 
 
+            local_number.Text = Convert.ToString(green / sim_value);
+            minor_number.Text = Convert.ToString(red / sim_value);
 
+           // MessageBox.Show(Convert.ToString(map));
 
             return map;
 
@@ -366,22 +416,23 @@ namespace Gradproject
             unhappymin = 0;
             for (int r = 0; r < locals_num; r++)
             {
-                if ((Locals[r] != null && (Locals[r].rate < lower_bound || Locals[r].rate > upper_bound) &&   Locals[r].type==1) ||
-                   (Minors[r] != null && (Minors[r].rate < lower_bound || Minors[r].rate > upper_bound) &&   Minors[r].type == 1))
+                if ((  (Locals[r].rate < lower_bound || Locals[r].rate > upper_bound) &&   Locals[r].type==1) ||
+                   (Locals[r].rate < lower_bound2 || Locals[r].rate > upper_bound2) && Locals[r].type == 2)
+                    
                 {
                     unhappyloc++;
                 }
             }
             for (int r = 0; r < min_num; r++)
             {
-                if (((Locals[r].rate < lower_bound2 || Locals[r].rate > upper_bound2) && Locals[r] != null && Locals[r].type == 2) ||
-                   ((Minors[r].rate < lower_bound2 || Minors[r].rate > upper_bound2) && Minors[r] != null && Minors[r].type == 2))
+                if (((Minors[r].rate < lower_bound || Minors[r].rate > upper_bound) && Minors[r].type == 1) ||
+                   ((Minors[r].rate < lower_bound2 || Minors[r].rate > upper_bound2) && Minors[r].type == 2))
                 {
                     unhappymin++;
                 }
             }
-            unhappy_array[kuar, 2 * a] = unhappyloc;
-            unhappy_array[kuar, 2 * a + 1] = unhappymin;
+            //unhappy_array[kuar, 2 * a] = unhappyloc;
+            //unhappy_array[kuar, 2 * a + 1] = unhappymin;
 
             return unhappy_array;
 
@@ -793,7 +844,7 @@ namespace Gradproject
 
                 dice = rnd3.Next(0, agents.Count);
 
-                if ((agents[dice] != null&& agents[dice].type==1&& (rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<lower_bound
+                if ((agents[dice] != null&& agents[dice].type==1 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<lower_bound
                     || rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map) > upper_bound)||
                         (agents[dice] != null && agents[dice].type == 2 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) < lower_bound2
                     || rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) > upper_bound2))))
@@ -978,7 +1029,7 @@ namespace Gradproject
                 frac_count = 0;
                 kuar = 0;
                 Matrix<double> map = execute();
-
+                count_unhappy(map, kuar, a);
                 for (int j = 0; j < min_num; j++)
                 {
 
@@ -994,11 +1045,11 @@ namespace Gradproject
 
                 double sum1 = 100000;
                 double sum2 = 100000;
-
+                kuar = 1;
                 while (sum1 + sum2 > 0)//xaxis*xaxis/10000)
                 {
 
-
+                    count_unhappy(map, kuar, a);
                     rate_check_for_all(map);
 
 
@@ -1051,7 +1102,7 @@ namespace Gradproject
                         }
 
                     }
-                    count_unhappy(map, kuar, a);
+
                     map = continue_2(map);
                     kuar = kuar + 1;
                     for (int i = 0; i < locals_num; i++)
@@ -1111,13 +1162,13 @@ namespace Gradproject
                     }
 
                     Random rnd4 = new Random();
-              
-                  
+
+
                     number_loc = 0;
                     number_min = 0;
                     for (int i = 0; i < locals_num; i++)  // Count the number of agent types
                     {
-                        if (Locals[i] != null && Locals[i].type == 1  )
+                        if (Locals[i] != null && Locals[i].type == 1)
                         {
                             number_loc = number_loc + 1;
 
@@ -1157,9 +1208,9 @@ namespace Gradproject
 
 
 
-                  // update_map();
-                   
-                    
+                    // update_map();
+
+
 
 
                 }
@@ -1179,15 +1230,15 @@ namespace Gradproject
 
                 //}
 
-                
-            
-            
 
 
 
-               
-                                                                                                  
-                
+
+
+
+
+
+
                 for (int i = 0; i < locals_num; i++)  // Count the number of agent types
                 {
                     if (Locals[i].type == 1)
@@ -1362,7 +1413,7 @@ namespace Gradproject
                         }
                     }
 
-                    if (prob_dist[12, queue] + prob_dist[1, queue] == 0)
+                    if (z==10)//prob_dist[12, queue] + prob_dist[1, queue] == 0)
                     {
 
                         break;
@@ -1371,17 +1422,17 @@ namespace Gradproject
                 }//end of square analysis counting
 
                 update_map();
+                
 
                
 
 
             }// end of simulations
 
+            local_number.Text = Convert.ToString(loc_number.Sum()/sim_value);
+            minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
 
 
-
-            local_number.Text = Convert.ToString(green/sim_value );
-            minor_number.Text = Convert.ToString(red /sim_value);
 
 
 
