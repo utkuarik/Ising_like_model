@@ -195,78 +195,113 @@ namespace Gradproject
 
             /////// Attach local and minor agents' positions ///////////////////////
 
-            //for (int i = 0; i < locals_num; i++)
-            //{
+            for (int i = 0; i < locals_num; i++)
+            {
 
-            //    dix = rndd.Next(0, 2);
+                dix = rndd.Next(0, 2);
 
-            //    if (dix == 1)
-            //    {
-            //        green++;
-            //        Locals[i] = new Agents()
-            //        {
-            //            type = 1
+                if (dix == 1)
+                {
+                    green++;
+                    Locals[i] = new Agents()
+                    {
+                        type = 1
 
-            //        };
-
-
-            //    }
-            //    else
-            //    {
-            //        red++;
-            //        Locals[i] = new Agents()
-            //        {
-            //            type = 2
-
-            //        };
-
-            //    }
-
-            //    numero++;
-
-            //}
+                    };
 
 
+                }
+                else
+                {
+                    red++;
+                    Locals[i] = new Agents()
+                    {
+                        type = 2
+
+                    };
+
+                }
+                dix = rndd.Next(0, 3);
+
+                if(dix==0)
+                {
+                    Locals[i].lower_bound = 0.25;
+
+                }
+                else if(dix==1)
+                {
+                    Locals[i].lower_bound = 0.375;
+
+                }
+
+                else
+                {
+                    Locals[i].lower_bound = 0.5;
+
+                }
+                numero++;
+
+            }
 
 
-            //for (int i = 0; i < min_num; i++)
-            //{
-
-            //    dix = rndd.Next(0, 2);
-            //    if (dix == 1)
-            //    {
-            //        green++;
-            //        Minors[i] = new Agents()
-            //        {
-            //            type = 1,
-
-            //        };
 
 
-            //    }
-            //    else
-            //    {
-            //        red++;
-            //        Minors[i] = new Agents()
-            //        {
-            //            type = 2,
+            for (int i = 0; i < min_num; i++)
+            {
 
-            //        };
+                dix = rndd.Next(0, 2);
+                if (dix == 1)
+                {
+                    green++;
+                    Minors[i] = new Agents()
+                    {
+                        type = 1,
+
+                    };
 
 
-            //    }
+                }
+                else
+                {
+                    red++;
+                    Minors[i] = new Agents()
+                    {
+                        type = 2,
 
-            //    numero++;
+                    };
 
-            //}
+
+                }
+
+                dix = rndd.Next(0, 3);
+
+                if (dix == 0)
+                {
+                    Minors[i].lower_bound = 0.25;
+
+                }
+                else if (dix == 1)
+                {
+                    Minors[i].lower_bound = 0.375;
+
+                }
+
+                else
+                {
+                    Minors[i].lower_bound = 0.5;
+
+                }
+                numero++;
+
+            }
             for (int i = 0; i < locals_num; ++i)
             {
 
-                Locals[i] = new Agents()
-                {
-                    type = 1,
+                //Locals[i] = new Agents()
+                //{
+                //    type = 1,
 
-                };
+                //};
                 x = rndd.Next(0, xaxis);
                 y = rndd.Next(0, yaxis);
 
@@ -291,11 +326,11 @@ namespace Gradproject
             {
 
 
-                Minors[i] = new Agents()
-                {
-                    type = 2,
+                //Minors[i] = new Agents()
+                //{
+                //    type = 2,
 
-                };
+                //};
                 x = rndd.Next(0, xaxis);
                 y = rndd.Next(0, yaxis);
 
@@ -416,8 +451,8 @@ namespace Gradproject
             unhappymin = 0;
             for (int r = 0; r < locals_num; r++)
             {
-                if ((  (Locals[r].rate < lower_bound || Locals[r].rate > upper_bound) &&   Locals[r].type==1) ||
-                   (Locals[r].rate < lower_bound2 || Locals[r].rate > upper_bound2) && Locals[r].type == 2)
+                if ((  (Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound) &&   Locals[r].type==1) ||
+                   (Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound2) && Locals[r].type == 2)
                     
                 {
                     unhappyloc++;
@@ -425,8 +460,8 @@ namespace Gradproject
             }
             for (int r = 0; r < min_num; r++)
             {
-                if (((Minors[r].rate < lower_bound || Minors[r].rate > upper_bound) && Minors[r].type == 1) ||
-                   ((Minors[r].rate < lower_bound2 || Minors[r].rate > upper_bound2) && Minors[r].type == 2))
+                if (((Minors[r].rate < Minors[r].lower_bound || Minors[r].rate > upper_bound) && Minors[r].type == 1) ||
+                   ((Minors[r].rate < Minors[r].lower_bound || Minors[r].rate > upper_bound2) && Minors[r].type == 2))
                 {
                     unhappymin++;
                 }
@@ -806,8 +841,8 @@ namespace Gradproject
 
             for (int j = 0; j < locals_num; j++)
             {
-                if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
-                  ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                if (((Locals[j].rate < Locals[j].lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                  ((Locals[j].rate < Locals[j].lower_bound || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                 {
                     agents.Add(Locals[j]);
 
@@ -816,8 +851,8 @@ namespace Gradproject
             }
             for (int j = 0; j < min_num; j++)
             {
-                if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
-                  ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                if (((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                  ((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                 {
                     agents.Add(Minors[j]);
                 }
@@ -844,12 +879,12 @@ namespace Gradproject
 
                 dice = rnd3.Next(0, agents.Count);
 
-                if ((agents[dice] != null&& agents[dice].type==1 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<lower_bound
+                if ((agents[dice] != null&& agents[dice].type==1 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<agents[dice].lower_bound
                     || rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map) > upper_bound)||
-                        (agents[dice] != null && agents[dice].type == 2 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) < lower_bound2
+                        (agents[dice] != null && agents[dice].type == 2 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) < agents[dice].lower_bound
                     || rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) > upper_bound2))))
                 {
-                    if (agents[dice].type == 1 && (agents[dice].rate < lower_bound || agents[dice].rate > upper_bound))
+                    if (agents[dice].type == 1 && (agents[dice].rate < agents[dice].lower_bound || agents[dice].rate > upper_bound))
                     {
                         map[agents[dice].xpos, agents[dice].ypos] = 2;
                         agents[dice].type = 2;
@@ -860,7 +895,7 @@ namespace Gradproject
 
                     }
 
-                    else if (agents[dice].type == 2 && (agents[dice].rate < lower_bound2 || agents[dice].rate > upper_bound2))
+                    else if (agents[dice].type == 2 && (agents[dice].rate < agents[dice].lower_bound || agents[dice].rate > upper_bound2))
                     {
                         map[agents[dice].xpos, agents[dice].ypos] = 1;
                         agents[dice].type = 1;
@@ -1110,8 +1145,8 @@ namespace Gradproject
 
                         if (Locals[i] != null)
                         {
-                            if (((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
-                                ((Locals[i].rate < lower_bound2 || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
+                            if (((Locals[i].rate < Locals[i].lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
+                                ((Locals[i].rate < Locals[i].lower_bound || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
                             {
                                 Locals[i].s = 1;
 
@@ -1128,8 +1163,8 @@ namespace Gradproject
                     {
                         if (Minors[j] != null)
                         {
-                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
-                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                            if (((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                                 ((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                             {
                                 Minors[j].s = 1;
 
@@ -1208,7 +1243,7 @@ namespace Gradproject
 
 
 
-                     update_map();
+                    update_map();
 
 
 
@@ -1490,6 +1525,7 @@ namespace Gradproject
         public double het_neigh { get; set; }
         public double total_neigh { get; set; }
 
+        public double lower_bound { get; set; }
         public double emp_neigh { get; set; }
         public double utility { get; set; }
 
