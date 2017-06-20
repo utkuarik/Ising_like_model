@@ -431,8 +431,8 @@ namespace Gradproject
                     unhappymin++;
                 }
             }
-            //unhappy_array[kuar, 2 * a] = unhappyloc;
-            //unhappy_array[kuar, 2 * a + 1] = unhappymin;
+            unhappy_array[kuar, 2 * a] = unhappyloc;
+            unhappy_array[kuar, 2 * a + 1] = unhappymin;
 
             return unhappy_array;
 
@@ -440,7 +440,7 @@ namespace Gradproject
         public Matrix<double> AdjacentElements(Matrix<double> map2, int row, int column)
         {
             // Collect neighbor cells' positions
-            Matrix<double> w = Matrix<double>.Build.Dense(250, 3, 5);
+            Matrix<double> w = Matrix<double>.Build.Dense(500, 3, 5);
 
             int rows = map2.RowCount;
             int columns = map2.ColumnCount;
@@ -1208,7 +1208,7 @@ namespace Gradproject
 
 
 
-                    // update_map();
+                     update_map();
 
 
 
