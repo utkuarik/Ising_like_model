@@ -227,7 +227,7 @@ namespace Gradproject
 
                 if(dix==0)
                 {
-                    Locals[i].lower_bound = 0.5;
+                    Locals[i].lower_bound = 0.25;
 
                 }
                 else if(dix==1)
@@ -238,16 +238,12 @@ namespace Gradproject
 
                 else
                 {
-                    Locals[i].lower_bound = 0.5;
+                    Locals[i].lower_bound = 0.75;
 
                 }
                 numero++;
 
             }
-
-
-
-
             for (int i = 0; i < min_num; i++)
             {
 
@@ -279,7 +275,7 @@ namespace Gradproject
 
                 if (dix == 0)
                 {
-                    Minors[i].lower_bound = 0.5;
+                    Minors[i].lower_bound = 0.25;
 
                 }
                 else if (dix == 1)
@@ -290,7 +286,7 @@ namespace Gradproject
 
                 else
                 {
-                    Minors[i].lower_bound = 0.5;
+                    Minors[i].lower_bound = 0.75;
 
                 }
                 numero++;
@@ -1125,7 +1121,7 @@ namespace Gradproject
                 double sum1 = 100000;
                 double sum2 = 100000;
                 kuar = 1;
-                while (sum1 + sum2 > 0)//xaxis*xaxis/10000)
+                while (sum1 + sum2 > xaxis*xaxis*0.1)
                 {
 
                     count_unhappy(map, kuar, a);
