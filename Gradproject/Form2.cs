@@ -35,7 +35,7 @@ namespace Gradproject
         public int xaxis;
         public int yaxis;
         public int utility_check;
-        public int cellSize = 2;
+        public int cellSize = 5;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
@@ -227,7 +227,7 @@ namespace Gradproject
 
                 if(dix==0)
                 {
-                    Locals[i].lower_bound = 0.25;
+                    Locals[i].lower_bound = 0.5;
 
                 }
                 else if(dix==1)
@@ -238,7 +238,7 @@ namespace Gradproject
 
                 else
                 {
-                    Locals[i].lower_bound = 0.75;
+                    Locals[i].lower_bound = 0.5;
 
                 }
                 numero++;
@@ -275,7 +275,7 @@ namespace Gradproject
 
                 if (dix == 0)
                 {
-                    Minors[i].lower_bound = 0.25;
+                    Minors[i].lower_bound = 0.5;
 
                 }
                 else if (dix == 1)
@@ -286,7 +286,7 @@ namespace Gradproject
 
                 else
                 {
-                    Minors[i].lower_bound = 0.75;
+                    Minors[i].lower_bound = 0.5;
 
                 }
                 numero++;
@@ -1121,7 +1121,7 @@ namespace Gradproject
                 double sum1 = 100000;
                 double sum2 = 100000;
                 kuar = 1;
-                while (sum1 + sum2 > xaxis*xaxis*0.1)
+                while (sum1 + sum2 > 0)
                 {
 
                     count_unhappy(map, kuar, a);
@@ -1538,10 +1538,10 @@ namespace Gradproject
             rngg.Value2 = prob_dist;
 
 
-            xlc.Visible = true;
-            xld.Visible = true;
+            //xlc.Visible = true;
+            //xld.Visible = true;
 
-            xlb.Visible = true;
+            //xlb.Visible = true;
             xlb.WindowState = XlWindowState.xlMaximized;
             xlc.WindowState = XlWindowState.xlMaximized;
             xld.WindowState = XlWindowState.xlMaximized;
