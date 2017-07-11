@@ -1326,7 +1326,28 @@ namespace Gradproject
             local_number.Text = Convert.ToString(loc_number.Sum()/sim_value);
             minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
 
-
+            ave_sim_neigh.Text = Convert.ToString(Math.Round(B / sim_value, 3));
+            ave_mix.Text = Convert.ToString(Math.Round(C / sim_value, 3));
+            ave_FSI.Text = Convert.ToString(Math.Round(D / sim_value, 3));
+            NDF_emp.Text = Convert.ToString(Math.Round(E, 3) / sim_value);
+            NDF_emp_2.Text = Convert.ToString(Math.Round(F, 3) / sim_value);
+            NDF_emp_3.Text = Convert.ToString(Math.Round(G, 3) / sim_value);
+            ndf_11.Text = Convert.ToString(Math.Round(I, 3) / sim_value);
+            ndf_12.Text = Convert.ToString(Math.Round(J, 3) / sim_value);
+            ndf_13.Text = Convert.ToString(Math.Round(K, 3) / sim_value);
+            ndf_21.Text = Convert.ToString(Math.Round(L, 3) / sim_value);
+            ndf_22.Text = Convert.ToString(Math.Round(M, 3) / sim_value);
+            ndf_23.Text = Convert.ToString(Math.Round(N, 3) / sim_value);
+            sepera.Text = Convert.ToString(H / sim_value);
+            var_asn.Text = Convert.ToString(Math.Round(variance_ASN, 5));
+            var_fsi.Text = Convert.ToString(Math.Round(variance_FSI, 5));
+            var_mix.Text = Convert.ToString(Math.Round(variance_MIX, 5));
+            local_number.Text = Convert.ToString(loc_number.Sum() / sim_value);
+            minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
+            min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(), 3));
+            sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(), 3));
+            unhloc.Text = Convert.ToString(unhappyloc / sim_value);
+            unhmin.Text = Convert.ToString(unhappymin / sim_value);
 
 
 
