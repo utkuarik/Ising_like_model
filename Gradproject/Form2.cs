@@ -79,7 +79,7 @@ namespace Gradproject
         int red;
         int green;
         //End of universal variables
-        public static List<Agents> agents = new List<Agents>();
+        public static List<Agents> unhappy_agents_list = new List<Agents>();
         
         static Agents[] Locals;
 
@@ -99,7 +99,7 @@ namespace Gradproject
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
             string algo, string upperbound2, string wsize)
 
-        {   // Get the values from previous form
+        {   // Get the values from previous windows form
 
             InitializeComponent();
 
@@ -146,36 +146,15 @@ namespace Gradproject
             Pen p = new Pen(Color.Black);
             Brush bBrush = (Brush)Brushes.Gray;
 
-            g = this.CreateGraphics();
+            g = this.CreateGraphics();                  
            
-
-         
-
- 
-
-            // g.Clear(Color.White);
-          
-           
-
-            //for (int y = 0; y < y_axis; ++y)
-            //{
-            //    g.DrawLine(p, 0, y * cellSize, y_axis * cellSize, y * cellSize);
-            //}
-
-            //for (int x = 0; x < x_axis; ++x)
-            //{
-            //    g.DrawLine(p, x * cellSize, 0, x * cellSize, x_axis * cellSize);
-            //}
             exp_het = 2 * (locals_num / (locals_num + min_num * 1.00)) * (min_num / (locals_num + min_num * 1.00));
-
-
-
         }
 
 
-        public Agents[,] execute()
-        // Make the initial implanting and create agents
-        // and draw the initial world
+        public Agents[,] execute() // Make the initial implanting and create agents
+                                   // and draw the initial world
+
         {
 
             Pen bluePen = new Pen(Color.Blue, 2);
@@ -188,20 +167,17 @@ namespace Gradproject
 
             // Check for world type///////////////////////////////////////////
 
-
             Random rnd3 = new Random();
             Random rndd = new Random();
             Random rnd = new Random();
             int numero = 1;
             int x, y;
 
-            /////// Attach local and minor agents' positions ///////////////////////
+            /////// Attach agents' types ///////////////////////
 
             for (int i = 0; i < locals_num; i++)
             {
-
                 dix = rndd.Next(0, 2);
-
                 if (dix == 1)
                 {
                     green++;
@@ -211,7 +187,6 @@ namespace Gradproject
 
                     };
 
-
                 }
                 else
                 {
@@ -219,30 +194,8 @@ namespace Gradproject
                     Locals[i] = new Agents()
                     {
                         type = 2
-
                     };
-
-                }
-                dix = rndd.Next(0, 3);
-
-                if(dix==0)
-                {
-                    Locals[i].lower_bound = lower_bound;
-
-                }
-                else if(dix==1)
-                {
-                    Locals[i].lower_bound = lower_bound;
-
-                }
-
-                else
-                {
-                    Locals[i].lower_bound = lower_bound;
-
-                }
-                numero++;
-
+                }                          
             }
             for (int i = 0; i < min_num; i++)
             {
@@ -256,8 +209,6 @@ namespace Gradproject
                         type = 1,
 
                     };
-
-
                 }
                 else
                 {
@@ -267,43 +218,16 @@ namespace Gradproject
                         type = 2,
 
                     };
-
-
-                }
-
-                dix = rndd.Next(0, 3);
-
-                if (dix == 0)
-                {
-                    Minors[i].lower_bound = lower_bound;
-
-                }
-                else if (dix == 1)
-                {
-                    Minors[i].lower_bound = lower_bound;
-
-                }
-
-                else
-                {
-                    Minors[i].lower_bound = lower_bound;
-
-                }
-                numero++;
-
+                }                
             }
+
+            /////// End of agents' types ///////////////////////
+
+            /////// Attach agents' positions ///////////////////////
             for (int i = 0; i < locals_num; ++i)
-            {
-
-                //Locals[i] = new Agents()
-                //{
-                //    type = 1,
-
-                //};
+            {              
                 x = rndd.Next(0, xaxis);
                 y = rndd.Next(0, yaxis);
-
-
 
                 while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
                 {
@@ -312,11 +236,8 @@ namespace Gradproject
 
                 }
 
-
                 Locals[i].xpos = x;
                 Locals[i].ypos = y;
-
-
 
                 map[x, y] = Locals[i].type;
                 node_map[x,y] = Locals[i];
@@ -324,12 +245,6 @@ namespace Gradproject
             for (int i = 0; i < min_num; ++i)
             {
 
-
-                //Minors[i] = new Agents()
-                //{
-                //    type = 2,
-
-                //};
                 x = rndd.Next(0, xaxis);
                 y = rndd.Next(0, yaxis);
 
@@ -348,9 +263,8 @@ namespace Gradproject
             }
 
             numero = 0;
-            //MessageBox.Show(Convert.ToString(map));
-
-
+      
+            /////// End of attachment of agents' positions ///////////////////////
 
             //////////////////////////////////////////////////////////////////
             Brush bbrush = (Brush)Brushes.Green;
@@ -360,8 +274,7 @@ namespace Gradproject
 
             Graphics g;
             g = this.CreateGraphics();
-
-            ///// Place the agetns in the map/////////////////////////////////
+            ///// Draw the agents in the map/////////////////////////////////
             for (int i = 0; i < locals_num; ++i)
             {
                 g.FillRectangle(bbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
@@ -371,80 +284,28 @@ namespace Gradproject
             {
                 g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
             }
-            //////////////////////////////////////////////////////////////////
-
-            if (geo_value == 1)// If there is natural boundary horizontal
-            {
-                for (int k = 0; k < xaxis; k++)
-                    for (int l = yaxis / 2; l <= yaxis / 2 + 1; l++)
-
-                    {
-                        {
-                            g.FillRectangle(dbrush, k * cellSize, l * cellSize, cellSize, cellSize);
-
-                        }
-
-                    }
-
-            }
-            else if (geo_value == 2)// ıf there is a natural boundary diagonal
-            {
-                int ja = 0;
-                for (int i = yaxis - 1; i >= 0; i--)
-                {
-
-                    g.FillRectangle(dbrush, ja * cellSize, i * cellSize, cellSize, cellSize);
-
-                    ja = ja + 1;
-                }
-
-            }
+            //// End of Drawing ////////////////////////////////////////////////////////
+           
 
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, Convert.ToInt16(xaxis / 3), Convert.ToInt16(xaxis / 3));
             System.Drawing.Rectangle rect1 = new System.Drawing.Rectangle(
                 Convert.ToInt16(xaxis - xaxis / 4), xaxis - xaxis / 4, Convert.ToInt16(xaxis / 2), Convert.ToInt16(xaxis / 2));
             System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize *
                 Convert.ToInt16(xaxis - xaxis / 4), cellSize * Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
-
-
-            //for (int y = 0; y < y_axis; ++y)
-            //{
-            //    g.DrawLine(p, 0, y * cellSize, y_axis * cellSize, y * cellSize);
-            //}
-
-            //for (int x = 0; x < x_axis; ++x)
-            //{
-            //    g.DrawLine(p, x * cellSize, 0, x * cellSize, x_axis * cellSize);
-            //}
-
-
-
+           
             g.DrawRectangle(bluePen, rect);
             g.DrawRectangle(orangePen, rect1);
             g.DrawRectangle(aquqPen, rect2);
-            //for (int y = 0; y < yaxis; ++y)
-            //{
-            //    g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
-            //}
-
-            //for (int x = 0; x < xaxis; ++x)
-            //{
-            //    g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
-            //}
-
-
-
+          
             local_number.Text = Convert.ToString(green / sim_value);
             minor_number.Text = Convert.ToString(red / sim_value);
-
-           // MessageBox.Show(Convert.ToString(map));
 
             return node_map;
 
         }   // end of execute function
 
-        public int[,] count_unhappy(Agents[,] map, int kuar, int a)
-            //Count unhappy agents
+        public int[,] count_unhappy(Agents[,] map, int kuar, int a) /////////Count unhappy agents for excel output
+
         {
             rate_check_for_all(map);
             unhappyloc = 0;
@@ -472,29 +333,18 @@ namespace Gradproject
             return unhappy_array;
 
         }//end of count unhappy agent function
+
+
         public Agents[,] AdjacentElements(Agents[,] node_map, int row, int column)
         {
-            // Collect neighbor cells' positions
-          // Matrix<double> w = Matrix<double>.Build.Dense(500, 3, 5);
+           ////// Collect neighbor cells' positions with periodic boundary conditions
+        
             Agents[,] w = new Agents[500, 3];
             int rows = yaxis;
             int columns = xaxis;
 
             int r = 0;
-   
-            //for (int j = row - 1; j <= row + 1; j++)
-            //{
-            //    for (int i = column - 1; i <= column + 1; i++)
-            //    {
-            //        if (i >= 0 && j >= 0 && i < columns && j < rows && !(j == row && i == column))
-            //        {
-            //            w[r, 0] = node_map[j, i];
-            //            r = r + 1;
-            //        }
-
-            //    }
-
-            //}
+             
             for (int j = row - w_size1; j <= row + w_size1; j++)
             {
                 for (int i = column - w_size1; i <= column + w_size1; i++)
@@ -628,7 +478,9 @@ namespace Gradproject
             return a;
 
         }// end of rate_check func.
+
         public double rate_check_for_one(int lxpos, int lypos, Agents[,] map)
+            //Calculate the neigbor type proportions
         {
             int[,] a;
            
@@ -662,16 +514,12 @@ namespace Gradproject
 
 
             }
-
-            //uti_map[Minors[i].xpos, Minors[i].ypos] = a;
-          
-            
-                  
-
+                                         
             return rate1;
         }
 
         public void rate_check_for_all(Agents[,] node_map)//Compute neigbors rate for all agents and statistics
+            // Main function to calculate all agents' happiness in the network, sufficient to use alone.
         {
             Matrix<double> uti_map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
             double a = 0.0;
@@ -772,7 +620,7 @@ namespace Gradproject
                     }
                 }
 
-                //uti_map[Minors[i].xpos, Minors[i].ypos] = a;
+               
                 else if (Minors[i].type == 1)
                 {
                     if (t[0, 0] == 0)
@@ -803,10 +651,7 @@ namespace Gradproject
 
                 }
                
-                   
-                
-
-               
+                                               
                     Minors[i].rate = a;
                     Minors[i].mixity = 1 - a;
                     if (Minors[i].type == 2)
@@ -826,20 +671,23 @@ namespace Gradproject
             
         }// end of rate_check_for_all func.
 
-        public Agents[,] continue_to(Agents[,] map)//Reimplanting
+        public Agents[,] continue_to(Agents[,] map)
+            //Reimplanting, basically the "move function" after the happiness check for all agents..
+            ///..
         {
-            Random rnd1 = new Random();
+            Random rnd1 = new Random();  /// pseudo random generator variables
             Random rnd2 = new Random();
             Random rnd3 = new Random();
            
- 
-            int dice1;
             int local_index;
             int minor_index;
-             
+
             //local_index = rnd2.Next(0, locals_num);
             //minor_index = rnd2.Next(0, min_num);
-            if (algo_value == 0)
+
+
+
+            if (algo_value == 0)/// If it is Kawasaki dynamic
             {
 
 
@@ -868,91 +716,71 @@ namespace Gradproject
             }
 
 
-            else
+            else   //If the algorithm is Glauber dynamic
             {
-
-                
-                            
-                local_index = rnd2.Next(0, locals_num);
-                minor_index = rnd2.Next(0, min_num);
-
-
-
-
+                                           
             for (int j = 0; j < locals_num; j++)
             {
-                if (((Locals[j].rate < Locals[j].lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
-                  ((Locals[j].rate < Locals[j].lower_bound || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                  ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                 {
-                    agents.Add(Locals[j]);
+                    unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
 
                 }
 
             }
             for (int j = 0; j < min_num; j++)
             {
-                if (((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
-                  ((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                  ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                 {
-                    agents.Add(Minors[j]);
+                    unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
                 }
             }
-           
 
-           
-
-            //for (int j = 0; j < agents.Count; ++j)
-            //{
-            //    for (i = 0; i < agents.Count; ++i)
-            //    {
-            //        int randomIndex = rnd2.Next(agents.Count);
-            //        var temp = agents[randomIndex];
-            //        agents[randomIndex] = agents[i];
-            //        agents[i] = temp;
-            //    }
-            //}
-
-            for (dice1 = 0; dice1 < agents.Count; dice1++)
+               
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                    // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
 
 
             {
 
-                dice = rnd3.Next(0, agents.Count);
+                dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
 
-                if ((agents[dice] != null&& agents[dice].type==1 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map)<agents[dice].lower_bound
-                    || rate_check_for_one(agents[dice].xpos, agents[dice].ypos,map) > upper_bound)||
-                        (agents[dice] != null && agents[dice].type == 2 && (rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) < agents[dice].lower_bound
-                    || rate_check_for_one(agents[dice].xpos, agents[dice].ypos, map) > upper_bound2))))
+                if ((unhappy_agents_list[dice] != null&& unhappy_agents_list[dice].type==1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos,map)<lower_bound
+                    || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos,map) > upper_bound)||
+                        (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound2
+                    || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound2))))
                 {
-                    if (agents[dice].type == 1 && (agents[dice].rate < agents[dice].lower_bound || agents[dice].rate > upper_bound))
+                    if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate < lower_bound || unhappy_agents_list[dice].rate > upper_bound))
                     {
-                        map[agents[dice].xpos, agents[dice].ypos].type = 2;
-                        agents[dice].type = 2;
-                        agents.RemoveAt(dice);
+                        map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                        unhappy_agents_list[dice].type = 2;
+                        unhappy_agents_list.RemoveAt(dice);
 
 
 
 
                     }
 
-                    else if (agents[dice].type == 2 && (agents[dice].rate < agents[dice].lower_bound || agents[dice].rate > upper_bound2))
+                    else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate < lower_bound2 || unhappy_agents_list[dice].rate > upper_bound2))
                     {
-                        map[agents[dice].xpos, agents[dice].ypos].type = 1;
-                        agents[dice].type = 1;
-                        agents.RemoveAt(dice);
+                        map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                        unhappy_agents_list[dice].type = 1;
+                        unhappy_agents_list.RemoveAt(dice);
 
                     }
 
                 }
                 else
                 {
-                        agents.RemoveAt(dice);
+                        unhappy_agents_list.RemoveAt(dice);
 
 
                 }
             }
          
-            agents.Clear();
+            unhappy_agents_list.Clear();
 
 
                 //while (i < agents.Count)
@@ -1080,16 +908,7 @@ namespace Gradproject
         public void button1_Click(object sender, EventArgs l)
         {
 
-            
-
-
       
-
-           
-
-      
-
-
             //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
             //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
             //Worksheet ws = (Worksheet)xla.ActiveSheet;
@@ -1185,8 +1004,8 @@ namespace Gradproject
 
                         if (Locals[i] != null)
                         {
-                            if (((Locals[i].rate < Locals[i].lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
-                                ((Locals[i].rate < Locals[i].lower_bound || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
+                            if (((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
+                                ((Locals[i].rate < lower_bound2 || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
                             {
                                 Locals[i].s = 1;
 
@@ -1203,8 +1022,8 @@ namespace Gradproject
                     {
                         if (Minors[j] != null)
                         {
-                            if (((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
-                                 ((Minors[j].rate < Minors[j].lower_bound || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                            if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                                 ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                             {
                                 Minors[j].s = 1;
 
@@ -1353,7 +1172,7 @@ namespace Gradproject
                 number_loc = 0;
                 number_min = 0;
                 
-                agents.Clear();
+                unhappy_agents_list.Clear();
                 queue = 0;
 
                 for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
