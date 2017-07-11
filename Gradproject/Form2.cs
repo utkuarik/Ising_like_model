@@ -1126,7 +1126,181 @@ namespace Gradproject
 
 
 
+                double[,] ndf;
+                ndf = new double[xaxis * yaxis, 3];
+                double[,] ndf2;
+                double[,] ndf3;
+                ndf2 = new double[xaxis * yaxis, 3];
+                ndf3 = new double[xaxis * yaxis, 3];
+                double ndf_sum = 0;
+                double ndf_sum2 = 0;
+                double ndf_sum3 = 0;
+                double ndf_sum11 = 0;
+                double ndf_sum12 = 0;
+                double ndf_sum13 = 0;
+                double ndf_sum21 = 0;
+                double ndf_sum22 = 0;
+                double ndf_sum23 = 0;
+                int count_empties = 0;
 
+                int count_locals = 0;
+                int count_minors = 0;
+                for (int i = 0; i < xaxis; i++)  // NDF Calculations
+                {
+                    for (int j = 0; j < yaxis; j++)
+                    {
+                        var ndf_matrice = rate_check(i, j, map);
+                        if (map[i, j].type == 0)
+                        {
+
+                            ndf[count_empties, 0] = ndf_matrice[2, 0] / ((ndf_matrice[0, 0] + ndf_matrice[1, 0] + ndf_matrice[2, 0]) * 1.00);
+                            ndf[count_empties, 1] = ndf_matrice[2, 1] / ((ndf_matrice[0, 1] + ndf_matrice[1, 1] + ndf_matrice[2, 1]) * 1.00);
+                            ndf[count_empties, 2] = ndf_matrice[2, 2] / ((ndf_matrice[0, 2] + ndf_matrice[1, 2] + ndf_matrice[2, 2]) * 1.00);
+                            count_empties = count_empties + 1;
+                        }
+                        else if (map[i, j].type == 1)
+                        {
+                            ndf2[count_locals, 0] = ndf_matrice[0, 0] / ((ndf_matrice[0, 0] + ndf_matrice[1, 0] + ndf_matrice[2, 0]) * 1.00);
+                            ndf2[count_locals, 1] = ndf_matrice[0, 1] / ((ndf_matrice[0, 1] + ndf_matrice[1, 1] + ndf_matrice[2, 1]) * 1.00);
+                            ndf2[count_locals, 2] = ndf_matrice[0, 2] / ((ndf_matrice[0, 2] + ndf_matrice[1, 2] + ndf_matrice[2, 2]) * 1.00);
+                            count_locals = count_locals + 1;
+
+
+                        }
+                        else if (map[i, j].type == 2)
+                        {
+                            ndf3[count_minors, 0] = ndf_matrice[1, 0] / ((ndf_matrice[0, 0] + ndf_matrice[1, 0] + ndf_matrice[2, 0]) * 1.00);
+                            ndf3[count_minors, 1] = ndf_matrice[1, 1] / ((ndf_matrice[0, 1] + ndf_matrice[1, 1] + ndf_matrice[2, 1]) * 1.00);
+                            ndf3[count_minors, 2] = ndf_matrice[1, 2] / ((ndf_matrice[0, 2] + ndf_matrice[1, 2] + ndf_matrice[2, 2]) * 1.00);
+                            count_minors = count_minors + 1;
+
+
+                        }
+
+
+                    }
+
+
+                }
+                for (int i = 0; i < count_empties; i++)
+                {
+
+                    ndf_sum = ndf_sum + ndf[i, 0];
+                    ndf_sum2 = ndf_sum2 + ndf[i, 1];
+                    ndf_sum3 = ndf_sum3 + ndf[i, 2];
+                }
+
+                ndf_sum = ndf_sum / count_empties;
+                ndf_sum2 = ndf_sum2 / count_empties;
+                ndf_sum3 = ndf_sum3 / count_empties;
+
+                for (int i = 0; i < count_locals; i++)
+                {
+
+                    ndf_sum11 = ndf_sum11 + ndf2[i, 0];
+                    ndf_sum12 = ndf_sum12 + ndf2[i, 1];
+                    ndf_sum13 = ndf_sum13 + ndf2[i, 2];
+                }
+
+                ndf_sum11 = ndf_sum11 / count_locals;
+                ndf_sum12 = ndf_sum12 / count_locals;
+                ndf_sum13 = ndf_sum13 / count_locals;
+
+                for (int i = 0; i < count_minors; i++)
+                {
+
+                    ndf_sum21 = ndf_sum21 + ndf3[i, 0];
+                    ndf_sum22 = ndf_sum22 + ndf3[i, 1];
+                    ndf_sum23 = ndf_sum23 + ndf3[i, 2];
+                }
+
+                ndf_sum21 = ndf_sum21 / count_minors;
+                ndf_sum22 = ndf_sum22 / count_minors;
+                ndf_sum23 = ndf_sum23 / count_minors;
+
+
+
+                update_map();
+                double sum_1 = 0;
+                double sum_2 = 0;
+                double sum_3 = 0;
+                double sum_4 = 0;
+                double sum_5 = 0;
+                double sum_6 = 0;
+                double sum_7 = 0;
+                double sum_8 = 0;
+                for (int i = 0; i < locals_num; i++) // Segregation index calculations
+                {
+                    while (Locals[i] == null && i <= locals_num)
+                    { i = i + 1; }
+                    sum_1 = sum_1 + Locals[i].utility;
+                    sum_2 = sum_2 + Locals[i].mixity;
+                    sum_3 = sum_3 + Locals[i].rate;
+                    sum_4 = sum_4 + Locals[i].FSI;
+                    sum_5 = sum_5 + Locals[i].het_neigh;
+                    sum_6 = sum_6 + Locals[i].total_neigh;
+                    Locals[i].sim_neigh = Locals[i].het_neigh / Locals[i].total_neigh;
+                    sum_7 = sum_7 + Locals[i].sim_neigh;
+                    sum_8 = sum_8 + Locals[i].seperatist;
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    while (Minors[j] == null && j <= min_num)
+                    { j = j + 1; }
+                    sum_1 = sum_1 + Minors[j].utility;
+                    sum_2 = sum_2 + Minors[j].mixity;
+                    sum_3 = sum_3 + Minors[j].rate;
+                    sum_4 = sum_4 + Minors[j].FSI;
+                    sum_5 = sum_5 + Minors[j].het_neigh;
+                    sum_6 = sum_6 + Minors[j].total_neigh;
+                    Minors[j].sim_neigh = Minors[j].het_neigh / Minors[j].total_neigh;
+                    sum_7 = sum_7 + Minors[j].sim_neigh;
+                    sum_8 = sum_8 + Minors[j].seperatist;
+                }
+
+
+                ave_sim_neigh.Text = Convert.ToString(1 - sum_7 / (locals_num + min_num));
+                ave_FSI.Text = Convert.ToString(sum_4 / (locals_num + min_num));
+                NDF_emp.Text = Convert.ToString(Math.Round(ndf_sum, 3));
+                NDF_emp_2.Text = Convert.ToString(Math.Round(ndf_sum2, 3));
+                NDF_emp_3.Text = Convert.ToString(Math.Round(ndf_sum3, 3));
+                ndf_11.Text = Convert.ToString(Math.Round(ndf_sum11, 3));
+                ndf_12.Text = Convert.ToString(Math.Round(ndf_sum12, 3));
+                ndf_13.Text = Convert.ToString(Math.Round(ndf_sum13, 3));
+                ndf_21.Text = Convert.ToString(Math.Round(ndf_sum21, 3));
+                ndf_22.Text = Convert.ToString(Math.Round(ndf_sum22, 3));
+                ndf_23.Text = Convert.ToString(Math.Round(ndf_sum23, 3));
+
+
+
+                exp_het = exp_het * sum_6;
+
+                A = A + sum_1 / (locals_num + min_num);//utility
+                B = B + (1 - sum_7 / (locals_num + min_num));// average similar neighbor
+                C = C + sum_5 / sum_6;//mixity
+                D = D + (exp_het - sum_5) / exp_het;//FSI
+                E = E + ndf_sum; //NDF
+                F = F + ndf_sum2;//
+                G = G + ndf_sum3;//
+                H = H + sum_8;
+                I = I + ndf_sum11;
+                J = J + ndf_sum12;
+                K = K + ndf_sum13;
+                L = L + ndf_sum21;
+                M = M + ndf_sum22;
+                N = N + ndf_sum23;
+                SEPAR[a] = sum_8;
+
+
+
+                FSI_VALUE[a] = (exp_het - sum_5) / exp_het;  // Put segregation indexes to vector
+                AVE_VALUE[a] = (1 - sum_7 / (locals_num + min_num));
+                MIX[a] = sum_5 / sum_6;
+
+                variance_FSI = FSI_VALUE.Variance();
+                variance_ASN = AVE_VALUE.Variance();
+                variance_MIX = MIX.Variance();
 
 
 
