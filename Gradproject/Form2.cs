@@ -227,18 +227,18 @@ namespace Gradproject
 
                 if(dix==0)
                 {
-                    Locals[i].lower_bound = 0.5;
+                    Locals[i].lower_bound = lower_bound;
 
                 }
                 else if(dix==1)
                 {
-                    Locals[i].lower_bound = 0.5;
+                    Locals[i].lower_bound = lower_bound;
 
                 }
 
                 else
                 {
-                    Locals[i].lower_bound = 0.5;
+                    Locals[i].lower_bound = lower_bound;
 
                 }
                 numero++;
@@ -275,18 +275,18 @@ namespace Gradproject
 
                 if (dix == 0)
                 {
-                    Minors[i].lower_bound = 0.5;
+                    Minors[i].lower_bound = lower_bound;
 
                 }
                 else if (dix == 1)
                 {
-                    Minors[i].lower_bound = 0.5;
+                    Minors[i].lower_bound = lower_bound;
 
                 }
 
                 else
                 {
-                    Minors[i].lower_bound = 0.5;
+                    Minors[i].lower_bound = lower_bound;
 
                 }
                 numero++;
@@ -1514,37 +1514,37 @@ namespace Gradproject
 
 
 
-            Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
-            Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wt = (Worksheet)xlb.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
+            //Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
+            //Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wt = (Worksheet)xlb.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
 
 
-            Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wf = (Worksheet)xlc.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
+            //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+            //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wf = (Worksheet)xlc.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
 
-            Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
-            Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
-            Worksheet wg = (Worksheet)xld.ActiveSheet;
-            Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0), prob_dist2.GetLength(1));
-
-
+            //Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+            //Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+            //Worksheet wg = (Worksheet)xld.ActiveSheet;
+            //Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0), prob_dist2.GetLength(1));
 
 
-            rngg1.Value2 = unhappy_array;
-            rngg2.Value2 = prob_dist2;
-            rngg.Value2 = prob_dist;
 
 
-            //xlc.Visible = true;
-            //xld.Visible = true;
+            //rngg1.Value2 = unhappy_array;
+            //rngg2.Value2 = prob_dist2;
+            //rngg.Value2 = prob_dist;
 
-            //xlb.Visible = true;
-            xlb.WindowState = XlWindowState.xlMaximized;
-            xlc.WindowState = XlWindowState.xlMaximized;
-            xld.WindowState = XlWindowState.xlMaximized;
+
+            ////xlc.Visible = true;
+            ////xld.Visible = true;
+
+            ////xlb.Visible = true;
+            //xlb.WindowState = XlWindowState.xlMaximized;
+            //xlc.WindowState = XlWindowState.xlMaximized;
+            //xld.WindowState = XlWindowState.xlMaximized;
         }
 
         private void button2_Click(object sender, EventArgs e)
