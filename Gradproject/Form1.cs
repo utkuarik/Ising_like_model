@@ -48,7 +48,7 @@ namespace Gradproject
         {
             Form2 Form2 = new Form2(Population.Text, Minority.Text, X_axis.Text, Y_axis.Text,
                 lowerbound.Text, lowerbound2.Text, eco.Text, upperbound.Text, Utility_check.Text, sim.Text,
-                geo.Text, no_free_cells.Text, algo.Text, upperbound2.Text, wsize.Text);
+                geo.Text, simultaneous.Text, algo.Text, upperbound2.Text, wsize.Text,simultaneous.Text);
             Form2.Show();
 
            
@@ -85,6 +85,11 @@ namespace Gradproject
         }
 
         private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void simultaneous_TextChanged(object sender, EventArgs e)
         {
 
         }

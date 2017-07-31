@@ -55,8 +55,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.geo = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
-            this.no_free_cells = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
+            this.simultaneous = new System.Windows.Forms.TextBox();
+            this.Async = new System.Windows.Forms.Label();
             this.algo = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.lowerbound2 = new System.Windows.Forms.TextBox();
@@ -295,9 +295,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(287, 119);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(55, 13);
+            this.label2.Size = new System.Drawing.Size(98, 13);
             this.label2.TabIndex = 33;
-            this.label2.Text = "Simulation";
+            this.label2.Text = "Simulation Number:";
             // 
             // geo
             // 
@@ -316,23 +316,24 @@
             this.label11.TabIndex = 35;
             this.label11.Text = "Immovable Cells:";
             // 
-            // no_free_cells
+            // simultaneous
             // 
-            this.no_free_cells.Location = new System.Drawing.Point(35, 233);
-            this.no_free_cells.Name = "no_free_cells";
-            this.no_free_cells.Size = new System.Drawing.Size(33, 20);
-            this.no_free_cells.TabIndex = 36;
-            this.no_free_cells.Text = "2";
+            this.simultaneous.Location = new System.Drawing.Point(35, 225);
+            this.simultaneous.Name = "simultaneous";
+            this.simultaneous.Size = new System.Drawing.Size(33, 20);
+            this.simultaneous.TabIndex = 36;
+            this.simultaneous.Text = "1";
+            this.simultaneous.TextChanged += new System.EventHandler(this.simultaneous_TextChanged);
             // 
-            // label12
+            // Async
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(32, 204);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(120, 26);
-            this.label12.TabIndex = 37;
-            this.label12.Text = "World without free cells:\r\n                (0-1)";
-            this.label12.Click += new System.EventHandler(this.label12_Click);
+            this.Async.AutoSize = true;
+            this.Async.Location = new System.Drawing.Point(32, 206);
+            this.Async.Name = "Async";
+            this.Async.Size = new System.Drawing.Size(39, 13);
+            this.Async.TabIndex = 37;
+            this.Async.Text = "Async:";
+            this.Async.Click += new System.EventHandler(this.label12_Click);
             // 
             // algo
             // 
@@ -340,12 +341,12 @@
             this.algo.Name = "algo";
             this.algo.Size = new System.Drawing.Size(33, 20);
             this.algo.TabIndex = 38;
-            this.algo.Text = "3";
+            this.algo.Text = "1";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(35, 256);
+            this.label13.Location = new System.Drawing.Point(32, 252);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(50, 13);
             this.label13.TabIndex = 39;
@@ -394,8 +395,8 @@
             this.Controls.Add(this.lowerbound2);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.algo);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.no_free_cells);
+            this.Controls.Add(this.Async);
+            this.Controls.Add(this.simultaneous);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.geo);
             this.Controls.Add(this.label2);
@@ -459,8 +460,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox geo;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TextBox no_free_cells;
-        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox simultaneous;
+        private System.Windows.Forms.Label Async;
         private System.Windows.Forms.TextBox algo;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox lowerbound2;

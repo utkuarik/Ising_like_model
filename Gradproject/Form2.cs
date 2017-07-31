@@ -35,7 +35,7 @@ namespace Gradproject
         public int xaxis;
         public int yaxis;
         public int utility_check;
-        public int cellSize = 5;
+        public int cellSize = 7;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
@@ -76,11 +76,15 @@ namespace Gradproject
         public int unhappymin;
         public int[,] unhappy_array;
         public int w_size1;
+        public int simultaneous;
         int red;
         int green;
+        public int ground_state = 0;
+        Agents[,] map;
+        public int[,] map3;
         //End of universal variables
         public static List<Agents> unhappy_agents_list = new List<Agents>();
-        
+        public static List<Agents> agent_list = new List<Agents>();
         static Agents[] Locals;
 
         static Agents[] Minors;
@@ -89,6 +93,7 @@ namespace Gradproject
 
 
         public int sim_value = 0;
+       
         public int dix;
         private int lxpos;
         private int lypos;
@@ -97,7 +102,7 @@ namespace Gradproject
 
         public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound, string lowerbound2,
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
-            string algo, string upperbound2, string wsize)
+            string algo, string upperbound2, string wsize, string async)
 
         {   // Get the values from previous windows form
 
@@ -128,11 +133,12 @@ namespace Gradproject
            // fract = new double[50,1500000];
             prob_dist = new double[13, 1000];
             prob_dist1 = new double[13, 1000];
-            prob_dist2 = new double[1000, 100];
-            unhappy_array = new int[1000, 100];
+            prob_dist2 = new double[1000, 200];
+            unhappy_array = new int[1000, 200];
             w_size1 = Convert.ToInt32(wsize);
             locals_num = Convert.ToInt16(population);
             min_num = Convert.ToInt16(minority);
+            simultaneous = Convert.ToInt32(async);
         }
 
        
@@ -161,7 +167,9 @@ namespace Gradproject
             Pen orangePen = new Pen(Color.Orange, 2);
             Pen aquqPen = new Pen(Color.Aqua, 2);
 
-            Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
+            //Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
+            int[,] map = new int[xaxis,yaxis];
+            map3 = new int[xaxis, yaxis];
             Agents[,] node_map = new Agents[xaxis,yaxis];
             double[] samples = SystemRandomSource.Doubles(1000000, 100);
 
@@ -175,11 +183,61 @@ namespace Gradproject
 
             /////// Attach agents' types ///////////////////////
 
-            for (int i = 0; i < locals_num; i++)
+            if (locals_num == min_num)
             {
-                dix = rndd.Next(0, 2);
-                if (dix == 1)
+                for (int i = 0; i < locals_num; i++)
                 {
+                    dix = rndd.Next(0, 2);
+                    if (dix == 1)
+                    {
+                        green++;
+                        Locals[i] = new Agents()
+                        {
+                            type = 1
+
+                        };
+
+                    }
+                    else
+                    {
+                        red++;
+                        Locals[i] = new Agents()
+                        {
+                            type = 2
+                        };
+                    }
+                }
+                for (int i = 0; i < min_num; i++)
+                {
+
+                    dix = rndd.Next(0, 2);
+                    if (dix == 1)
+                    {
+                        green++;
+                        Minors[i] = new Agents()
+                        {
+                            type = 1,
+
+                        };
+                    }
+                    else
+                    {
+                        red++;
+                        Minors[i] = new Agents()
+                        {
+                            type = 2,
+
+                        };
+                    }
+                }
+
+            }
+            else
+            {
+
+                for (int i = 0; i < locals_num; i++)
+                {
+
                     green++;
                     Locals[i] = new Agents()
                     {
@@ -188,39 +246,23 @@ namespace Gradproject
                     };
 
                 }
-                else
-                {
-                    red++;
-                    Locals[i] = new Agents()
-                    {
-                        type = 2
-                    };
-                }                          
-            }
-            for (int i = 0; i < min_num; i++)
-            {
 
-                dix = rndd.Next(0, 2);
-                if (dix == 1)
-                {
-                    green++;
-                    Minors[i] = new Agents()
-                    {
-                        type = 1,
 
-                    };
-                }
-                else
+                for (int i = 0; i < min_num; i++)
                 {
+
+
+
+
                     red++;
                     Minors[i] = new Agents()
                     {
                         type = 2,
 
                     };
-                }                
-            }
 
+                }
+            }
             /////// End of agents' types ///////////////////////
 
             /////// Attach agents' positions ///////////////////////
@@ -339,7 +381,7 @@ namespace Gradproject
         {
            ////// Collect neighbor cells' positions with periodic boundary conditions
         
-            Agents[,] w = new Agents[500, 3];
+            Agents[,] w = new Agents[5000, 3];
             int rows = yaxis;
             int columns = xaxis;
 
@@ -678,7 +720,7 @@ namespace Gradproject
             Random rnd1 = new Random();  /// pseudo random generator variables
             Random rnd2 = new Random();
             Random rnd3 = new Random();
-           
+            int dice1;
             int local_index;
             int minor_index;
 
@@ -689,6 +731,25 @@ namespace Gradproject
 
             if (algo_value == 0)/// If it is Kawasaki dynamic
             {
+
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                      ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                    {
+                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                    }
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                      ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                    {
+                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                    }
+                }
 
 
 
@@ -716,7 +777,7 @@ namespace Gradproject
             }
 
 
-            else   //If the algorithm is Glauber dynamic
+            else if(algo_value==1)  //If the algorithm is Glauber dynamic
             {
                                            
             for (int j = 0; j < locals_num; j++)
@@ -818,6 +879,37 @@ namespace Gradproject
                 //}///
 
             }
+
+            else// Voter model
+            {
+                for (int j = 0; j < locals_num; j++)
+                {                 
+                        agent_list.Add(Locals[j]);// Collect  list                 
+                }
+                for (int j = 0; j < min_num; j++)
+                {                   
+                       agent_list.Add(Minors[j]);// Collect  list                 
+                }
+
+
+                
+
+                for( int i=0; i < agent_list.Count; i++)
+                {
+                    dice = rnd1.Next(0, agent_list.Count);
+                    
+                    var results = AdjacentElements(map, agent_list[dice].xpos, agent_list[dice].ypos);
+                    dice1 = rnd1.Next(0,  Convert.ToInt32(Math.Pow((2 * w_size1 + 1),2)) - 1);
+
+                    map[agent_list[dice].xpos, agent_list[dice].ypos].type = results[dice1,0].type;
+                   agent_list[dice].type = results[dice1,0].type;
+
+
+                }
+
+                agent_list.Clear();
+
+            }
             return map;
             }// end of continue function, it  basically includes the main algorithm of the code
           
@@ -908,12 +1000,25 @@ namespace Gradproject
         public void button1_Click(object sender, EventArgs l)
         {
 
-      
+
             //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
             //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
             //Worksheet ws = (Worksheet)xla.ActiveSheet;
             //xla.Visible = true;
-
+            double A = 0;
+            double B = 0;
+            double C = 0;
+            double D = 0;
+            double E = 0;
+            double F = 0;
+            double G = 0;
+            double H = 0;
+            double I = 0;
+            double J = 0;
+            double K = 0;
+            double L = 0;
+            double M = 0;
+            double N = 0;
 
             int kuar = 0;
         
@@ -922,8 +1027,18 @@ namespace Gradproject
                 Draw_World(xaxis, yaxis);
                 frac_count = 0;
                 kuar = 0;
-                Agents[,] map = execute();
+                map = execute();
                 count_unhappy(map, kuar, a);
+                for (int x = 0; x < xaxis; x++)
+                {
+                    for (int y = 0; y < yaxis; y++)
+                    {
+                        map3[x, y] = map[x, y].type;
+
+
+
+                    }
+                }
                 for (int j = 0; j < min_num; j++)
                 {
 
@@ -964,11 +1079,11 @@ namespace Gradproject
                                 {
                                     for (int j = e; j < z + e; j++)
                                     {
-                                        if (map[i, j].type == 1)
+                                        if (map[i, j] != null && map[i, j].type == 1 )
                                         {
                                             count_green = count_green + 1;
                                         }
-                                        else if (map[i, j].type == 2)
+                                        else if ( map[i, j] != null && map[i, j].type == 2 )
                                         {
                                             count_red = count_red + 1;
                                         }
@@ -1101,9 +1216,10 @@ namespace Gradproject
 
 
 
-
-                    update_map();
-
+                    if (simultaneous == 1 || simultaneous==3)
+                    {
+                        update_map();
+                    }
 
 
 
@@ -1292,8 +1408,6 @@ namespace Gradproject
                 N = N + ndf_sum23;
                 SEPAR[a] = sum_8;
 
-
-
                 FSI_VALUE[a] = (exp_het - sum_5) / exp_het;  // Put segregation indexes to vector
                 AVE_VALUE[a] = (1 - sum_7 / (locals_num + min_num));
                 MIX[a] = sum_5 / sum_6;
@@ -1301,11 +1415,6 @@ namespace Gradproject
                 variance_FSI = FSI_VALUE.Variance();
                 variance_ASN = AVE_VALUE.Variance();
                 variance_MIX = MIX.Variance();
-
-
-
-
-
 
                 for (int i = 0; i < locals_num; i++)  // Count the number of agent types
                 {
@@ -1341,6 +1450,10 @@ namespace Gradproject
 
 
                 }
+
+                if(number_min == 0 || number_loc ==0)
+                { ground_state++; }
+            
                 loc_number[a] = number_loc * 1.00;
                 mino_number[a] = number_min * 1.00;
                 number_loc = 0;
@@ -1352,8 +1465,6 @@ namespace Gradproject
                 for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
 
                 {
-
-
 
                     queue = queue + 1;
                     for (int e = 0; e <= yaxis - z; e++)
@@ -1481,7 +1592,7 @@ namespace Gradproject
                         }
                     }
 
-                    if (z==10)//prob_dist[12, queue] + prob_dist[1, queue] == 0)
+                    if (prob_dist[12, queue] + prob_dist[1, queue] == 0)
                     {
 
                         break;
@@ -1523,42 +1634,43 @@ namespace Gradproject
             unhloc.Text = Convert.ToString(unhappyloc / sim_value);
             unhmin.Text = Convert.ToString(unhappymin / sim_value);
 
+            MessageBox.Show(Convert.ToString(ground_state));
+
+
+            if (simultaneous == 3)
+            {
+                Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
+                Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wt = (Worksheet)xlb.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
+
+
+                Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+                Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wf = (Worksheet)xlc.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
+
+                Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+                Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wg = (Worksheet)xld.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(map3.GetLength(0), map3.GetLength(1));
+                rngg2.Value2 = map3;
 
 
 
+                rngg1.Value2 = unhappy_array;
+
+                rngg.Value2 = prob_dist;
 
 
-            //Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
-            //Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet wt = (Worksheet)xlb.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
+                //xlc.Visible = true;
+                //xld.Visible = true;
 
-
-            //Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet wf = (Worksheet)xlc.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
-
-            //Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
-            //Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet wg = (Worksheet)xld.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(prob_dist2.GetLength(0), prob_dist2.GetLength(1));
-
-
-
-
-            //rngg1.Value2 = unhappy_array;
-            //rngg2.Value2 = prob_dist2;
-            //rngg.Value2 = prob_dist;
-
-
-            ////xlc.Visible = true;
-            ////xld.Visible = true;
-
-            ////xlb.Visible = true;
-            //xlb.WindowState = XlWindowState.xlMaximized;
-            //xlc.WindowState = XlWindowState.xlMaximized;
-            //xld.WindowState = XlWindowState.xlMaximized;
+                //xlb.Visible = true;
+                xlb.WindowState = XlWindowState.xlMaximized;
+                xlc.WindowState = XlWindowState.xlMaximized;
+                xld.WindowState = XlWindowState.xlMaximized;
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
