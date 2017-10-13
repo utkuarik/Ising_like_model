@@ -48,7 +48,7 @@ namespace Gradproject
         {
             Form2 Form2 = new Form2(Population.Text, Minority.Text, X_axis.Text, Y_axis.Text,
                 lowerbound.Text, lowerbound2.Text, eco.Text, upperbound.Text, Utility_check.Text, sim.Text,
-                geo.Text, simultaneous.Text, algo.Text, upperbound2.Text, wsize.Text,simultaneous.Text);
+                geo.Text, simultaneous.Text, algo.Text, upperbound2.Text, wsize.Text,simultaneous.Text,periodic.Text,cellsize.Text);
             Form2.Show();
 
            

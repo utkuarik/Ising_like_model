@@ -63,6 +63,10 @@
             this.upperbound2 = new System.Windows.Forms.TextBox();
             this.wsize = new System.Windows.Forms.TextBox();
             this.w_size = new System.Windows.Forms.Label();
+            this.periodic = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.cellsize = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // X_axis
@@ -71,7 +75,7 @@
             this.X_axis.Name = "X_axis";
             this.X_axis.Size = new System.Drawing.Size(43, 20);
             this.X_axis.TabIndex = 0;
-            this.X_axis.Text = "120";
+            this.X_axis.Text = "40";
             this.X_axis.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // Y_axis
@@ -80,7 +84,7 @@
             this.Y_axis.Name = "Y_axis";
             this.Y_axis.Size = new System.Drawing.Size(43, 20);
             this.Y_axis.TabIndex = 1;
-            this.Y_axis.Text = "120";
+            this.Y_axis.Text = "40";
             this.Y_axis.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // Population
@@ -89,7 +93,7 @@
             this.Population.Name = "Population";
             this.Population.Size = new System.Drawing.Size(100, 20);
             this.Population.TabIndex = 4;
-            this.Population.Text = "7200";
+            this.Population.Text = "800";
             this.Population.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label3
@@ -107,7 +111,7 @@
             this.Minority.Name = "Minority";
             this.Minority.Size = new System.Drawing.Size(100, 20);
             this.Minority.TabIndex = 6;
-            this.Minority.Text = "7200";
+            this.Minority.Text = "800";
             this.Minority.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // label4
@@ -151,7 +155,7 @@
             this.lowerbound.Name = "lowerbound";
             this.lowerbound.Size = new System.Drawing.Size(34, 20);
             this.lowerbound.TabIndex = 13;
-            this.lowerbound.Text = "0.5";
+            this.lowerbound.Text = "0.25";
             // 
             // label7
             // 
@@ -177,7 +181,7 @@
             this.upperbound.Name = "upperbound";
             this.upperbound.Size = new System.Drawing.Size(34, 20);
             this.upperbound.TabIndex = 17;
-            this.upperbound.Text = "1";
+            this.upperbound.Text = "0.5";
             // 
             // label9
             // 
@@ -330,9 +334,9 @@
             this.Async.AutoSize = true;
             this.Async.Location = new System.Drawing.Point(32, 206);
             this.Async.Name = "Async";
-            this.Async.Size = new System.Drawing.Size(39, 13);
+            this.Async.Size = new System.Drawing.Size(70, 13);
             this.Async.TabIndex = 37;
-            this.Async.Text = "Async:";
+            this.Async.Text = "Simultaneous";
             this.Async.Click += new System.EventHandler(this.label12_Click);
             // 
             // algo
@@ -358,7 +362,7 @@
             this.lowerbound2.Name = "lowerbound2";
             this.lowerbound2.Size = new System.Drawing.Size(30, 20);
             this.lowerbound2.TabIndex = 40;
-            this.lowerbound2.Text = "0.5";
+            this.lowerbound2.Text = "0.25";
             // 
             // upperbound2
             // 
@@ -366,7 +370,7 @@
             this.upperbound2.Name = "upperbound2";
             this.upperbound2.Size = new System.Drawing.Size(30, 20);
             this.upperbound2.TabIndex = 41;
-            this.upperbound2.Text = "1";
+            this.upperbound2.Text = "0.5";
             // 
             // wsize
             // 
@@ -374,6 +378,7 @@
             this.wsize.Name = "wsize";
             this.wsize.Size = new System.Drawing.Size(28, 20);
             this.wsize.TabIndex = 42;
+            this.wsize.Text = "1";
             // 
             // w_size
             // 
@@ -384,11 +389,47 @@
             this.w_size.TabIndex = 43;
             this.w_size.Text = "w size:";
             // 
+            // periodic
+            // 
+            this.periodic.Location = new System.Drawing.Point(101, 225);
+            this.periodic.Name = "periodic";
+            this.periodic.Size = new System.Drawing.Size(34, 20);
+            this.periodic.TabIndex = 44;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(98, 206);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(96, 13);
+            this.label12.TabIndex = 45;
+            this.label12.Text = "Periodic Boundary:";
+            // 
+            // cellsize
+            // 
+            this.cellsize.Location = new System.Drawing.Point(101, 272);
+            this.cellsize.Name = "cellsize";
+            this.cellsize.Size = new System.Drawing.Size(34, 20);
+            this.cellsize.TabIndex = 46;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(98, 252);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(47, 13);
+            this.label14.TabIndex = 47;
+            this.label14.Text = "Cell Size";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(406, 463);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.cellsize);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.periodic);
             this.Controls.Add(this.w_size);
             this.Controls.Add(this.wsize);
             this.Controls.Add(this.upperbound2);
@@ -468,6 +509,10 @@
         private System.Windows.Forms.TextBox upperbound2;
         private System.Windows.Forms.TextBox wsize;
         private System.Windows.Forms.Label w_size;
+        private System.Windows.Forms.TextBox periodic;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox cellsize;
+        private System.Windows.Forms.Label label14;
     }
 }
 
