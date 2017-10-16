@@ -34,6 +34,8 @@ namespace Gradproject
         int min_num;
         public int xaxis;
         public int yaxis;
+        public int x;
+        public int y;
         public int utility_check;
         public int cellSize = 5;
         public double lower_bound = 0.0;
@@ -91,10 +93,11 @@ namespace Gradproject
         //End of universal variables
         public static List<Agents> unhappy_agents_list = new List<Agents>();
         public static List<Agents> agent_list = new List<Agents>();
+        public static List<int[,]> freecell_list = new List<int[,]>();
         static Agents[] Locals;
 
         static Agents[] Minors;
-
+        public Agents[,] node_map;
         
 
 
@@ -150,6 +153,7 @@ namespace Gradproject
             locals_num = Convert.ToInt16(population);
             min_num = Convert.ToInt16(minority);
             simultaneous = Convert.ToInt32(async);
+            Agents[,] node_map = new Agents[xaxis, yaxis];
         }
 
 
@@ -202,7 +206,7 @@ namespace Gradproject
             //Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
             int[,] map = new int[xaxis,yaxis];
             map3 = new int[xaxis, yaxis];
-            Agents[,] node_map = new Agents[xaxis,yaxis];
+            
             double[] samples = SystemRandomSource.Doubles(1000000, 100);
 
             // Check for world type///////////////////////////////////////////
@@ -1147,7 +1151,188 @@ namespace Gradproject
 
             }
 
-        
+            else if (algo_value ==5)
+            {
+
+                if (utility_check == 0)
+
+                {
+                    //for (int i = 0; i < locals_num; i++)
+                    //{
+                    //    if (Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)&& Locals[i]
+                    //    {
+                    //        x = rnd1.Next(0, xaxis);
+                    //        y = rnd1.Next(0, yaxis);
+
+                    //        while (map[x, y].type == 1 || map[x, y].type == 2 || map[x, y].type == 3)
+                    //        {
+                    //            x = rnd1.Next(0, xaxis);
+                    //            y = rnd1.Next(0, yaxis);
+                    //        }
+
+                    //        map[Locals[i].xpos, Locals[i].ypos].type = 0; // clear the previous position on the map
+                    //        Locals[i].xpos = x;
+                    //        Locals[i].ypos = y;
+                    //    }
+
+                    //    map[Locals[i].xpos, Locals[i].ypos].type = 1;
+                    //}
+                    //for (int i = 0; i < min_num; i++)
+                    //{
+                    //    if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
+                    //    {
+                    //        x = rnd1.Next(0, xaxis);
+                    //        y = rnd1.Next(0, yaxis);
+
+                    //        while (map[x, y].type == 1 || map[x, y].type == 2 || map[x, y].type == 3)
+                    //        {
+                    //            x = rnd1.Next(0, xaxis);
+                    //            y = rnd1.Next(0, yaxis);
+                    //        }
+
+                    //        map[Minors[i].xpos, Minors[i].ypos].type = 0;// clear the previous position on the map
+                    //        Minors[i].xpos = x;
+                    //        Minors[i].ypos = y;
+                    //    }
+
+
+                    //    map[Minors[i].xpos, Minors[i].ypos].type = 2;
+                    //}
+
+                    for (int j = 0; j < locals_num; j++)
+                    {
+                        if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                          ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                        {
+                            unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                        }                    
+                    }
+                    for (int j = 0; j < min_num; j++)
+                    {
+                        if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                          ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                        {
+                            unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                        }
+                    
+                    }
+
+
+                    for (int i = 0; i < unhappy_agents_list.Count; ++i)
+                        {
+
+                            x = rnd1.Next(0, xaxis);
+                            y = rnd1.Next(0, yaxis);
+
+                            while (map[x, y].type == 1 || map[x, y].type == 2 || map[x, y].type == 3)
+                            {
+                                x = rnd1.Next(0, xaxis);
+                                y = rnd1.Next(0, yaxis);
+
+                            }
+
+                            unhappy_agents_list[i].xpos = x;
+                            unhappy_agents_list[i].ypos = y;
+
+                             map[unhappy_agents_list[i].xpos, unhappy_agents_list[i].ypos] = 3;
+                            map[x, y].type = unhappy_agents_list[i].type;
+                            node_map[x, y] = unhappy_agents_list[i];
+                            unhappy_agents_list.RemoveAt(i);
+                    }
+
+
+                        //else if (Locals[j].rate == 0.5)
+                        // {
+
+                        //     unhappy_agents_list.Add(Locals[j]);
+
+                        // }
+
+                    
+                               
+
+                    unhappy_agents_list.Clear();
+                }
+                else
+                {
+
+                    for (int i = 0; i < locals_num; i++)
+                    {
+                        double[] uti;
+                        uti = new double[3];
+
+                        uti[1] = Locals[i].xpos;
+                        uti[2] = Locals[i].ypos;
+                        //uti[0] = utility(map, Locals[i].xpos, Locals[i].ypos, Locals[i].type);
+                        //double s = 0.0;
+                        //if (Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)
+                        //{
+
+                        //    for (int k = 0; k < xaxis; k++)
+                        //    {
+                        //        for (int l = 0; l < yaxis; l++)
+                        //        {
+
+                        //            if (uti[0] < utility(map, k, l, 0) && (map[k, l] == 0))
+                        //            {
+                        //                uti[0] = utility(map, k, l, 0);
+                        //                uti[1] = k;
+                        //                uti[2] = l;
+                        //            }
+
+                        //        }
+                        //    }
+
+                        //    map[Locals[i].xpos, Locals[i].ypos] = 0;
+                        //    Locals[i].xpos = Convert.ToInt32(uti[1]);
+                        //    Locals[i].ypos = Convert.ToInt32(uti[2]);
+                        //    Locals[i].utility = uti[0];
+                        //    map[Locals[i].xpos, Locals[i].ypos] = 1;
+                        //}
+
+
+
+                    }
+                    for (int i = 0; i < min_num; i++)
+                    {
+                        double[] uti;
+
+                        uti = new double[3];
+
+                //        uti[1] = Minors[i].xpos;
+                //        uti[2] = Minors[i].ypos;
+                //        uti[0] = utility(map, Minors[i].xpos, Minors[i].ypos, Minors[i].type);
+                //        double s = 0.0;
+                //        if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
+                //        {
+
+                //            for (int k = 0; k < xaxis; k++)
+                //            {
+                //                for (int l = 0; l < yaxis; l++)
+                //                {
+
+                //                    if (uti[0] < utility(map, k, l, 1) && (map[k, l] == 0))
+                //                    {
+                //                        uti[0] = utility(map, k, l, 1);
+                //                        uti[1] = k;
+                //                        uti[2] = l;
+                //                    }
+
+                //                }
+                //            }
+                //            map[Minors[i].xpos, Minors[i].ypos] = 0;
+                //            Minors[i].xpos = Convert.ToInt32(uti[1]);
+                //            Minors[i].ypos = Convert.ToInt32(uti[2]);
+                //            Minors[i].utility = uti[0];
+                //            map[Minors[i].xpos, Minors[i].ypos] = 2;
+                //        }
+
+                   }
+                }
+
+            }
+
             else// Voter model
             {
                 for (int j = 0; j < locals_num; j++)
