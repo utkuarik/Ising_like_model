@@ -97,7 +97,7 @@ namespace Gradproject
         static Agents[] Locals;
 
         static Agents[] Minors;
-        public Agents[,] node_map;
+        public static Agents[,] node_map;
         
 
 
@@ -153,7 +153,7 @@ namespace Gradproject
             locals_num = Convert.ToInt16(population);
             min_num = Convert.ToInt16(minority);
             simultaneous = Convert.ToInt32(async);
-            Agents[,] node_map = new Agents[xaxis, yaxis];
+            node_map = new Agents[xaxis, yaxis];
         }
 
 
@@ -302,12 +302,23 @@ namespace Gradproject
             /////// End of agents' types ///////////////////////
 
             /////// Attach agents' positions ///////////////////////
+
+            for (int i = 0; i < xaxis; i++)
+                for (int j = 0; j < yaxis; j++)
+                {
+                    {
+
+                        map[i, j] = 3;
+
+
+                    }
+                }
             for (int i = 0; i < locals_num; ++i)
             {              
                 x = rndd.Next(0, xaxis);
                 y = rndd.Next(0, yaxis);
 
-                while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
+                while (map[x, y] == 1 || map[x, y] == 2)
                 {
                     x = rndd.Next(0, xaxis);
                     y = rndd.Next(0, yaxis);
@@ -326,7 +337,7 @@ namespace Gradproject
                 x = rndd.Next(0, xaxis);
                 y = rndd.Next(0, yaxis);
 
-                while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
+                while (map[x, y] == 1 || map[x, y] == 2)
                 {
                     x = rndd.Next(0, xaxis);
                     y = rndd.Next(0, yaxis);
@@ -1225,7 +1236,7 @@ namespace Gradproject
                             x = rnd1.Next(0, xaxis);
                             y = rnd1.Next(0, yaxis);
 
-                            while (map[x, y].type == 1 || map[x, y].type == 2 || map[x, y].type == 3)
+                            while (map[x, y].type == 1 || map[x, y].type == 2 )
                             {
                                 x = rnd1.Next(0, xaxis);
                                 y = rnd1.Next(0, yaxis);
@@ -1235,7 +1246,7 @@ namespace Gradproject
                             unhappy_agents_list[i].xpos = x;
                             unhappy_agents_list[i].ypos = y;
 
-                             map[unhappy_agents_list[i].xpos, unhappy_agents_list[i].ypos] = 3;
+                             map[unhappy_agents_list[i].xpos, unhappy_agents_list[i].ypos].type = 3;
                             map[x, y].type = unhappy_agents_list[i].type;
                             node_map[x, y] = unhappy_agents_list[i];
                             unhappy_agents_list.RemoveAt(i);
