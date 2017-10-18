@@ -49,6 +49,8 @@ namespace Gradproject
         public double exp_het;
         public double[] MIX;
         public int[] Keep_arr;
+        public double rate_sum;
+        public double rate_sum2;
         public double[] AVE_VALUE;
         public double[] FSI_VALUE;
         public double energy_sum;
@@ -499,6 +501,10 @@ namespace Gradproject
 
             Agents[,] map2 = node_map;
             int count1 = 0;
+            int countx = 0;
+            int county = 0;
+            int count2x = 0;
+            int count2y = 0;
             var arr = map2;
             int count2 = 0;
             int count3 = 0;
@@ -534,6 +540,58 @@ namespace Gradproject
                 {
                     break;
                 }
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+
+                if (results[i, 0].type == 1)
+                {
+                    countx = countx + 1;
+                }
+                else if (results[i, 0].type == 2)
+                {
+                    county = county + 1;
+                }
+
+
+
+            }
+            if (w_size1 > 1)
+            {
+                for (int i = 8; i < 24; i++)
+                {
+
+                    if (results[i, 0].type == 1)
+                    {
+                        count2x = count2x + 1;
+                    }
+                    else if (results[i, 0].type == 2)
+                    {
+                        count2y = count2y + 1;
+                    }
+
+
+
+                }
+            }
+
+            if (node_map[x_pos, y_pos].type == 1)
+            {
+                node_map[x_pos, y_pos].rate_w1 = countx * 1.00 / (countx + county);
+            }
+            else if (node_map[x_pos, y_pos].type == 2)
+            {
+                node_map[x_pos, y_pos].rate_w1 = county * 1.00 / (countx + county);
+            }
+
+            if (node_map[x_pos, y_pos].type == 1)
+            {
+                node_map[x_pos, y_pos].rate_w2 = count2x * 1.00 / (count2x + count2y);
+            }
+            else if (node_map[x_pos, y_pos].type == 2)
+            {
+                node_map[x_pos, y_pos].rate_w2 = count2y * 1.00 / (count2x + count2y);
             }
 
             //for (int i = 0; i < results.GetLength(1); i++)
@@ -1493,7 +1551,7 @@ namespace Gradproject
             double N = 0;
 
             int kuar = 0;
-        
+
             for (int a = 0; a <= sim_value - 1; a++)
             {
                 Draw_World(xaxis, yaxis);
@@ -1556,9 +1614,9 @@ namespace Gradproject
                 while (sum1 + sum2 > 0)
                 {
 
-                   // window_keydown(null, new System.Windows.Input.KeyboardEventArgs(null, 1));
+                    // window_keydown(null, new System.Windows.Input.KeyboardEventArgs(null, 1));
 
-                        count_unhappy(map, kuar, a);
+                    count_unhappy(map, kuar, a);
                     rate_check_for_all(map);
 
                     for (int j = 0; j < locals_num; j++)
@@ -1568,7 +1626,7 @@ namespace Gradproject
                             if (Locals[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
                             {
                                 rate_histogram2[kuar, i] = rate_histogram2[kuar, i] + 1;
-                              
+
                             }
                         }
                     }
@@ -1581,7 +1639,7 @@ namespace Gradproject
                             if (Minors[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
                             {
                                 rate_histogram2[kuar, i] = rate_histogram2[kuar, i] + 1;
-                              
+
                             }
                         }
                     }
@@ -1644,7 +1702,7 @@ namespace Gradproject
                         if (Locals[i] != null)
                         {
                             if (algo_value != 3 || algo_value != 4)
-                            { 
+                            {
                                 if (((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
                                     ((Locals[i].rate < lower_bound2 || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
                                 {
@@ -1662,12 +1720,12 @@ namespace Gradproject
                                     Locals[i].s = 0;
 
                                 }
-                           } 
+                            }
 
                             else
                             {
 
-                                if(Locals[i].rate!=0.25)
+                                if (Locals[i].rate != 0.25)
                                 {
                                     Locals[i].s = 1;
 
@@ -1678,9 +1736,6 @@ namespace Gradproject
 
                                     Locals[i].s = 0;
                                 }
-
-
-
 
                             }
                         }
@@ -1696,7 +1751,6 @@ namespace Gradproject
                                 {
                                     Minors[j].s = 1;
 
-
                                 }
 
                                 //else if (Minors[j].rate == 0.5)
@@ -1706,9 +1760,7 @@ namespace Gradproject
                                 //}
                                 else
                                 {
-
                                     Minors[j].s = 0;
-
 
                                 }
                             }
@@ -1725,12 +1777,8 @@ namespace Gradproject
                                 else
                                 {
 
-                                   Minors[j].s = 0;
+                                    Minors[j].s = 0;
                                 }
-
-
-
-
                             }
                         }
                     }
@@ -1797,7 +1845,7 @@ namespace Gradproject
 
 
 
-                    if (simultaneous == 1 || simultaneous==3)
+                    if (simultaneous == 1 || simultaneous == 3)
                     {
                         update_map();
                     }
@@ -1808,9 +1856,9 @@ namespace Gradproject
 
                 for (int i = 0; i < locals_num; i++)
                 {
-                    Locals[i].energy = Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)- ((Math.Pow(2 * w_size1 + 1, 2) - 1)-
-                        Locals[i].rate* (Math.Pow(2 * w_size1 + 1, 2) - 1));
-                    energy_sum = energy_sum+Locals[i].energy;
+                    Locals[i].energy = Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                        Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
+                    energy_sum = energy_sum + Locals[i].energy;
 
                 }
 
@@ -1818,11 +1866,11 @@ namespace Gradproject
                 {
                     Minors[i].energy = Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
                         Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
-                    energy_sum = energy_sum+Minors[i].energy;
+                    energy_sum = energy_sum + Minors[i].energy;
 
                 }
 
-                energy_arr[a] = energy_sum/(locals_num+min_num);
+                energy_arr[a] = energy_sum / (locals_num + min_num);
                 energy_sum = 0;
 
                 for (int j = 0; j < locals_num; j++)
@@ -2088,12 +2136,12 @@ namespace Gradproject
 
                 //if(number_min == 0 || number_loc ==0)
                 //{ ground_state++; }
-            
+
                 loc_number[a] = number_loc * 1.00;
                 mino_number[a] = number_min * 1.00;
                 number_loc = 0;
                 number_min = 0;
-                
+
                 unhappy_agents_list.Clear();
                 queue = 0;
 
@@ -2236,12 +2284,36 @@ namespace Gradproject
                 //}//end of square analysis counting
 
                 update_map();
+
+
+                for (int i = 0; i < locals_num; i++)
+                {
+                    rate_sum = rate_sum + Locals[i].rate_w1;
+                    rate_sum2 = rate_sum2 + Locals[i].rate_w2;
+                }
+
+                for (int i = 0; i < min_num; i++)
+                {
+                    rate_sum = rate_sum + Minors[i].rate_w1;
+                    rate_sum2 = rate_sum2 + Minors[i].rate_w2;
+
+                }
+
+                rate_sum = rate_sum / (locals_num + min_num);
+
+                rate_sum2 = rate_sum2 / (locals_num + min_num);
+
+                MessageBox.Show(Convert.ToString(rate_sum2));
+                MessageBox.Show(Convert.ToString(rate_sum));
+
                 
 
                
+            
+            
+        }// end of simulations
 
 
-            }// end of simulations
             if (sim_value > 1)
             {
                 MessageBox.Show(Convert.ToString(Conf(energy_arr, 0.05)));
@@ -2292,8 +2364,8 @@ namespace Gradproject
                 Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
                 Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
                 Worksheet wg = (Worksheet)xld.ActiveSheet;
-                Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(rate_histogram2.GetLength(0), rate_histogram2.GetLength(1));
-                rngg2.Value2 = rate_histogram2;
+                Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(rate_histogram.GetLength(0), rate_histogram.GetLength(1));
+                rngg2.Value2 = rate_histogram;
 
 
 
@@ -2330,6 +2402,8 @@ namespace Gradproject
         public int xpos { get; set; }
         public int ypos { get; set; }
         public double rate { get; set; }
+        public double rate_w1 { get; set; }
+        public double rate_w2 { get; set; }
         public double mixity { get; set; }
         public double het_neigh { get; set; }
         public double total_neigh { get; set; }
