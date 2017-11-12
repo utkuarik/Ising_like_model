@@ -63,10 +63,10 @@
             this.upperbound2 = new System.Windows.Forms.TextBox();
             this.wsize = new System.Windows.Forms.TextBox();
             this.w_size = new System.Windows.Forms.Label();
-            this.periodic = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.cellsize = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // X_axis
@@ -75,7 +75,7 @@
             this.X_axis.Name = "X_axis";
             this.X_axis.Size = new System.Drawing.Size(43, 20);
             this.X_axis.TabIndex = 0;
-            this.X_axis.Text = "40";
+            this.X_axis.Text = "120";
             this.X_axis.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // Y_axis
@@ -84,7 +84,7 @@
             this.Y_axis.Name = "Y_axis";
             this.Y_axis.Size = new System.Drawing.Size(43, 20);
             this.Y_axis.TabIndex = 1;
-            this.Y_axis.Text = "40";
+            this.Y_axis.Text = "120";
             this.Y_axis.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // Population
@@ -93,7 +93,7 @@
             this.Population.Name = "Population";
             this.Population.Size = new System.Drawing.Size(100, 20);
             this.Population.TabIndex = 4;
-            this.Population.Text = "800";
+            this.Population.Text = "7200";
             this.Population.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label3
@@ -111,7 +111,7 @@
             this.Minority.Name = "Minority";
             this.Minority.Size = new System.Drawing.Size(100, 20);
             this.Minority.TabIndex = 6;
-            this.Minority.Text = "800";
+            this.Minority.Text = "7200";
             this.Minority.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // label4
@@ -141,7 +141,7 @@
             // 
             // Run
             // 
-            this.Run.Location = new System.Drawing.Point(83, 315);
+            this.Run.Location = new System.Drawing.Point(159, 335);
             this.Run.Name = "Run";
             this.Run.Size = new System.Drawing.Size(75, 23);
             this.Run.TabIndex = 12;
@@ -326,7 +326,7 @@
             this.simultaneous.Name = "simultaneous";
             this.simultaneous.Size = new System.Drawing.Size(33, 20);
             this.simultaneous.TabIndex = 36;
-            this.simultaneous.Text = "1";
+            this.simultaneous.Text = "3";
             this.simultaneous.TextChanged += new System.EventHandler(this.simultaneous_TextChanged);
             // 
             // Async
@@ -389,28 +389,13 @@
             this.w_size.TabIndex = 43;
             this.w_size.Text = "w size:";
             // 
-            // periodic
-            // 
-            this.periodic.Location = new System.Drawing.Point(101, 225);
-            this.periodic.Name = "periodic";
-            this.periodic.Size = new System.Drawing.Size(34, 20);
-            this.periodic.TabIndex = 44;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(98, 206);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(96, 13);
-            this.label12.TabIndex = 45;
-            this.label12.Text = "Periodic Boundary:";
-            // 
             // cellsize
             // 
             this.cellsize.Location = new System.Drawing.Point(101, 272);
             this.cellsize.Name = "cellsize";
             this.cellsize.Size = new System.Drawing.Size(34, 20);
             this.cellsize.TabIndex = 46;
+            this.cellsize.Text = "3";
             // 
             // label14
             // 
@@ -421,15 +406,37 @@
             this.label14.TabIndex = 47;
             this.label14.Text = "Cell Size";
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(35, 298);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(96, 17);
+            this.checkBox1.TabIndex = 48;
+            this.checkBox1.Text = "Excel outputs?";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(35, 321);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(118, 17);
+            this.checkBox2.TabIndex = 49;
+            this.checkBox2.Text = "Periodic Boundary?";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(406, 463);
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.cellsize);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.periodic);
             this.Controls.Add(this.w_size);
             this.Controls.Add(this.wsize);
             this.Controls.Add(this.upperbound2);
@@ -509,10 +516,10 @@
         private System.Windows.Forms.TextBox upperbound2;
         private System.Windows.Forms.TextBox wsize;
         private System.Windows.Forms.Label w_size;
-        private System.Windows.Forms.TextBox periodic;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox cellsize;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }
 

@@ -1,11 +1,16 @@
-﻿using System;
+﻿///****** Created by Utku Arık*****2016********
+///****** Agent based simulation on regular lattice*****
+///****** Includes Glauber and Kawasaki dynamics and more*****
+///****** User interface is included*****************
+
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MathNet;
@@ -16,21 +21,19 @@ using MathNet.Numerics.Distributions;
 using System.Timers;
 using System.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-
 using MathNet.Numerics.Statistics;
 using Microsoft.Office.Interop.Excel;
-/// <summary>
-/// dwadawdawdawdaw
-/// </summary>
+
 namespace Gradproject
 {
 
-    
 
     public partial class Form2 : Form
     {
 
-        int locals_num;    // Universal variables
+
+        //*************** Universal variables******************
+        int locals_num;
         int min_num;
         public int xaxis;
         public int yaxis;
@@ -63,8 +66,10 @@ namespace Gradproject
         public int number_min = 0;
         public double[] loc_number;
         public double[] mino_number;
-        public double [,] rate_histogram;
+        public double[,] rate_histogram;
         public double[,] rate_histogram2;
+        public double[,] rate_histogram3;
+        public double[,] rate_histogram4;
         public int local_index;
         public int minor_index;
         public int dice;
@@ -78,7 +83,7 @@ namespace Gradproject
         public double[,] prob_dist;
         public double[,] prob_dist1;
         public double[,] prob_dist2;
-        public double[] energy_arr;
+        public double[,] energy_arr;
         public int queue;
         public int queue1;
         public int unhappyloc;
@@ -92,36 +97,33 @@ namespace Gradproject
         public int ground_state = 0;
         Agents[,] map;
         public int[,] map3;
-        //End of universal variables
         public static List<Agents> unhappy_agents_list = new List<Agents>();
         public static List<Agents> agent_list = new List<Agents>();
         public static List<int[,]> freecell_list = new List<int[,]>();
         static Agents[] Locals;
-
         static Agents[] Minors;
         public static Agents[,] node_map;
-        
-
-
         public int sim_value = 0;
-       
         public int dix;
         private int lxpos;
         private int lypos;
         private int mxpos;
         private int mypos;
-
+        public int excel_wnt;
+        public int periodic;
+        public int ind = 0;
+        //*******************End of universal variables**************************
         public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound, string lowerbound2,
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
-            string algo, string upperbound2, string wsize, string async, string periodic, string cellsize)
+            string algo, string upperbound2, string wsize, string async, string cellsize, int excl, int periodica)
 
         {   // Get the values from previous windows form
 
             InitializeComponent();
-
+            excel_wnt = excl;
             // Convert text variables
             cellSize = Convert.ToInt16(cellsize);
-            periodic_boundary = Convert.ToInt16(periodic);
+            periodic_boundary = periodica;
             xaxis = Convert.ToInt32(x_axis);
             yaxis = Convert.ToInt32(y_axis);
             lower_bound = Convert.ToDouble(lowerbound);
@@ -142,16 +144,18 @@ namespace Gradproject
             SEPAR = new double[sim_value];
             Locals = new Agents[xaxis * xaxis];
             Minors = new Agents[xaxis * xaxis];
-           // fract = new double[50,1500000];
+            // fract = new double[50,1500000];
             prob_dist = new double[13, 10000];
             prob_dist1 = new double[13, 10000];
             prob_dist2 = new double[10000, 200];
             unhappy_array = new int[10000, 200];
-            
-            energy_arr = new double[sim_value];
+
+            energy_arr = new double[5000,20];
             w_size1 = Convert.ToInt32(wsize);
-            rate_histogram = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2) ))];
-            rate_histogram2 = new double[1000, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram2 = new double[10000, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram3 = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram4 = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
             locals_num = Convert.ToInt16(population);
             min_num = Convert.ToInt16(minority);
             simultaneous = Convert.ToInt32(async);
@@ -170,7 +174,7 @@ namespace Gradproject
             return Tuple.Create(mean - t, mean + t);
         }
 
-        public void window_keydown(object sender,System.Windows.Input.KeyboardEventArgs e)
+        public void window_keydown(object sender, System.Windows.Input.KeyboardEventArgs e)
         {
             if (Form.ModifierKeys == Keys.Shift)
             {
@@ -182,16 +186,41 @@ namespace Gradproject
 
 
         }
+
+        public void Calculate_energy(int tr, int sim_value)
+
+        { ///*********Energy calculations************
+            for (int i = 0; i < locals_num; i++)
+            {
+                Locals[i].energy = Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
+                energy_sum = energy_sum + Locals[i].energy;
+
+            }
+
+            for (int i = 0; i < min_num; i++)
+            {
+                Minors[i].energy = Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
+                energy_sum = energy_sum + Minors[i].energy;
+
+            }
+
+            energy_arr[tr,sim_value] = energy_sum ;
+            energy_sum = 0;
+
+            ///// *********end of energy calculations********************
+        }
         public void Draw_World(int x_axis, int y_axis) //Draw the initial empty world
 
         {
             Graphics g;
-          
+
             Pen p = new Pen(Color.Black);
             Brush bBrush = (Brush)Brushes.Gray;
 
-            g = this.CreateGraphics();                  
-           
+            g = this.CreateGraphics();
+
             exp_het = 2 * (locals_num / (locals_num + min_num * 1.00)) * (min_num / (locals_num + min_num * 1.00));
         }
 
@@ -206,9 +235,9 @@ namespace Gradproject
             Pen aquqPen = new Pen(Color.Aqua, 2);
 
             //Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
-            int[,] map = new int[xaxis,yaxis];
+            int[,] map = new int[xaxis, yaxis];
             map3 = new int[xaxis, yaxis];
-            
+
             double[] samples = SystemRandomSource.Doubles(1000000, 100);
 
             // Check for world type///////////////////////////////////////////
@@ -315,46 +344,172 @@ namespace Gradproject
 
                     }
                 }
-            for (int i = 0; i < locals_num; ++i)
-            {              
-                x = rndd.Next(0, xaxis);
-                y = rndd.Next(0, yaxis);
 
-                while (map[x, y] == 1 || map[x, y] == 2)
-                {
-                    x = rndd.Next(0, xaxis);
-                    y = rndd.Next(0, yaxis);
+            ind = 0;
 
-                }
+            if (algo_value == 6)
 
-                Locals[i].xpos = x;
-                Locals[i].ypos = y;
-
-                map[x, y] = Locals[i].type;
-                node_map[x,y] = Locals[i];
-            }
-            for (int i = 0; i < min_num; ++i)
             {
 
-                x = rndd.Next(0, xaxis);
-                y = rndd.Next(0, yaxis);
 
-                while (map[x, y] == 1 || map[x, y] == 2)
+                for (int i = 0; i < locals_num; i++)
+                {
+                    green++;
+                    Locals[i] = new Agents()
+                    {
+                        type = 1
+                    };
+                }
+                for (int i = 0; i < min_num; i++)
+                {
+                    red++;
+                    Minors[i] = new Agents()
+                    {
+                        type = 2,
+                    };
+                }
+
+                for (int i = 0; i < xaxis; i++)
+                {
+                    for (int j = 0; j < yaxis / 2; j++)
+
+                    {
+
+
+                        Locals[ind].type = 1;
+                        map[i, 2 * j + 1] = Locals[ind].type;
+                        Locals[ind].xpos = i;
+                        Locals[ind].ypos = 2 * j + 1;
+                        node_map[i, 2 * j + 1] = Locals[ind];
+                        ind = ind + 1;
+                    }
+                }
+
+                ind = 0;
+                for (int i = 0; i < xaxis; i++)
+                {
+                    for (int j = 0; j < yaxis / 2; j++)
+
+                    {
+
+                        Minors[ind].type = 2;
+                        map[i, 2 * j] = Minors[ind].type;
+                        Minors[ind].xpos = i;
+                        Minors[ind].ypos = 2 * j;
+                        node_map[i, 2 * j] = Minors[ind];
+                        ind = ind + 1;
+                    }
+                }
+
+                Minors[2200].type = 1;
+            }
+
+            else if (algo_value == 7)
+            {
+                ind = 0;
+                for (int i = 0; i < locals_num; i++)
+                {
+                    green++;
+                    Locals[i] = new Agents()
+                    {
+                        type = 1
+                    };
+                }
+                for (int i = 0; i < min_num; i++)
+                {
+                    red++;
+                    Minors[i] = new Agents()
+                    {
+                        type = 2,
+                    };
+                }
+
+
+
+                for (int j = 0; j < yaxis; j++)
+                {
+                    for (int i = 0; i < xaxis; i+=2)
+                    {
+
+                        
+
+                        if (j % 2 == 0)
+                        {
+                            Locals[ind].xpos = i;
+                            Locals[ind].ypos = j;
+                            Minors[ind].xpos = i + 1;
+                            Minors[ind].ypos = j;
+                            map[i, j] = Locals[ind].type;
+                            node_map[i, j] = Locals[ind];
+                            map[i + 1, j] = Minors[ind].type;
+                            node_map[i + 1, j] = Minors[ind];
+                        }
+
+                        else
+                        {
+                            Locals[ind].xpos = i + 1;
+                            Locals[ind].ypos = j;
+                            Minors[ind].xpos = i;
+                            Minors[ind].ypos = j;
+                            map[i, j] = Minors[ind].type;
+                            node_map[i, j] = Minors[ind];
+                            map[i + 1, j] = Locals[ind].type;
+                            node_map[i + 1, j] = Locals[ind];
+
+                        }
+                        ind = ind + 1;
+                    }
+                }
+
+
+
+                Minors[2200].type = 1;
+            }
+            else
+            {
+                for (int i = 0; i < locals_num; ++i)
                 {
                     x = rndd.Next(0, xaxis);
                     y = rndd.Next(0, yaxis);
 
+                    while (map[x, y] == 1 || map[x, y] == 2)
+                    {
+                        x = rndd.Next(0, xaxis);
+                        y = rndd.Next(0, yaxis);
+
+                    }
+
+                    Locals[i].xpos = x;
+                    Locals[i].ypos = y;
+
+                    map[x, y] = Locals[i].type;
+                    node_map[x, y] = Locals[i];
                 }
+                for (int i = 0; i < min_num; ++i)
+                {
 
-                Minors[i].xpos = x;
-                Minors[i].ypos = y;
+                    x = rndd.Next(0, xaxis);
+                    y = rndd.Next(0, yaxis);
 
-                map[x, y] = Minors[i].type;
-                node_map[x, y] = Minors[i];
+                    while (map[x, y] == 1 || map[x, y] == 2)
+                    {
+                        x = rndd.Next(0, xaxis);
+                        y = rndd.Next(0, yaxis);
+
+                    }
+
+                    Minors[i].xpos = x;
+                    Minors[i].ypos = y;
+
+                    map[x, y] = Minors[i].type;
+                    node_map[x, y] = Minors[i];
+                }
             }
 
+
+
             numero = 0;
-      
+
             /////// End of attachment of agents' positions ///////////////////////
 
             //////////////////////////////////////////////////////////////////
@@ -376,18 +531,18 @@ namespace Gradproject
                 g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
             }
             //// End of Drawing ////////////////////////////////////////////////////////
-           
+
 
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, Convert.ToInt16(xaxis / 3), Convert.ToInt16(xaxis / 3));
             System.Drawing.Rectangle rect1 = new System.Drawing.Rectangle(
                 Convert.ToInt16(xaxis - xaxis / 4), xaxis - xaxis / 4, Convert.ToInt16(xaxis / 2), Convert.ToInt16(xaxis / 2));
             System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize *
                 Convert.ToInt16(xaxis - xaxis / 4), cellSize * Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
-           
+
             g.DrawRectangle(bluePen, rect);
             g.DrawRectangle(orangePen, rect1);
             g.DrawRectangle(aquqPen, rect2);
-          
+
             local_number.Text = Convert.ToString(green / sim_value);
             minor_number.Text = Convert.ToString(red / sim_value);
 
@@ -403,9 +558,9 @@ namespace Gradproject
             unhappymin = 0;
             for (int r = 0; r < locals_num; r++)
             {
-                if ((  (Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound) &&   Locals[r].type==1) ||
+                if (((Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound) && Locals[r].type == 1) ||
                    (Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound2) && Locals[r].type == 2)
-                    
+
                 {
                     unhappyloc++;
                 }
@@ -430,7 +585,7 @@ namespace Gradproject
         {
             ////// Collect neighbor cells' positions with periodic boundary conditions
 
-            Agents[,] w = new Agents[Convert.ToUInt16(Math.Pow(2 * w_size1  +1, 2) - 1), 3];
+            Agents[,] w = new Agents[Convert.ToUInt16(Math.Pow(2 * w_size1 + 1, 2) - 1), 3];
             int rows = yaxis;
             int columns = xaxis;
 
@@ -459,40 +614,40 @@ namespace Gradproject
             {
                 for (int j = row - w_size1; j <= row + w_size1; j++)
                 {
-                for (int i = column - w_size1; i <= column + w_size1; i++)
-                {
-                    if (!(j == row && i == column))
+                    for (int i = column - w_size1; i <= column + w_size1; i++)
                     {
-                        if (j >= 0 && i >= 0)
+                        if (!(j == row && i == column))
                         {
-                            w[r, 0] = node_map[j % xaxis, i % xaxis];
-                            r = r + 1;
-                        }
-                        else if (j >= 0 && i < 0)
-                        {
-                            w[r, 0] = node_map[j % xaxis, i + xaxis];
-                            r = r + 1;
+                            if (j >= 0 && i >= 0)
+                            {
+                                w[r, 0] = node_map[j % xaxis, i % xaxis];
+                                r = r + 1;
+                            }
+                            else if (j >= 0 && i < 0)
+                            {
+                                w[r, 0] = node_map[j % xaxis, i + xaxis];
+                                r = r + 1;
 
-                        }
-                        else if (j < 0 && i < 0)
-                        {
-                            w[r, 0] = node_map[j + xaxis, i + xaxis];
-                            r = r + 1;
+                            }
+                            else if (j < 0 && i < 0)
+                            {
+                                w[r, 0] = node_map[j + xaxis, i + xaxis];
+                                r = r + 1;
 
-                        }
-                        else if (j < 0 && i >= 0)
-                        {
-                            w[r, 0] = node_map[j + xaxis, i % xaxis];
-                            r = r + 1;
+                            }
+                            else if (j < 0 && i >= 0)
+                            {
+                                w[r, 0] = node_map[j + xaxis, i % xaxis];
+                                r = r + 1;
 
+                            }
                         }
+
                     }
 
                 }
 
             }
-
-        }
             return w;
         }// end of adjacent elements function
 
@@ -648,12 +803,12 @@ namespace Gradproject
         }// end of rate_check func.
 
         public double rate_check_for_one(int lxpos, int lypos, Agents[,] map)
-            //Calculate the neigbor type proportions
+        //Calculate the neigbor type proportions
         {
             int[,] a;
-           
-            double rate1=0;
-          
+
+            double rate1 = 0;
+
             double c = 1.00;
             a = rate_check(lxpos, lypos, map);
 
@@ -682,12 +837,12 @@ namespace Gradproject
 
 
             }
-                                         
+
             return rate1;
         }
 
         public void rate_check_for_all(Agents[,] node_map)//Compute neigbors rate for all agents and statistics
-            // Main function to calculate all agents' happiness in the network, sufficient to use alone.
+                                                          // Main function to calculate all agents' happiness in the network, sufficient to use alone.
         {
             Matrix<double> uti_map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
             double a = 0.0;
@@ -750,22 +905,22 @@ namespace Gradproject
                 {
                     Locals[i].seperatist = 0;
                 }
-               
-                    Locals[i].rate = a;
-                    Locals[i].mixity = 1 - a;
-                    if (Locals[i].type == 1)
-                    {
-                        Locals[i].het_neigh = t[1, 0];
-                    }
-                    else
-                    {
-                        Locals[i].het_neigh = t[0, 0];
 
-                    }
-                    Locals[i].total_neigh = t[0, 0] + t[1, 0];
-                    Locals[i].FSI = (exp_het - Locals[i].het_neigh) / exp_het;
-                    Locals[i].emp_neigh = t[2, 0];
-                
+                Locals[i].rate = a;
+                Locals[i].mixity = 1 - a;
+                if (Locals[i].type == 1)
+                {
+                    Locals[i].het_neigh = t[1, 0];
+                }
+                else
+                {
+                    Locals[i].het_neigh = t[0, 0];
+
+                }
+                Locals[i].total_neigh = t[0, 0] + t[1, 0];
+                Locals[i].FSI = (exp_het - Locals[i].het_neigh) / exp_het;
+                Locals[i].emp_neigh = t[2, 0];
+
             }
             for (int i = 0; i < min_num; i++)
             {
@@ -788,7 +943,7 @@ namespace Gradproject
                     }
                 }
 
-               
+
                 else if (Minors[i].type == 1)
                 {
                     if (t[0, 0] == 0)
@@ -818,30 +973,30 @@ namespace Gradproject
                     Minors[i].seperatist = 0;
 
                 }
-               
-                                               
-                    Minors[i].rate = a;
-                    Minors[i].mixity = 1 - a;
-                    if (Minors[i].type == 2)
-                    {
-                        Minors[i].het_neigh = t[0, 0];
-                    }
-                    else
-                    {
-                        Minors[i].het_neigh = t[1, 0];
 
-                    }
-                    Minors[i].total_neigh = t[0, 0] + t[1, 0];
-                    Minors[i].FSI = (exp_het - Minors[i].het_neigh) / exp_het;
-                
+
+                Minors[i].rate = a;
+                Minors[i].mixity = 1 - a;
+                if (Minors[i].type == 2)
+                {
+                    Minors[i].het_neigh = t[0, 0];
+                }
+                else
+                {
+                    Minors[i].het_neigh = t[1, 0];
+
+                }
+                Minors[i].total_neigh = t[0, 0] + t[1, 0];
+                Minors[i].FSI = (exp_het - Minors[i].het_neigh) / exp_het;
+
             }
 
-            
+
         }// end of rate_check_for_all func.
 
-        public Agents[,] continue_to(Agents[,] map)
-            //Reimplanting, basically the "move function" after the happiness check for all agents..
-            ///..
+        public Agents[,] main_algorithm(Agents[,] map)
+        //Reimplanting, basically the "move function" after the happiness check for all agents..
+        ///..
         {
             Random rnd1 = new Random();  /// pseudo random generator variables
             Random rnd2 = new Random();
@@ -910,22 +1065,22 @@ namespace Gradproject
                         lxpos = Locals[local_index].xpos;
                         lypos = Locals[local_index].ypos;
                         mxpos = Minors[minor_index].xpos;
-                        mypos = Minors[minor_index].ypos;                        
-                          
+                        mypos = Minors[minor_index].ypos;
 
-                        }
-                 }
 
-                  
+                    }
+                }
+
+
 
             }
 
 
-            else if(algo_value==1)  //If the algorithm is Glauber dynamic
+            else if (algo_value == 1)  //If the algorithm is Glauber dynamic (Asyncronous)
             {
-                                           
-            for (int j = 0; j < locals_num; j++)
-            {
+
+                for (int j = 0; j < locals_num; j++)
+                {
                     if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
                       ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                     {
@@ -933,16 +1088,16 @@ namespace Gradproject
 
                     }
 
-                   //else if (Locals[j].rate == 0.5)
-                   // {
+                    //else if (Locals[j].rate == 0.5)
+                    // {
 
-                   //     unhappy_agents_list.Add(Locals[j]);
+                    //     unhappy_agents_list.Add(Locals[j]);
 
-                   // }
+                    // }
 
                 }
-            for (int j = 0; j < min_num; j++)
-            {
+                for (int j = 0; j < min_num; j++)
+                {
                     if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
                       ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                     {
@@ -957,29 +1112,24 @@ namespace Gradproject
                     //}
                 }
 
-               
+
                 for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
-                    // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
 
-
-            {
-
-                dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
-
-                if ((unhappy_agents_list[dice] != null&& unhappy_agents_list[dice].type==1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos,map)<lower_bound
-                    || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos,map) > upper_bound)||
-                        (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound2
-                    || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound2))))
                 {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound
+                        || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound) ||
+                            (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound2
+                        || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound2))))
+                    {
                         if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate < lower_bound || unhappy_agents_list[dice].rate > upper_bound))
                         {
                             map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
                             unhappy_agents_list[dice].type = 2;
                             unhappy_agents_list.RemoveAt(dice);
-
-
-
-
                         }
                         //else if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate == 0.5))
                         //{
@@ -1003,54 +1153,19 @@ namespace Gradproject
                         //}
 
                     }
-                else
-                {
+                    else
+                    {
                         unhappy_agents_list.RemoveAt(dice);
 
 
+                    }
                 }
-            }
-         
-            unhappy_agents_list.Clear();
 
-
-                //while (i < agents.Count)
-                //{
-                //    dice = rnd3.Next(0, 2);
-
-
-                //    //if (dice == 0)
-                //    //{
-                //    local_index = rnd2.Next(0, locals_num);
-
-                //    dice = rnd3.Next(agents.Count);
-
-                //    if (agents[dice].type == 1 && (agents[dice].rate < lower_bound || agents[dice].rate > upper_bound))
-                //    {
-                //        map[agents[dice].xpos, agents[dice].ypos] = 2;
-                //        agents[dice].type = 2;
-                //        agents.RemoveAt(dice);
-                //        agents.RemoveAll(item => item == null);
-
-
-
-                //    }
-
-                //    else if (agents[dice].type == 2 && (agents[dice].rate < lower_bound2 || agents[dice].rate > upper_bound2))
-                //    {
-                //        map[agents[dice].xpos, agents[dice].ypos] = 1;
-                //        agents[dice].type = 1;
-                //        agents.RemoveAt(dice);
-                //        agents.RemoveAll(item => item == null);
-
-
-                //    }
-                //    i = i + 1;
-                //}///
+                unhappy_agents_list.Clear();
 
             }
 
-            else if (algo_value == 2)
+            else if (algo_value == 2) //// Syncronous Glauber dynamic
             {
 
                 for (int j = 0; j < locals_num; j++)
@@ -1062,61 +1177,12 @@ namespace Gradproject
 
                     }
 
-                  
 
                 }
                 for (int j = 0; j < min_num; j++)
                 {
                     if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
                       ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
-                    {
-                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
-                    }
-
-                  
-                }
-
-
-                for  (int i  = 0; i < unhappy_agents_list.Count; i ++ )
-                {
-                    if ( unhappy_agents_list[i].type == 1)
-                    {
-                        unhappy_agents_list[i].type = 2;
-                        unhappy_agents_list.RemoveAt(i);
-                    }
-
-                    else if (unhappy_agents_list[i].type == 2)
-                    {
-                        unhappy_agents_list[i].type = 1;
-                        unhappy_agents_list.RemoveAt(i);
-                    }
-
-
-                }
-
-
-
-            }
-
-            else if (algo_value == 3)
-            {
-
-                for (int j = 0; j < locals_num; j++)
-                {
-                    if (((Locals[j].rate != 0.25 && Locals[j].type == 1) ||
-                      ((Locals[j].rate != 0.25 && Locals[j].type == 2))))
-                    {
-                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
-
-                    }
-
-
-
-                }
-                for (int j = 0; j < min_num; j++)
-                {
-                    if (((Minors[j].rate !=0.25 && Minors[j].type == 1) ||
-                      ((Minors[j].rate !=0.25 && Minors[j].type == 2))))
                     {
                         unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
                     }
@@ -1139,16 +1205,100 @@ namespace Gradproject
                         unhappy_agents_list.RemoveAt(i);
                     }
 
-
                 }
 
             }
 
-            else if (algo_value==4)
+            else if (algo_value == 3)
+            {
+
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (((!(Locals[j].rate == 0.5 || (Locals[j].rate == 0.25)) && Locals[j].type == 1) ||
+                      ((!(Locals[j].rate == 0.5 || (Locals[j].rate == 0.25)) && Locals[j].type == 2))))
+                    {
+                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                    }
+
+
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (((!(Minors[j].rate == 0.5 || Minors[j].rate == 0.25) && Minors[j].type == 1) ||
+                      (((!(Minors[j].rate == 0.5 || Minors[j].rate == 0.25) && Minors[j].type == 2)))))
+                    {
+                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                    }
+
+
+                }
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if (((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && !(rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.5 ||
+                        rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.25))
+                      ) || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && !(rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.5 ||
+                            rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.25)))
+
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && !(unhappy_agents_list[dice].rate == 0.25 || unhappy_agents_list[dice].rate == 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+
+                        else if (unhappy_agents_list[dice].type == 2 && !(unhappy_agents_list[dice].rate == 0.25 || unhappy_agents_list[dice].rate == 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+
+                        }
+
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+
+
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+
+
+
+                //for (int i = 0; i < unhappy_agents_list.Count; i++)
+                //{
+                //    if (unhappy_agents_list[i].type == 1)
+                //    {
+                //        unhappy_agents_list[i].type = 2;
+                //        unhappy_agents_list.RemoveAt(i);
+                //    }
+
+                //    else if (unhappy_agents_list[i].type == 2)
+                //    {
+                //        unhappy_agents_list[i].type = 1;
+                //        unhappy_agents_list.RemoveAt(i);
+                //    }
+
+
+                //}
+
+            }
+
+            else if (algo_value == 4)
             {
                 for (int j = 0; j < locals_num; j++)
                 {
-                 
+
 
                     if (Locals[j].rate != 0.25)
                     {
@@ -1160,9 +1310,9 @@ namespace Gradproject
                 }
                 for (int j = 0; j < min_num; j++)
                 {
-                    
 
-                     if (Minors[j].rate!= 0.25)
+
+                    if (Minors[j].rate != 0.25)
                     {
 
                         unhappy_agents_list.Add(Minors[j]);
@@ -1179,11 +1329,11 @@ namespace Gradproject
 
                     dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
 
-                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) !=0.25)
-                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) !=0.25
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.25)
+                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.25
                        )))
                     {
-                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate !=0.25))
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate != 0.25))
                         {
                             map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
                             unhappy_agents_list[dice].type = 2;
@@ -1193,7 +1343,7 @@ namespace Gradproject
 
 
                         }
-                        
+
                         else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate != 0.25))
                         {
                             map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
@@ -1202,7 +1352,7 @@ namespace Gradproject
 
                         }
 
-                       
+
 
                     }
                     else
@@ -1216,11 +1366,11 @@ namespace Gradproject
                 unhappy_agents_list.Clear();
 
 
-               
+
 
             }
 
-            else if (algo_value ==5)
+            else if (algo_value == 5)
             {
 
                 if (utility_check == 0)
@@ -1275,7 +1425,7 @@ namespace Gradproject
                         {
                             unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
 
-                        }                    
+                        }
                     }
                     for (int j = 0; j < min_num; j++)
                     {
@@ -1284,45 +1434,49 @@ namespace Gradproject
                         {
                             unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
                         }
-                    
+
                     }
 
 
                     for (int i = 0; i < unhappy_agents_list.Count; ++i)
-                        {
+                    {
 
+                        x = rnd1.Next(0, xaxis);
+                        y = rnd1.Next(0, yaxis);
+
+                        while (map[x, y].type == 1 || map[x, y].type == 2)
+                        {
                             x = rnd1.Next(0, xaxis);
                             y = rnd1.Next(0, yaxis);
 
-                            while (map[x, y].type == 1 || map[x, y].type == 2 )
-                            {
-                                x = rnd1.Next(0, xaxis);
-                                y = rnd1.Next(0, yaxis);
+                        }
 
-                            }
+                        unhappy_agents_list[i].xpos = x;
+                        unhappy_agents_list[i].ypos = y;
 
-                            unhappy_agents_list[i].xpos = x;
-                            unhappy_agents_list[i].ypos = y;
-
-                             map[unhappy_agents_list[i].xpos, unhappy_agents_list[i].ypos].type = 3;
-                            map[x, y].type = unhappy_agents_list[i].type;
-                            node_map[x, y] = unhappy_agents_list[i];
-                            unhappy_agents_list.RemoveAt(i);
+                        map[unhappy_agents_list[i].xpos, unhappy_agents_list[i].ypos].type = 3;
+                        map[x, y].type = unhappy_agents_list[i].type;
+                        node_map[x, y] = unhappy_agents_list[i];
+                        unhappy_agents_list.RemoveAt(i);
                     }
 
 
-                        //else if (Locals[j].rate == 0.5)
-                        // {
+                    //else if (Locals[j].rate == 0.5)
+                    // {
 
-                        //     unhappy_agents_list.Add(Locals[j]);
+                    //     unhappy_agents_list.Add(Locals[j]);
 
-                        // }
+                    // }
 
-                    
-                               
+
+
 
                     unhappy_agents_list.Clear();
                 }
+
+
+
+
                 else
                 {
 
@@ -1369,62 +1523,161 @@ namespace Gradproject
 
                         uti = new double[3];
 
-                //        uti[1] = Minors[i].xpos;
-                //        uti[2] = Minors[i].ypos;
-                //        uti[0] = utility(map, Minors[i].xpos, Minors[i].ypos, Minors[i].type);
-                //        double s = 0.0;
-                //        if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
-                //        {
+                        //        uti[1] = Minors[i].xpos;
+                        //        uti[2] = Minors[i].ypos;
+                        //        uti[0] = utility(map, Minors[i].xpos, Minors[i].ypos, Minors[i].type);
+                        //        double s = 0.0;
+                        //        if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
+                        //        {
 
-                //            for (int k = 0; k < xaxis; k++)
-                //            {
-                //                for (int l = 0; l < yaxis; l++)
-                //                {
+                        //            for (int k = 0; k < xaxis; k++)
+                        //            {
+                        //                for (int l = 0; l < yaxis; l++)
+                        //                {
 
-                //                    if (uti[0] < utility(map, k, l, 1) && (map[k, l] == 0))
-                //                    {
-                //                        uti[0] = utility(map, k, l, 1);
-                //                        uti[1] = k;
-                //                        uti[2] = l;
-                //                    }
+                        //                    if (uti[0] < utility(map, k, l, 1) && (map[k, l] == 0))
+                        //                    {
+                        //                        uti[0] = utility(map, k, l, 1);
+                        //                        uti[1] = k;
+                        //                        uti[2] = l;
+                        //                    }
 
-                //                }
-                //            }
-                //            map[Minors[i].xpos, Minors[i].ypos] = 0;
-                //            Minors[i].xpos = Convert.ToInt32(uti[1]);
-                //            Minors[i].ypos = Convert.ToInt32(uti[2]);
-                //            Minors[i].utility = uti[0];
-                //            map[Minors[i].xpos, Minors[i].ypos] = 2;
-                //        }
+                        //                }
+                        //            }
+                        //            map[Minors[i].xpos, Minors[i].ypos] = 0;
+                        //            Minors[i].xpos = Convert.ToInt32(uti[1]);
+                        //            Minors[i].ypos = Convert.ToInt32(uti[2]);
+                        //            Minors[i].utility = uti[0];
+                        //            map[Minors[i].xpos, Minors[i].ypos] = 2;
+                        //        }
 
-                   }
+                    }
                 }
 
             }
 
+            else if (algo_value == 6)
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (Locals[j].rate != 0.25)
+                    {
+                        unhappy_agents_list.Add(Locals[j]);
+                    }
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (Minors[j].rate != 0.25)
+                    {
+                        unhappy_agents_list.Add(Minors[j]);
+                    }
+                }
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.25)
+                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.25
+                       )))
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate != 0.25))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate != 0.25))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+            }
+
+
+            else if (algo_value == 7)
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (Locals[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Locals[j]);
+                    }
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (Minors[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Minors[j]);
+                    }
+                }
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.5)
+                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.5
+                       )))
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate != 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate != 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+            }
+
+
+
             else// Voter model
             {
                 for (int j = 0; j < locals_num; j++)
-                {                 
-                        agent_list.Add(Locals[j]);// Collect  list                 
+                {
+                    agent_list.Add(Locals[j]);// Collect  list                 
                 }
                 for (int j = 0; j < min_num; j++)
-                {                   
-                       agent_list.Add(Minors[j]);// Collect  list                 
+                {
+                    agent_list.Add(Minors[j]);// Collect  list                 
                 }
 
 
-                
 
-                for( int i=0; i < agent_list.Count; i++)
+
+                for (int i = 0; i < agent_list.Count; i++)
                 {
                     dice = rnd1.Next(0, agent_list.Count);
-                    
-                    var results = AdjacentElements(map, agent_list[dice].xpos, agent_list[dice].ypos);
-                    dice1 = rnd1.Next(0,  Convert.ToInt32(Math.Pow((2 * w_size1 + 1),2)) - 1);
 
-                    map[agent_list[dice].xpos, agent_list[dice].ypos].type = results[dice1,0].type;
-                   agent_list[dice].type = results[dice1,0].type;
+                    var results = AdjacentElements(map, agent_list[dice].xpos, agent_list[dice].ypos);
+                    dice1 = rnd1.Next(0, Convert.ToInt32(Math.Pow((2 * w_size1 + 1), 2)) - 1);
+
+                    map[agent_list[dice].xpos, agent_list[dice].ypos].type = results[dice1, 0].type;
+                    agent_list[dice].type = results[dice1, 0].type;
 
 
                 }
@@ -1433,8 +1686,8 @@ namespace Gradproject
 
             }
             return map;
-            }// end of continue function, it  basically includes the main algorithm of the code
-          
+        }// end of continue function, it  basically includes the main algorithm of the code
+
         public void update_map()// update the visual map
         {
             Brush bbrush = (Brush)Brushes.Green;
@@ -1446,9 +1699,9 @@ namespace Gradproject
             Pen aquqPen = new Pen(Color.Aqua, 2);
 
             Graphics g;
-           
+
             g = this.CreateGraphics();
-       
+
             // g.Clear(Color.White);
             //System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0,0,Convert.ToInt16(xaxis/3), Convert.ToInt16(xaxis / 3)) ;
             //System.Drawing.Rectangle rect1 = new System.Drawing.Rectangle(
@@ -1456,14 +1709,14 @@ namespace Gradproject
             //System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize * 
             //    Convert.ToInt16(xaxis - xaxis / 4), cellSize*Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
             //g.FillRectangle(ebrush, 0, 0, xaxis * yaxis, xaxis * yaxis);
-           
-           
+
+
 
             // Create rectangle.
-            
+
 
             // Draw rectangle to screen.
-           // e.Graphics.DrawRectangle(blackPen, rect);
+            // e.Graphics.DrawRectangle(blackPen, rect);
             Pen p = new Pen(Color.Black);
             for (int i = 0; i < locals_num; ++i)
             {
@@ -1475,7 +1728,7 @@ namespace Gradproject
                 }
 
 
-                if (Locals[i] != null && Locals[i].type == 1 )
+                if (Locals[i] != null && Locals[i].type == 1)
                 {
                     g.FillRectangle(bbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
                 }
@@ -1489,7 +1742,7 @@ namespace Gradproject
             {
                 while (Minors[i] == null)
                 { i = i + 1; }
-                if ( Minors[i] != null && Minors[i].type == 2)
+                if (Minors[i] != null && Minors[i].type == 2)
                 {
                     g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
                 }
@@ -1520,13 +1773,13 @@ namespace Gradproject
             Agents[,] map1 = map;
             //Draw_World(xaxis, yaxis);
             //update_map();
-            map1 = continue_to(map);
+            map1 = main_algorithm(map);
 
             return map1;
 
         }
 
-      
+
         public void button1_Click(object sender, EventArgs l)
         {
 
@@ -1549,7 +1802,8 @@ namespace Gradproject
             double L = 0;
             double M = 0;
             double N = 0;
-
+            number_loc = 0;
+            number_min = 0;
             int kuar = 0;
 
             for (int a = 0; a <= sim_value - 1; a++)
@@ -1611,11 +1865,14 @@ namespace Gradproject
                     }
                 }
 
-                while (sum1 + sum2 > 0)
+                ////************ Until sum of local and minor unhappy agents are zero****************
+                int tr = 0;
+
+                while (sum1 + sum2 > 0 & tr < 1000)
                 {
 
                     // window_keydown(null, new System.Windows.Input.KeyboardEventArgs(null, 1));
-
+                    Calculate_energy(tr,a);
                     count_unhappy(map, kuar, a);
                     rate_check_for_all(map);
 
@@ -1696,12 +1953,16 @@ namespace Gradproject
 
                     map = continue_2(map);
                     kuar = kuar + 1;
+
+
+
+                    ///********** Regarding to algorithm type determine the end condition of the system***********
                     for (int i = 0; i < locals_num; i++)
                     {
 
                         if (Locals[i] != null)
                         {
-                            if (algo_value != 3 || algo_value != 4)
+                            if (!(algo_value == 3 || algo_value == 4 ||algo_value ==6 || algo_value ==7))
                             {
                                 if (((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
                                     ((Locals[i].rate < lower_bound2 || Locals[i].rate > upper_bound2) && Locals[i].type == 2))
@@ -1724,17 +1985,33 @@ namespace Gradproject
 
                             else
                             {
-
-                                if (Locals[i].rate != 0.25)
+                                if (algo_value == 6)
                                 {
-                                    Locals[i].s = 1;
+                                    if (!(Locals[i].rate == 0.25 || Locals[i].rate == 0.25))
+                                    {
+                                        Locals[i].s = 1;
 
+                                    }
+
+                                    else
+                                    {
+
+                                        Locals[i].s = 0;
+                                    }
                                 }
 
-                                else
+                                else if(algo_value ==7)
                                 {
+                                    if (!(Locals[i].rate == 0.5 || Locals[i].rate == 0.5))
+                                    {
+                                        Locals[i].s = 1;
+                                    }
+                                    else
+                                    {
 
-                                    Locals[i].s = 0;
+                                        Locals[i].s = 0;
+                                    }
+
                                 }
 
                             }
@@ -1744,7 +2021,7 @@ namespace Gradproject
                     {
                         if (Minors[j] != null)
                         {
-                            if (algo_value != 3 || algo_value != 4)
+                            if (!(algo_value == 3 || algo_value == 4 || algo_value == 6 || algo_value == 7))
                             {
                                 if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
                                      ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
@@ -1767,22 +2044,45 @@ namespace Gradproject
 
                             else
                             {
-
-                                if (Minors[j].rate != 0.25)
+                                if (algo_value == 6)
                                 {
-                                    Minors[j].s = 1;
+                                    if (!(Minors[j].rate == 0.25 || Minors[j].rate == 0.25))
+                                    {
+                                        Minors[j].s = 1;
 
+                                    }
+
+                                    else
+                                    {
+
+                                        Minors[j].s = 0;
+                                    }
                                 }
 
-                                else
+                                else if(algo_value==7)
                                 {
 
-                                    Minors[j].s = 0;
+                                    if (!(Minors[j].rate == 0.5 || Minors[j].rate == 0.5))
+                                    {
+                                        Minors[j].s = 1;
+
+                                    }
+
+                                    else
+                                    {
+
+                                        Minors[j].s = 0;
+                                    }
+
                                 }
                             }
                         }
                     }
                     sum1 = 0;
+
+                    /////**************End of end condition determiner**************
+
+
                     for (int i = 0; i < locals_num; i++)
                     {
                         if (Locals[i] != null)
@@ -1804,13 +2104,13 @@ namespace Gradproject
 
                     number_loc = 0;
                     number_min = 0;
-                    for (int i = 0; i < locals_num; i++)  // Count the number of agent types
+
+                    //************** Count the number of agent types in the network**********************
+                    for (int i = 0; i < locals_num; i++)
                     {
                         if (Locals[i] != null && Locals[i].type == 1)
                         {
                             number_loc = number_loc + 1;
-
-
                         }
 
                         else if (Locals[i] != null && Locals[i].type == 2)
@@ -1819,14 +2119,12 @@ namespace Gradproject
                             number_min = number_min + 1;
                         }
 
-
                     }
                     for (int i = 0; i < min_num; i++)
                     {
                         if (Minors[i] != null && Minors[i].type == 1)
                         {
                             number_loc = number_loc + 1;
-
 
                         }
 
@@ -1836,8 +2134,9 @@ namespace Gradproject
                             number_min = number_min + 1;
                         }
 
-
                     }
+                    /////************ end of agent type counting**************
+
                     if (sum1 + sum2 < 1000)
                     {
                         //MessageBox.Show(Convert.ToString(number_loc), Convert.ToString(number_min));
@@ -1845,34 +2144,22 @@ namespace Gradproject
 
 
 
-                    if (simultaneous == 1 || simultaneous == 3)
+                    if (simultaneous == 1)
                     {
                         update_map();
                     }
 
-
-
+                    
+                    tr++;
                 }
+                ///***********End of main algorithm************************************************************
 
-                for (int i = 0; i < locals_num; i++)
-                {
-                    Locals[i].energy = Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
-                        Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
-                    energy_sum = energy_sum + Locals[i].energy;
+                
 
-                }
+                
 
-                for (int i = 0; i < min_num; i++)
-                {
-                    Minors[i].energy = Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
-                        Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
-                    energy_sum = energy_sum + Minors[i].energy;
 
-                }
-
-                energy_arr[a] = energy_sum / (locals_num + min_num);
-                energy_sum = 0;
-
+                ////****** similar neighbors histogram calculations*************
                 for (int j = 0; j < locals_num; j++)
                 {
                     for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
@@ -1881,13 +2168,19 @@ namespace Gradproject
                         {
                             rate_histogram[a, i] = rate_histogram[a, i] + 1;
 
+
                         }
 
+                        if (Locals[j].rate_w1 == Convert.ToDouble((i * 1.00 / 8)))
+                        {
+                            rate_histogram3[a, i] = rate_histogram3[a, i] + 1;
+                        }
 
-
-
+                        if (Locals[j].rate_w2 == Convert.ToDouble((i * 1.00 / 16)))
+                        {
+                            rate_histogram4[a, i] = rate_histogram4[a, i] + 1;
+                        }
                     }
-
                 }
 
                 for (int j = 0; j < min_num; j++)
@@ -1899,15 +2192,23 @@ namespace Gradproject
                         if (Minors[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
                         {
                             rate_histogram[a, i] = rate_histogram[a, i] + 1;
-
                         }
 
+                        if (Minors[j].rate_w1 == Convert.ToDouble((i * 1.00 / 8)))
+                        {
+                            rate_histogram3[a, i] = rate_histogram3[a, i] + 1;
+                        }
 
-
-
+                        if (Minors[j].rate_w2 == Convert.ToDouble((i * 1.00 / 16)))
+                        {
+                            rate_histogram4[a, i] = rate_histogram4[a, i] + 1;
+                        }
                     }
-
                 }
+                /// ********end of similar neighbors histogram calculations************
+
+
+
                 //for (int i = 0; i < 10000; i++)
 
                 //{
@@ -1925,6 +2226,8 @@ namespace Gradproject
 
 
 
+
+                ///*********************** NDF Calculations********************************             
                 double[,] ndf;
                 ndf = new double[xaxis * yaxis, 3];
                 double[,] ndf2;
@@ -1944,7 +2247,8 @@ namespace Gradproject
 
                 int count_locals = 0;
                 int count_minors = 0;
-                for (int i = 0; i < xaxis; i++)  // NDF Calculations
+
+                for (int i = 0; i < xaxis; i++)
                 {
                     for (int j = 0; j < yaxis; j++)
                     {
@@ -2017,7 +2321,7 @@ namespace Gradproject
                 ndf_sum22 = ndf_sum22 / count_minors;
                 ndf_sum23 = ndf_sum23 / count_minors;
 
-
+                /////****************End of NDF CALCULATIONS*****************************************************
 
                 update_map();
                 double sum_1 = 0;
@@ -2133,9 +2437,12 @@ namespace Gradproject
 
 
                 //}
+                local_number.Text = Convert.ToString(number_loc);
+                minor_number.Text = Convert.ToString(number_min);
 
-                //if(number_min == 0 || number_loc ==0)
-                //{ ground_state++; }
+
+                if (number_min == 0 || number_loc == 0)
+                { ground_state++; }
 
                 loc_number[a] = number_loc * 1.00;
                 mino_number[a] = number_min * 1.00;
@@ -2303,24 +2610,24 @@ namespace Gradproject
 
                 rate_sum2 = rate_sum2 / (locals_num + min_num);
 
-                MessageBox.Show(Convert.ToString(rate_sum2));
-                MessageBox.Show(Convert.ToString(rate_sum));
-
-                
-
-               
-            
-            
-        }// end of simulations
+                //MessageBox.Show(Convert.ToString(rate_sum2));
+                //MessageBox.Show(Convert.ToString(rate_sum));
 
 
-            if (sim_value > 1)
-            {
-                MessageBox.Show(Convert.ToString(Conf(energy_arr, 0.05)));
 
-                local_number.Text = Convert.ToString(Conf(energy_arr, 0.05));
-                minor_number.Text = Convert.ToString(Conf(energy_arr, 0.05));
-            }
+
+
+
+            }// end of simulations
+
+
+            //if (sim_value > 1)
+            //{
+            //    //MessageBox.Show(Convert.ToString(Conf(energy_arr, 0.05)));
+
+            //    local_number.Text = Convert.ToString(Conf(energy_arr, 0.05));
+            //    minor_number.Text = Convert.ToString(Conf(energy_arr, 0.05));
+            //}
             ave_sim_neigh.Text = Convert.ToString(Math.Round(B / sim_value, 3));
             ave_mix.Text = Convert.ToString(Math.Round(C / sim_value, 3));
             ave_FSI.Text = Convert.ToString(Math.Round(D / sim_value, 3));
@@ -2337,7 +2644,7 @@ namespace Gradproject
             var_asn.Text = Convert.ToString(Math.Round(variance_ASN, 5));
             var_fsi.Text = Convert.ToString(Math.Round(variance_FSI, 5));
             var_mix.Text = Convert.ToString(Math.Round(variance_MIX, 5));
-       
+
             //local_number.Text = Convert.ToString(loc_number.Sum() / sim_value);
             //minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
             min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(), 3));
@@ -2345,10 +2652,10 @@ namespace Gradproject
             unhloc.Text = Convert.ToString(unhappyloc / sim_value);
             unhmin.Text = Convert.ToString(unhappymin / sim_value);
 
-            MessageBox.Show(Convert.ToString(energy_arr.Sum()/sim_value));
+           // MessageBox.Show(Convert.ToString(energy_arr.Sum() / sim_value));
 
 
-            if (simultaneous == 3 ) 
+            if (excel_wnt == 1)
             {
                 Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
                 Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
@@ -2367,7 +2674,17 @@ namespace Gradproject
                 Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(rate_histogram.GetLength(0), rate_histogram.GetLength(1));
                 rngg2.Value2 = rate_histogram;
 
+                Microsoft.Office.Interop.Excel.Application xle = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+                Workbook ws = xle.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wr = (Worksheet)xle.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg3 = wr.Cells.get_Resize(rate_histogram3.GetLength(0), rate_histogram3.GetLength(1));
+                rngg3.Value2 = rate_histogram3;
 
+                Microsoft.Office.Interop.Excel.Application xlf = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+                Workbook wk = xlf.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wn = (Worksheet)xlf.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg4 = wn.Cells.get_Resize(energy_arr.GetLength(0), energy_arr.GetLength(1));
+                rngg4.Value2 = energy_arr;
 
                 ////rngg1.Value2 = unhappy_array;
 
@@ -2375,8 +2692,9 @@ namespace Gradproject
 
 
                 //xlc.Visible = true;
-                xld.Visible = true;
-
+                //xld.Visible = true;
+                //xle.Visible = true;
+                xlf.Visible = true;
                 //xlb.Visible = true;
                 //xlb.WindowState = XlWindowState.xlMaximized;
                 //xlc.WindowState = XlWindowState.xlMaximized;
