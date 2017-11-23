@@ -84,6 +84,8 @@ namespace Gradproject
         public double[,] prob_dist1;
         public double[,] prob_dist2;
         public double[,] energy_arr;
+        public double temperature;
+        public double boltzmann;
         public int queue;
         public int queue1;
         public int unhappyloc;
@@ -112,6 +114,10 @@ namespace Gradproject
         public int excel_wnt;
         public int periodic;
         public int ind = 0;
+        public double hamiltonian;
+        public double hamiltonian1;
+        public double hamiltonian2;
+        
         //*******************End of universal variables**************************
         public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound, string lowerbound2,
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
@@ -150,7 +156,7 @@ namespace Gradproject
             prob_dist2 = new double[10000, 200];
             unhappy_array = new int[10000, 200];
 
-            energy_arr = new double[5000,20];
+            energy_arr = new double[5000,100];
             w_size1 = Convert.ToInt32(wsize);
             rate_histogram = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
             rate_histogram2 = new double[10000, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
@@ -187,30 +193,59 @@ namespace Gradproject
 
         }
 
+        ///*********Energy calculations************
         public void Calculate_energy(int tr, int sim_value)
 
-        { ///*********Energy calculations************
+        { 
             for (int i = 0; i < locals_num; i++)
             {
-                Locals[i].energy = Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
-                    Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
+                Locals[i].energy = -(Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
                 energy_sum = energy_sum + Locals[i].energy;
 
             }
 
             for (int i = 0; i < min_num; i++)
             {
-                Minors[i].energy = Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
-                    Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1));
+                Minors[i].energy = -(Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
                 energy_sum = energy_sum + Minors[i].energy;
 
             }
 
             energy_arr[tr,sim_value] = energy_sum ;
+           
             energy_sum = 0;
 
-            ///// *********end of energy calculations********************
+            
         }
+
+        public double Calculate_hamilton( int sim_value)
+
+        {
+            for (int i = 0; i < locals_num; i++)
+            {
+                Locals[i].energy = -(Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                energy_sum = energy_sum + Locals[i].energy;
+
+            }
+
+            for (int i = 0; i < min_num; i++)
+            {
+                Minors[i].energy = -(Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                energy_sum = energy_sum + Minors[i].energy;
+
+            }
+
+           
+            hamiltonian1 = -energy_sum;
+            energy_sum = 0;
+            return hamiltonian1;
+
+        }
+        ///// *********end of energy calculations********************
         public void Draw_World(int x_axis, int y_axis) //Draw the initial empty world
 
         {
@@ -404,7 +439,7 @@ namespace Gradproject
                 Minors[2200].type = 1;
             }
 
-            else if (algo_value == 7)
+            else if (algo_value == 7 || algo_value ==8)
             {
                 ind = 0;
                 for (int i = 0; i < locals_num; i++)
@@ -539,9 +574,9 @@ namespace Gradproject
             System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize *
                 Convert.ToInt16(xaxis - xaxis / 4), cellSize * Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
 
-            g.DrawRectangle(bluePen, rect);
-            g.DrawRectangle(orangePen, rect1);
-            g.DrawRectangle(aquqPen, rect2);
+            //g.DrawRectangle(bluePen, rect);
+            //g.DrawRectangle(orangePen, rect1);
+            //g.DrawRectangle(aquqPen, rect2);
 
             local_number.Text = Convert.ToString(green / sim_value);
             minor_number.Text = Convert.ToString(red / sim_value);
@@ -700,18 +735,16 @@ namespace Gradproject
             for (int i = 0; i < 8; i++)
             {
 
-                if (results[i, 0].type == 1)
+                if (results[i,0]!= null && results[i, 0].type == 1 )
                 {
                     countx = countx + 1;
                 }
-                else if (results[i, 0].type == 2)
+                else if (results[i, 0] != null && results[i, 0].type == 2)
                 {
                     county = county + 1;
                 }
-
-
-
             }
+
             if (w_size1 > 1)
             {
                 for (int i = 8; i < 24; i++)
@@ -1572,6 +1605,8 @@ namespace Gradproject
                         unhappy_agents_list.Add(Minors[j]);
                     }
                 }
+
+
                 for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
                                                                                // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
                 {
@@ -1621,6 +1656,29 @@ namespace Gradproject
                         unhappy_agents_list.Add(Minors[j]);
                     }
                 }
+
+                //for(int index=0; index < unhappy_agents_list.Count;index ++)
+                //{
+
+
+                //    if(unhappy_agents_list[index].type==1)
+                //    {
+                //        unhappy_agents_list[index].type = 2;
+                //        map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                //        unhappy_agents_list.RemoveAt(dice);
+                //    }
+                //    else
+                //    {
+                //        unhappy_agents_list[index].type = 1;
+                //        map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                //        unhappy_agents_list.RemoveAt(dice);
+                //    }
+
+
+                //}
+
+
+
                 for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
                                                                                // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
                 {
@@ -1653,7 +1711,79 @@ namespace Gradproject
                 unhappy_agents_list.Clear();
             }
 
+            else if (algo_value == 8)
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (Locals[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Locals[j]);
+                    }
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (Minors[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Minors[j]);
+                    }
+                }
 
+                hamiltonian =  Calculate_hamilton(sim_value);
+
+
+                for (int indice = 0; indice < unhappy_agents_list.Count; indice++)
+                {
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);
+
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.5)
+                           || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.5
+                        )))
+                    { 
+
+
+                          if (unhappy_agents_list[dice].type == 1)
+                          {
+                            unhappy_agents_list[dice].type = 2;
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                          }
+                        else
+                        {
+                            unhappy_agents_list[dice].type = 1;
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                        }
+
+                    hamiltonian2 = Calculate_hamilton(sim_value);
+                    double random = rnd3.Next(0, 100);
+                        random = random / 100.0;
+
+                    if (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.5)
+                    {
+                        if (random > 0.05)
+                        {
+                            if (unhappy_agents_list[dice].type == 1)
+                            {
+                                unhappy_agents_list[dice].type = 2;
+                                map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            }
+                            else
+                            {
+                                unhappy_agents_list[dice].type = 1;
+                                map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            }
+
+
+                        }
+                    }
+                    
+                   }
+                    unhappy_agents_list.RemoveAt(dice);
+                }
+
+                unhappy_agents_list.Clear();
+            }
+
+            
 
             else// Voter model
             {
@@ -2000,7 +2130,7 @@ namespace Gradproject
                                     }
                                 }
 
-                                else if(algo_value ==7)
+                                else if(algo_value ==7 || algo_value ==8)
                                 {
                                     if (!(Locals[i].rate == 0.5 || Locals[i].rate == 0.5))
                                     {
@@ -2059,7 +2189,7 @@ namespace Gradproject
                                     }
                                 }
 
-                                else if(algo_value==7)
+                                else if(algo_value==7 || algo_value == 8)
                                 {
 
                                     if (!(Minors[j].rate == 0.5 || Minors[j].rate == 0.5))
@@ -2621,13 +2751,12 @@ namespace Gradproject
             }// end of simulations
 
 
-            //if (sim_value > 1)
-            //{
-            //    //MessageBox.Show(Convert.ToString(Conf(energy_arr, 0.05)));
+            if (sim_value > 1)
+            {
+                MessageBox.Show(Convert.ToString(ground_state));
 
-            //    local_number.Text = Convert.ToString(Conf(energy_arr, 0.05));
-            //    minor_number.Text = Convert.ToString(Conf(energy_arr, 0.05));
-            //}
+               
+            }
             ave_sim_neigh.Text = Convert.ToString(Math.Round(B / sim_value, 3));
             ave_mix.Text = Convert.ToString(Math.Round(C / sim_value, 3));
             ave_FSI.Text = Convert.ToString(Math.Round(D / sim_value, 3));
