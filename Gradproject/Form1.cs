@@ -19,6 +19,8 @@ namespace Gradproject
         public int minority = 0;
         public int x_axis = 0;
         public int y_axis = 0;
+        public int excel_wnt =0;
+        public int periodica = 0;
         public Form1()
         {
             InitializeComponent();
@@ -46,8 +48,22 @@ namespace Gradproject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form2 Form2 = new Form2(Population.Text, Minority.Text,X_axis.Text, Y_axis.Text,lowerbound.Text,lowerbound2.Text,eco.Text,upperbound.Text,Utility_check.Text, sim.Text, geo.Text, no_free_cells.Text,algo.Text);
+
+            if (checkBox1.Checked == true)
+            {
+                excel_wnt = 1 ;
+            }
+
+            if (checkBox2.Checked == true)
+            {
+                periodica = 1;
+            }
+            Form2 Form2 = new Form2(Population.Text, Minority.Text, X_axis.Text, Y_axis.Text,
+                lowerbound.Text, lowerbound2.Text, eco.Text, upperbound.Text, Utility_check.Text, sim.Text,
+                geo.Text, simultaneous.Text, algo.Text, upperbound2.Text, wsize.Text,simultaneous.Text, cellsize.Text, excel_wnt, periodica, effect1.Text, ini_adp.Text, stub_per.Text);
             Form2.Show();
+
+           
     
         }
 
@@ -81,6 +97,36 @@ namespace Gradproject
         }
 
         private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void simultaneous_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void effect_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label16_Click(object sender, EventArgs e)
         {
 
         }

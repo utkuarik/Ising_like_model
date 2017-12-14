@@ -61,11 +61,20 @@
             this.var_fsi = new System.Windows.Forms.Label();
             this.min_var = new System.Windows.Forms.Label();
             this.sep_var = new System.Windows.Forms.Label();
+            this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
+            this.unhloc = new System.Windows.Forms.Label();
+            this.unhmin = new System.Windows.Forms.Label();
+            this.Ini_mrk_shr = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.eeeee = new System.Windows.Forms.Label();
+            this.fin_mrk_sh = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.price = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(525, 148);
+            this.button1.Location = new System.Drawing.Point(818, 156);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -75,7 +84,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(525, 191);
+            this.button2.Location = new System.Drawing.Point(818, 194);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
@@ -86,7 +95,7 @@
             // ave_uti
             // 
             this.ave_uti.AutoSize = true;
-            this.ave_uti.Location = new System.Drawing.Point(661, 153);
+            this.ave_uti.Location = new System.Drawing.Point(954, 156);
             this.ave_uti.Name = "ave_uti";
             this.ave_uti.Size = new System.Drawing.Size(13, 13);
             this.ave_uti.TabIndex = 2;
@@ -95,7 +104,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(639, 133);
+            this.label2.Location = new System.Drawing.Point(932, 136);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 3;
@@ -104,7 +113,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(639, 188);
+            this.label1.Location = new System.Drawing.Point(932, 191);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 13);
             this.label1.TabIndex = 4;
@@ -113,7 +122,7 @@
             // ave_mix
             // 
             this.ave_mix.AutoSize = true;
-            this.ave_mix.Location = new System.Drawing.Point(661, 201);
+            this.ave_mix.Location = new System.Drawing.Point(954, 204);
             this.ave_mix.Name = "ave_mix";
             this.ave_mix.Size = new System.Drawing.Size(13, 13);
             this.ave_mix.TabIndex = 5;
@@ -122,7 +131,7 @@
             // ave_sim_neigh
             // 
             this.ave_sim_neigh.AutoSize = true;
-            this.ave_sim_neigh.Location = new System.Drawing.Point(753, 153);
+            this.ave_sim_neigh.Location = new System.Drawing.Point(1046, 156);
             this.ave_sim_neigh.Name = "ave_sim_neigh";
             this.ave_sim_neigh.Size = new System.Drawing.Size(13, 13);
             this.ave_sim_neigh.TabIndex = 7;
@@ -131,7 +140,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(730, 133);
+            this.label3.Location = new System.Drawing.Point(1023, 136);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 13);
             this.label3.TabIndex = 8;
@@ -140,7 +149,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(742, 188);
+            this.label4.Location = new System.Drawing.Point(1035, 191);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(66, 13);
             this.label4.TabIndex = 9;
@@ -149,7 +158,7 @@
             // ave_FSI
             // 
             this.ave_FSI.AutoSize = true;
-            this.ave_FSI.Location = new System.Drawing.Point(753, 201);
+            this.ave_FSI.Location = new System.Drawing.Point(1046, 204);
             this.ave_FSI.Name = "ave_FSI";
             this.ave_FSI.Size = new System.Drawing.Size(13, 13);
             this.ave_FSI.TabIndex = 10;
@@ -158,7 +167,7 @@
             // editex
             // 
             this.editex.AutoSize = true;
-            this.editex.Location = new System.Drawing.Point(551, 20);
+            this.editex.Location = new System.Drawing.Point(844, 23);
             this.editex.Name = "editex";
             this.editex.Size = new System.Drawing.Size(89, 13);
             this.editex.TabIndex = 11;
@@ -167,7 +176,7 @@
             // NDF_emp
             // 
             this.NDF_emp.AutoSize = true;
-            this.NDF_emp.Location = new System.Drawing.Point(587, 45);
+            this.NDF_emp.Location = new System.Drawing.Point(880, 48);
             this.NDF_emp.Name = "NDF_emp";
             this.NDF_emp.Size = new System.Drawing.Size(13, 13);
             this.NDF_emp.TabIndex = 12;
@@ -176,7 +185,7 @@
             // NDF_emp_2
             // 
             this.NDF_emp_2.AutoSize = true;
-            this.NDF_emp_2.Location = new System.Drawing.Point(587, 69);
+            this.NDF_emp_2.Location = new System.Drawing.Point(880, 72);
             this.NDF_emp_2.Name = "NDF_emp_2";
             this.NDF_emp_2.Size = new System.Drawing.Size(13, 13);
             this.NDF_emp_2.TabIndex = 13;
@@ -185,7 +194,7 @@
             // NDF_emp_3
             // 
             this.NDF_emp_3.AutoSize = true;
-            this.NDF_emp_3.Location = new System.Drawing.Point(587, 92);
+            this.NDF_emp_3.Location = new System.Drawing.Point(880, 95);
             this.NDF_emp_3.Name = "NDF_emp_3";
             this.NDF_emp_3.Size = new System.Drawing.Size(13, 13);
             this.NDF_emp_3.TabIndex = 14;
@@ -194,7 +203,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(742, 312);
+            this.label5.Location = new System.Drawing.Point(1035, 315);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(59, 26);
             this.label5.TabIndex = 15;
@@ -203,7 +212,7 @@
             // sepera
             // 
             this.sepera.AutoSize = true;
-            this.sepera.Location = new System.Drawing.Point(765, 334);
+            this.sepera.Location = new System.Drawing.Point(1058, 337);
             this.sepera.Name = "sepera";
             this.sepera.Size = new System.Drawing.Size(13, 13);
             this.sepera.TabIndex = 16;
@@ -212,7 +221,7 @@
             // simu_number
             // 
             this.simu_number.AutoSize = true;
-            this.simu_number.Location = new System.Drawing.Point(661, 271);
+            this.simu_number.Location = new System.Drawing.Point(954, 274);
             this.simu_number.Name = "simu_number";
             this.simu_number.Size = new System.Drawing.Size(13, 13);
             this.simu_number.TabIndex = 17;
@@ -221,7 +230,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(622, 245);
+            this.label7.Location = new System.Drawing.Point(915, 248);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(96, 13);
             this.label7.TabIndex = 18;
@@ -230,7 +239,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(653, 20);
+            this.label6.Location = new System.Drawing.Point(946, 23);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(63, 13);
             this.label6.TabIndex = 19;
@@ -239,7 +248,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(742, 20);
+            this.label8.Location = new System.Drawing.Point(1035, 23);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(63, 13);
             this.label8.TabIndex = 20;
@@ -248,7 +257,7 @@
             // ndf_11
             // 
             this.ndf_11.AutoSize = true;
-            this.ndf_11.Location = new System.Drawing.Point(676, 45);
+            this.ndf_11.Location = new System.Drawing.Point(969, 48);
             this.ndf_11.Name = "ndf_11";
             this.ndf_11.Size = new System.Drawing.Size(13, 13);
             this.ndf_11.TabIndex = 21;
@@ -257,7 +266,7 @@
             // ndf_12
             // 
             this.ndf_12.AutoSize = true;
-            this.ndf_12.Location = new System.Drawing.Point(676, 69);
+            this.ndf_12.Location = new System.Drawing.Point(969, 72);
             this.ndf_12.Name = "ndf_12";
             this.ndf_12.Size = new System.Drawing.Size(13, 13);
             this.ndf_12.TabIndex = 22;
@@ -266,7 +275,7 @@
             // ndf_13
             // 
             this.ndf_13.AutoSize = true;
-            this.ndf_13.Location = new System.Drawing.Point(676, 92);
+            this.ndf_13.Location = new System.Drawing.Point(969, 95);
             this.ndf_13.Name = "ndf_13";
             this.ndf_13.Size = new System.Drawing.Size(13, 13);
             this.ndf_13.TabIndex = 23;
@@ -275,7 +284,7 @@
             // ndf_21
             // 
             this.ndf_21.AutoSize = true;
-            this.ndf_21.Location = new System.Drawing.Point(768, 45);
+            this.ndf_21.Location = new System.Drawing.Point(1061, 48);
             this.ndf_21.Name = "ndf_21";
             this.ndf_21.Size = new System.Drawing.Size(13, 13);
             this.ndf_21.TabIndex = 24;
@@ -284,7 +293,7 @@
             // ndf_22
             // 
             this.ndf_22.AutoSize = true;
-            this.ndf_22.Location = new System.Drawing.Point(767, 69);
+            this.ndf_22.Location = new System.Drawing.Point(1060, 72);
             this.ndf_22.Name = "ndf_22";
             this.ndf_22.Size = new System.Drawing.Size(13, 13);
             this.ndf_22.TabIndex = 25;
@@ -293,7 +302,7 @@
             // ndf_23
             // 
             this.ndf_23.AutoSize = true;
-            this.ndf_23.Location = new System.Drawing.Point(767, 91);
+            this.ndf_23.Location = new System.Drawing.Point(1060, 94);
             this.ndf_23.Name = "ndf_23";
             this.ndf_23.Size = new System.Drawing.Size(13, 13);
             this.ndf_23.TabIndex = 26;
@@ -302,7 +311,7 @@
             // local_number
             // 
             this.local_number.AutoSize = true;
-            this.local_number.Location = new System.Drawing.Point(639, 312);
+            this.local_number.Location = new System.Drawing.Point(932, 315);
             this.local_number.Name = "local_number";
             this.local_number.Size = new System.Drawing.Size(13, 13);
             this.local_number.TabIndex = 27;
@@ -311,7 +320,7 @@
             // minor_number
             // 
             this.minor_number.AutoSize = true;
-            this.minor_number.Location = new System.Drawing.Point(639, 334);
+            this.minor_number.Location = new System.Drawing.Point(932, 337);
             this.minor_number.Name = "minor_number";
             this.minor_number.Size = new System.Drawing.Size(13, 13);
             this.minor_number.TabIndex = 28;
@@ -320,7 +329,7 @@
             // var_mix
             // 
             this.var_mix.AutoSize = true;
-            this.var_mix.Location = new System.Drawing.Point(661, 223);
+            this.var_mix.Location = new System.Drawing.Point(954, 226);
             this.var_mix.Name = "var_mix";
             this.var_mix.Size = new System.Drawing.Size(13, 13);
             this.var_mix.TabIndex = 30;
@@ -329,7 +338,7 @@
             // var_asn
             // 
             this.var_asn.AutoSize = true;
-            this.var_asn.Location = new System.Drawing.Point(753, 175);
+            this.var_asn.Location = new System.Drawing.Point(1046, 178);
             this.var_asn.Name = "var_asn";
             this.var_asn.Size = new System.Drawing.Size(13, 13);
             this.var_asn.TabIndex = 31;
@@ -338,7 +347,7 @@
             // var_fsi
             // 
             this.var_fsi.AutoSize = true;
-            this.var_fsi.Location = new System.Drawing.Point(753, 223);
+            this.var_fsi.Location = new System.Drawing.Point(1046, 226);
             this.var_fsi.Name = "var_fsi";
             this.var_fsi.Size = new System.Drawing.Size(13, 13);
             this.var_fsi.TabIndex = 32;
@@ -347,7 +356,7 @@
             // min_var
             // 
             this.min_var.AutoSize = true;
-            this.min_var.Location = new System.Drawing.Point(676, 312);
+            this.min_var.Location = new System.Drawing.Point(969, 315);
             this.min_var.Name = "min_var";
             this.min_var.Size = new System.Drawing.Size(13, 13);
             this.min_var.TabIndex = 33;
@@ -356,17 +365,112 @@
             // sep_var
             // 
             this.sep_var.AutoSize = true;
-            this.sep_var.Location = new System.Drawing.Point(765, 358);
+            this.sep_var.Location = new System.Drawing.Point(1058, 361);
             this.sep_var.Name = "sep_var";
             this.sep_var.Size = new System.Drawing.Size(13, 13);
             this.sep_var.TabIndex = 34;
             this.sep_var.Text = "0";
             // 
+            // cartesianChart1
+            // 
+            this.cartesianChart1.Hoverable = true;
+            this.cartesianChart1.Location = new System.Drawing.Point(430, 283);
+            this.cartesianChart1.Name = "cartesianChart1";
+            this.cartesianChart1.ScrollHorizontalFrom = 0D;
+            this.cartesianChart1.ScrollHorizontalTo = 0D;
+            this.cartesianChart1.ScrollMode = LiveCharts.ScrollMode.None;
+            this.cartesianChart1.ScrollVerticalFrom = 0D;
+            this.cartesianChart1.ScrollVerticalTo = 0D;
+            this.cartesianChart1.Size = new System.Drawing.Size(8, 8);
+            this.cartesianChart1.TabIndex = 35;
+            this.cartesianChart1.Text = "cartesianChart1";
+            // 
+            // unhloc
+            // 
+            this.unhloc.AutoSize = true;
+            this.unhloc.Location = new System.Drawing.Point(1038, 248);
+            this.unhloc.Name = "unhloc";
+            this.unhloc.Size = new System.Drawing.Size(35, 13);
+            this.unhloc.TabIndex = 36;
+            this.unhloc.Text = "label9";
+            // 
+            // unhmin
+            // 
+            this.unhmin.AutoSize = true;
+            this.unhmin.Location = new System.Drawing.Point(1038, 274);
+            this.unhmin.Name = "unhmin";
+            this.unhmin.Size = new System.Drawing.Size(41, 13);
+            this.unhmin.TabIndex = 37;
+            this.unhmin.Text = "label10";
+            // 
+            // Ini_mrk_shr
+            // 
+            this.Ini_mrk_shr.AutoSize = true;
+            this.Ini_mrk_shr.Location = new System.Drawing.Point(835, 315);
+            this.Ini_mrk_shr.Name = "Ini_mrk_shr";
+            this.Ini_mrk_shr.Size = new System.Drawing.Size(13, 13);
+            this.Ini_mrk_shr.TabIndex = 38;
+            this.Ini_mrk_shr.Text = "0";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(815, 302);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(86, 13);
+            this.label10.TabIndex = 39;
+            this.label10.Text = "Initial Market Sh.";
+            // 
+            // eeeee
+            // 
+            this.eeeee.AutoSize = true;
+            this.eeeee.Location = new System.Drawing.Point(818, 337);
+            this.eeeee.Name = "eeeee";
+            this.eeeee.Size = new System.Drawing.Size(84, 13);
+            this.eeeee.TabIndex = 40;
+            this.eeeee.Text = "Final Market Sh.";
+            // 
+            // fin_mrk_sh
+            // 
+            this.fin_mrk_sh.AutoSize = true;
+            this.fin_mrk_sh.Location = new System.Drawing.Point(835, 361);
+            this.fin_mrk_sh.Name = "fin_mrk_sh";
+            this.fin_mrk_sh.Size = new System.Drawing.Size(13, 13);
+            this.fin_mrk_sh.TabIndex = 41;
+            this.fin_mrk_sh.Text = "0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(818, 265);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(34, 13);
+            this.label9.TabIndex = 42;
+            this.label9.Text = "Price:";
+            // 
+            // price
+            // 
+            this.price.AutoSize = true;
+            this.price.Location = new System.Drawing.Point(835, 283);
+            this.price.Name = "price";
+            this.price.Size = new System.Drawing.Size(13, 13);
+            this.price.TabIndex = 43;
+            this.price.Text = "0";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(832, 457);
+            this.ClientSize = new System.Drawing.Size(1112, 411);
+            this.Controls.Add(this.price);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.fin_mrk_sh);
+            this.Controls.Add(this.eeeee);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.Ini_mrk_shr);
+            this.Controls.Add(this.unhmin);
+            this.Controls.Add(this.unhloc);
+            this.Controls.Add(this.cartesianChart1);
             this.Controls.Add(this.sep_var);
             this.Controls.Add(this.min_var);
             this.Controls.Add(this.var_fsi);
@@ -442,5 +546,14 @@
         private System.Windows.Forms.Label var_fsi;
         private System.Windows.Forms.Label min_var;
         private System.Windows.Forms.Label sep_var;
+        private LiveCharts.WinForms.CartesianChart cartesianChart1;
+        private System.Windows.Forms.Label unhloc;
+        private System.Windows.Forms.Label unhmin;
+        private System.Windows.Forms.Label Ini_mrk_shr;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label eeeee;
+        private System.Windows.Forms.Label fin_mrk_sh;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label price;
     }
 }

@@ -1,4 +1,10 @@
-﻿using System;
+﻿///****** Created by Utku Arık*****2016********
+///****** Agent based simulation on regular lattice*****
+///****** Includes Glauber and Kawasaki dynamics and more*****
+///****** User interface is included*****************
+
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,27 +16,36 @@ using System.Windows.Forms;
 using MathNet;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics;
+using MathNet.Numerics.Random;
+using MathNet.Numerics.Distributions;
 using System.Timers;
 using System.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using Microsoft.Office.Interop.Excel;
 using MathNet.Numerics.Statistics;
+using Microsoft.Office.Interop.Excel;
 
 namespace Gradproject
 {
 
+
     public partial class Form2 : Form
     {
 
-        int locals_num;    // Universal variables
+
+        //*************** Universal variables******************
+        int locals_num;
         int min_num;
+        int stub_num;
         public int xaxis;
         public int yaxis;
+        public int x;
+        public int y;
         public int utility_check;
         public int cellSize = 5;
         public double lower_bound = 0.0;
         public double lower_bound2 = 0.0;
         public double upper_bound = 0.0;
+        public double upper_bound2 = 0.0;
         public int econ;
         public int no_free_cells;
         public int geo_value;
@@ -38,57 +53,98 @@ namespace Gradproject
         public double exp_het;
         public double[] MIX;
         public int[] Keep_arr;
+        public double rate_sum;
+        public double rate_sum2;
         public double[] AVE_VALUE;
         public double[] FSI_VALUE;
+        public double energy_sum;
         public double[] RATE;
         public double[] SEPAR;
+        public double z;
         public int index_loc = 0;
         public int index_min = 0;
-        public int number_loc = 0;
-        public int number_min = 0;
+        public int final_number_loc = 0;
+        public int final_number_min = 0;
         public double[] loc_number;
         public double[] mino_number;
+        public double[,] rate_histogram;
+        public double[,] rate_histogram2;
+        public double[,] rate_histogram3;
+        public double[,] rate_histogram4;
         public int local_index;
         public int minor_index;
         public int dice;
         public double variance_FSI;
         public double variance_MIX;
         public double variance_ASN;
-        public double[] count_green;
-        public double[] count_red;
+        public double count_green;
+        public double count_red;
         public double[,] fract;
         public int frac_count;
-        public List<Agents> agents = new List<Agents>();
-
-        Agents[] Locals;
-
-        Agents[] Minors;
-
-        
-
-
+        public double[,] prob_dist;
+        public double[,] prob_dist1;
+        public double[,] prob_dist2;
+        public double[,] energy_arr;
+        public double temperature;
+        public double boltzmann;
+        public int queue;
+        public int queue1;
+        public int unhappyloc;
+        public int unhappymin;
+        public int[,] unhappy_array;
+        public int w_size1;
+        public int simultaneous;
+        public int periodic_boundary;
+        int red;
+        int green;
+        public int ground_state = 0;
+        Agents[,] map;
+        public int[,] map3;
+        public static List<Agents> unhappy_agents_list = new List<Agents>();
+        public static List<Agents> agent_list = new List<Agents>();
+        public static List<int[,]> freecell_list = new List<int[,]>();
+        public static List<Agents> radicals_lst = new List<Agents>();
+        static Agents[] Locals;
+        static Agents[] Minors;
+        static Agents[] Stubborn;
+        public static Agents[,] node_map;
         public int sim_value = 0;
-
+        public int dix;
+        private int lxpos;
+        private int lypos;
+        private int mxpos;
+        private int mypos;
+        public int excel_wnt;
+        public int periodic;
+        public int ind = 0;
+        public int effect;
+        public int num_ini_adopters;
+        public double hamiltonian;
+        public double hamiltonian1;
+        public double hamiltonian2;
+        public int percent_stubborn;
+        public List<Agents> pots_lst = new List<Agents>();
         
-
-
-
-        public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound,string lowerbound2,
+        //*******************End of universal variables**************************
+        public Form2(string population, string minority, string x_axis, string y_axis, string lowerbound, string lowerbound2,
             string eco, string upperbound, string utilitycheck, string sim, string geo, string no_freecells,
-            string algo)
-        {   // Get the values from previous form
+            string algo, string upperbound2, string wsize, string async, string cellsize, int excl, int periodica, string effect_1, string ini_adp, string stub_per)
+
+        {   // Get the values from previous windows form
 
             InitializeComponent();
-
-
-            locals_num = Convert.ToInt32(population);
-            min_num = Convert.ToInt32(minority);
+            excel_wnt = excl;
+            // Convert text variables
+            num_ini_adopters = Convert.ToInt16(ini_adp);
+            cellSize = Convert.ToInt16(cellsize);
+            periodic_boundary = periodica;
             xaxis = Convert.ToInt32(x_axis);
             yaxis = Convert.ToInt32(y_axis);
             lower_bound = Convert.ToDouble(lowerbound);
             lower_bound2 = Convert.ToDouble(lowerbound2);
             econ = Convert.ToInt32(eco);
             upper_bound = Convert.ToDouble(upperbound);
+            upper_bound2 = Convert.ToDouble(upperbound2);
             utility_check = Convert.ToInt32(utilitycheck);
             sim_value = Convert.ToInt32(sim);
             geo_value = Convert.ToInt32(geo);
@@ -100,20 +156,106 @@ namespace Gradproject
             loc_number = new double[sim_value];
             mino_number = new double[sim_value];
             SEPAR = new double[sim_value];
-            Locals = new Agents[locals_num];
-            Minors = new Agents[min_num];
-            fract = new double[50,250];
-            count_green = new double[4];
-            count_red = new double[4];
+            Locals = new Agents[xaxis * xaxis];
+            Minors = new Agents[xaxis * xaxis];
+            Stubborn = new Agents[xaxis * yaxis];
+            // fract = new double[50,1500000];
+            prob_dist = new double[13, 10000];
+            prob_dist1 = new double[13, 10000];
+            prob_dist2 = new double[10000, 200];
+            unhappy_array = new int[10000, 200];
+            effect = Convert.ToInt16(effect_1);
+            energy_arr = new double[5000,100];
+            w_size1 = Convert.ToInt32(wsize);
+            rate_histogram = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram2 = new double[10000, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram3 = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            rate_histogram4 = new double[sim_value, Convert.ToInt16((Math.Pow((2 * w_size1 + 1), 2)))];
+            locals_num = Convert.ToInt16(population);
+            min_num = Convert.ToInt16(minority);
+            percent_stubborn = Convert.ToInt16(stub_per);
+            simultaneous = Convert.ToInt32(async);
+            node_map = new Agents[xaxis, yaxis];
+        }
 
 
+        public static Tuple<double, double> Conf(double[] samples, double interval)
+        {
+            double theta = (interval + 1.0) / 2;
+            double T = FindRoots.OfFunction(x => StudentT.CDF(0, 1, samples.Length - 1, x) - theta, -800, 800);
+
+            double mean = samples.Mean();
+            double sd = samples.StandardDeviation();
+            double t = T * (sd / Math.Sqrt(samples.Length));
+            return Tuple.Create(mean - t, mean + t);
+        }
+
+        public void window_keydown(object sender, System.Windows.Input.KeyboardEventArgs e)
+        {
+            if (Form.ModifierKeys == Keys.Shift)
+            {
+                MessageBox.Show("hello");
+                algo_value = 1;
+
+
+            }
 
 
         }
 
+        ///*********Energy calculations************
+        public void Calculate_energy(int tr, int sim_value)
 
+        { 
+            for (int i = 0; i < locals_num; i++)
+            {
+                Locals[i].energy = -(Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                energy_sum = energy_sum + Locals[i].energy;
 
+            }
 
+            for (int i = 0; i < min_num; i++)
+            {
+                Minors[i].energy = -(Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                energy_sum = energy_sum + Minors[i].energy;
+
+            }
+
+            energy_arr[tr,sim_value] = energy_sum ;
+           
+            energy_sum = 0;
+
+            
+        }
+
+        public double Calculate_hamilton( int sim_value)
+
+        {
+            for (int i = 0; i < locals_num; i++)
+            {
+                Locals[i].energy = -(Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Locals[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                energy_sum = energy_sum + Locals[i].energy;
+
+            }
+
+            for (int i = 0; i < min_num; i++)
+            {
+                Minors[i].energy = -(Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1) - ((Math.Pow(2 * w_size1 + 1, 2) - 1) -
+                    Minors[i].rate * (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                energy_sum = energy_sum + Minors[i].energy;
+
+            }
+
+           
+            hamiltonian1 = -energy_sum;
+            energy_sum = 0;
+            return hamiltonian1;
+
+        }
+        ///// *********end of energy calculations********************
         public void Draw_World(int x_axis, int y_axis) //Draw the initial empty world
 
         {
@@ -124,473 +266,702 @@ namespace Gradproject
 
             g = this.CreateGraphics();
 
-            for (int y = 0; y < y_axis; ++y)
-            {
-                g.DrawLine(p, 0, y * cellSize, y_axis * cellSize, y * cellSize);
-            }
-
-            for (int x = 0; x < x_axis; ++x)
-            {
-                g.DrawLine(p, x * cellSize, 0, x * cellSize, x_axis * cellSize);
-            }
             exp_het = 2 * (locals_num / (locals_num + min_num * 1.00)) * (min_num / (locals_num + min_num * 1.00));
-
-
         }
-        public MathNet.Numerics.LinearAlgebra.Matrix<double> execute() // Make the initial implanting and create agents
-                                                                       // and draw the initial world
+
+
+        public Agents[,] execute() // Make the initial implanting and create agents
+                                   // and draw the initial world
 
         {
-            Keep_arr = new int[10000];
+
+            Pen bluePen = new Pen(Color.Blue, 2);
+            Pen orangePen = new Pen(Color.Orange, 2);
+            Pen aquqPen = new Pen(Color.Aqua, 2);
+
+            //Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
+            int[,] map = new int[xaxis, yaxis];
+            map3 = new int[xaxis, yaxis];
+
+            double[] samples = SystemRandomSource.Doubles(1000000, 100);
+
+            // Check for world type///////////////////////////////////////////
+
+            Random rnd3 = new Random();
+            Random rndd = new Random();
+            Random rnd = new Random();
+            int numero = 1;
+            int x, y;
+
+            /////// Attach agents' types ///////////////////////
             
-
-            Matrix<double> map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
-
-            if (geo_value == 1)
+            if (algo_value == 9)
             {
-                for (int k = 0; k < xaxis; k++)
-                    for (int l = yaxis / 2; l <= yaxis / 2 + 1; l++)
+                stub_num = Convert.ToInt16(Math.Round(xaxis * 1.00 * yaxis * percent_stubborn / 100, 0));
+                locals_num = (xaxis * yaxis - stub_num) / 2;
+                min_num = (xaxis * yaxis - stub_num) / 2;
 
+                for (int i = 0; i < locals_num; i++)
+                {
+                    dix = rndd.Next(0, 2);
+                    if (dix == 1)
                     {
+                        green++;
+                        Locals[i] = new Agents()
                         {
-                            map[k, l] = 3;
+                            type = 1,
+                            check = 0
 
-
-                        }
+                        };
 
                     }
-            }
-            else if (geo_value == 2)
-            {
-                int ja = 0;
-                for (int i = yaxis - 1; i >= 0; i--)
+                    else
+                    {
+                        red++;
+                        Locals[i] = new Agents()
+                        {
+                            type = 1,
+                            check = 0
+                        };
+                    }
+                }
+                for (int i = 0; i < min_num; i++)
                 {
 
-                    map[ja, i] = 3;
+                    dix = rndd.Next(0, 2);
+                    if (dix == 1)
+                    {
+                        green++;
+                        Minors[i] = new Agents()
+                        {
+                            type = 1,
+                            check = 0
 
-                    ja = ja + 1;
+                        };
+                    }
+                    else
+                    {
+                        red++;
+                        Minors[i] = new Agents()
+                        {
+                            type = 1,
+                            check = 0
+                        };
+                    }
+
+
+
+                }
+
+
+                /////// ***************Initiate the first adapters**********************************
+                //int index1 = 0;
+                //while (index1 != num_ini_adopters)
+                //{
+                //    dix = rndd.Next(0, min_num);
+
+                //    if (radicals_lst.Contains(Minors[dix]) == false && Minors[dix].type != 2)
+                //    {
+                //        radicals_lst.Add(Minors[dix]);
+                //        index1++;
+                //        Minors[dix].type = 2;
+                //        Minors[dix].stub = 1;
+                //    }
+
+                //}              
+
+               
+
+
+                /////********Initiate the Stubborn agents*******************************************
+                for (int i = 0; i < stub_num; i++)
+                {
+                        Stubborn[i] = new Agents()
+                        {
+
+                        type = 4,
+                        check = -1
+                        };
+
+
                 }
             }
 
-            Random rnd = new Random();
+            else
+            {
+                if (locals_num == min_num)
+                {
+                    for (int i = 0; i < locals_num; i++)
+                    {
+                        dix = rndd.Next(0, 2);
+                        if (dix == 1)
+                        {
+                            green++;
+                            Locals[i] = new Agents()
+                            {
+                                type = 1
 
-            for (int i = 0; i < locals_num; ++i)
+                            };
+
+                        }
+                        else
+                        {
+                            red++;
+                            Locals[i] = new Agents()
+                            {
+                                type = 2
+                            };
+                        }
+                    }
+                    for (int i = 0; i < min_num; i++)
+                    {
+
+                        dix = rndd.Next(0, 2);
+                        if (dix == 1)
+                        {
+                            green++;
+                            Minors[i] = new Agents()
+                            {
+                                type = 1,
+
+                            };
+                        }
+                        else
+                        {
+                            red++;
+                            Minors[i] = new Agents()
+                            {
+                                type = 2,
+
+                            };
+                        }
+                    }
+
+                }
+                else
+                {
+
+                    for (int i = 0; i < locals_num; i++)
+                    {
+
+                        green++;
+                        Locals[i] = new Agents()
+                        {
+                            type = 1
+
+                        };
+
+                    }
+
+
+                    for (int i = 0; i < min_num; i++)
+                    {
+
+                        red++;
+                        Minors[i] = new Agents()
+                        {
+                            type = 2,
+
+                        };
+
+                    }
+                }
+            }
+            /////// End of agents' types ///////////////////////
+
+            /////// Attach agents' positions ///////////////////////
+
+            for (int i = 0; i < xaxis; i++)
+                for (int j = 0; j < yaxis; j++)
+                {
+                    {
+
+                        map[i, j] = 3;
+
+
+                    }
+                }
+
+            ind = 0;
+
+            if (algo_value == 6)
+
             {
 
 
-                int x = rnd.Next(0, xaxis);
-                int y = rnd.Next(0, yaxis);
-
-
-
-                while (map[x, y] == 1 || map[x, y] == 3)
+                for (int i = 0; i < locals_num; i++)
                 {
-                    x = rnd.Next(0, xaxis);
-                    y = rnd.Next(0, yaxis);
-
+                    green++;
+                    Locals[i] = new Agents()
+                    {
+                        type = 1
+                    };
+                }
+                for (int i = 0; i < min_num; i++)
+                {
+                    red++;
+                    Minors[i] = new Agents()
+                    {
+                        type = 2,
+                    };
                 }
 
-                Locals[i] = new Agents()
+                for (int i = 0; i < xaxis; i++)
                 {
-                    xpos = x,
-                    ypos = y,
+                    for (int j = 0; j < yaxis / 2; j++)
+
+                    {
 
 
-                };
-                Locals[i].type = 1;
-                map[x, y] = 1;
+                        Locals[ind].type = 1;
+                        map[i, 2 * j + 1] = Locals[ind].type;
+                        Locals[ind].xpos = i;
+                        Locals[ind].ypos = 2 * j + 1;
+                        node_map[i, 2 * j + 1] = Locals[ind];
+                        ind = ind + 1;
+                    }
+                }
+
+                ind = 0;
+                for (int i = 0; i < xaxis; i++)
+                {
+                    for (int j = 0; j < yaxis / 2; j++)
+
+                    {
+
+                        Minors[ind].type = 2;
+                        map[i, 2 * j] = Minors[ind].type;
+                        Minors[ind].xpos = i;
+                        Minors[ind].ypos = 2 * j;
+                        node_map[i, 2 * j] = Minors[ind];
+                        ind = ind + 1;
+                    }
+                }
+
+                Minors[2200].type = 1;
             }
-            for (int i = 0; i < min_num; ++i)
+
+            else if (algo_value == 7 || algo_value ==8)
             {
-
-
-
-                int x = rnd.Next(0, xaxis);
-                int y = rnd.Next(0, yaxis);
-
-                while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
+                ind = 0;
+                for (int i = 0; i < locals_num; i++)
                 {
-                    x = rnd.Next(0, xaxis);
-                    y = rnd.Next(0, yaxis);
+                    green++;
+                    Locals[i] = new Agents()
+                    {
+                        type = 1
+                    };
+                }
+                for (int i = 0; i < min_num; i++)
+                {
+                    red++;
+                    Minors[i] = new Agents()
+                    {
+                        type = 2,
+                    };
+                }
+
+
+
+                for (int j = 0; j < yaxis; j++)
+                {
+                    for (int i = 0; i < xaxis; i+=2)
+                    {
+
+                        
+
+                        if (j % 2 == 0)
+                        {
+                            Locals[ind].xpos = i;
+                            Locals[ind].ypos = j;
+                            Minors[ind].xpos = i + 1;
+                            Minors[ind].ypos = j;
+                            map[i, j] = Locals[ind].type;
+                            node_map[i, j] = Locals[ind];
+                            map[i + 1, j] = Minors[ind].type;
+                            node_map[i + 1, j] = Minors[ind];
+                        }
+
+                        else
+                        {
+                            Locals[ind].xpos = i + 1;
+                            Locals[ind].ypos = j;
+                            Minors[ind].xpos = i;
+                            Minors[ind].ypos = j;
+                            map[i, j] = Minors[ind].type;
+                            node_map[i, j] = Minors[ind];
+                            map[i + 1, j] = Locals[ind].type;
+                            node_map[i + 1, j] = Locals[ind];
+
+                        }
+                        ind = ind + 1;
+                    }
+                }
+
+
+
+                Minors[2200].type = 1;
+            }
+            else
+            {
+                for (int i = 0; i < locals_num; ++i)
+                {
+                    x = rndd.Next(0, xaxis);
+                    y = rndd.Next(0, yaxis);
+
+                    while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 4)
+                    {
+                        x = rndd.Next(0, xaxis);
+                        y = rndd.Next(0, yaxis);
+
+                    }
+
+                    Locals[i].xpos = x;
+                    Locals[i].ypos = y;
+
+                    map[x, y] = Locals[i].type;
+                    node_map[x, y] = Locals[i];
+                }
+                for (int i = 0; i < min_num; ++i)
+                {
+
+                    x = rndd.Next(0, xaxis);
+                    y = rndd.Next(0, yaxis);
+
+                    while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 4)
+                    {
+                        x = rndd.Next(0, xaxis);
+                        y = rndd.Next(0, yaxis);
+                    }
+
+                    Minors[i].xpos = x;
+                    Minors[i].ypos = y;
+
+                    map[x, y] = Minors[i].type;
+                    node_map[x, y] = Minors[i];
+                }
+
+                for( int i = 0; i < stub_num; i ++)
+                {
+                    x = rndd.Next(0, xaxis);
+                    y = rndd.Next(0, yaxis);
+
+                    while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 4)
+                    {
+                        x = rndd.Next(0, xaxis);
+                        y = rndd.Next(0, yaxis);
+                    }
+
+                    Stubborn[i].xpos = x;
+                    Stubborn[i].ypos = y;
+
+                    map[x, y] = Stubborn[i].type;
+                    node_map[x, y] = Stubborn[i];
 
                 }
-                Minors[i] = new Agents()
+
+                var w = AdjacentElements2(node_map, Minors[1000].xpos, Minors[1000].ypos,6);
+
+                for (int j = 0; j < w.Length; j++)
                 {
-                    xpos = x,
-                    ypos = y,
+                    if (w[j].type ==1 )
+                    {
+                        radicals_lst.Add(w[j]);
+                        w[j].type = 2;
+                        w[j].stub = 1;
+                    }
 
-                    //map[Locals[i].xpos, Locals[i].ypos] = "full";
-                    // xpos = i + 1,
-                    //ypos = i + 5,
-                };
 
-                Minors[i].type = 2;
-                map[x, y] = 2;
+                }
             }
-            Brush bbrush = (Brush)Brushes.Green;
-            Brush cbrush = (Brush)Brushes.Red;
-            Brush dbrush = (Brush)Brushes.Black;
+
+
+
+            numero = 0;
+
+            /////// End of attachment of agents' positions ///////////////////////
+
+            //////////////////////////////////////////////////////////////////
+            Brush gbrush = (Brush)Brushes.Green;
+            Brush rbrush = (Brush)Brushes.Red;
+            Brush bbrush = (Brush)Brushes.Black;
+            Brush ybrush = (Brush)Brushes.Yellow;
             Pen p = new Pen(Color.Black);
 
             Graphics g;
             g = this.CreateGraphics();
-
+            ///// Draw the agents in the map/////////////////////////////////
             for (int i = 0; i < locals_num; ++i)
             {
-                g.FillRectangle(bbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                g.FillRectangle(gbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
             }
 
             for (int i = 0; i < min_num; ++i)
             {
-                g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                g.FillRectangle(rbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
             }
 
-            if (geo_value == 1)// If there is natural boundary horizontal
+            for (int i = 0; i < stub_num; ++i)
             {
-                for (int k = 0; k < xaxis; k++)
-                    for (int l = yaxis / 2; l <= yaxis / 2 + 1; l++)
+                g.FillRectangle(bbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+            }
+            //// End of Drawing ////////////////////////////////////////////////////////
 
+
+            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, Convert.ToInt16(xaxis / 3), Convert.ToInt16(xaxis / 3));
+            System.Drawing.Rectangle rect1 = new System.Drawing.Rectangle(
+                Convert.ToInt16(xaxis - xaxis / 4), xaxis - xaxis / 4, Convert.ToInt16(xaxis / 2), Convert.ToInt16(xaxis / 2));
+            System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize *
+                Convert.ToInt16(xaxis - xaxis / 4), cellSize * Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
+
+            //g.DrawRectangle(bluePen, rect);
+            //g.DrawRectangle(orangePen, rect1);
+            //g.DrawRectangle(aquqPen, rect2);
+
+            local_number.Text = Convert.ToString(green / sim_value);
+            minor_number.Text = Convert.ToString(red / sim_value);
+
+            return node_map;
+
+        }   // end of execute function
+
+
+        public List<Agents> find_potentials(Agents[,] node_map)
+        {
+            int sum = 0;
+            int sum1= 0;
+        
+            for( int i = 0; i < min_num; i++)
+            {
+
+
+              if(Minors[i].type == 2)
+                {
+                    pots_lst.Add(Minors[i]);
+                }
+
+            }
+           
+            
+
+            while(sum != (xaxis * yaxis - stub_num))
+            {
+                
+                sum1 = sum;
+                sum = 0;
+                for ( int i =0; i < pots_lst.Count; i++)
+                {
+                    var w = AdjacentElements(node_map, pots_lst[i].xpos, pots_lst[i].ypos);
+                   
+                    
+                    for( int j = 0; j < w.Length; j ++)
                     {
+                        if( w[j].type != 4 && w[j].check != 1 && w[j].check != -1)
                         {
-                            g.FillRectangle(dbrush, k * cellSize, l * cellSize, cellSize, cellSize);
+                            pots_lst.Add(w[j]);
+                            w[j].check = 1;
+                        }
+                        
+
+                    }
+
+                }
+                for (int i = 0; i < locals_num; i++)
+                {
+                    sum = sum + Locals[i].check;
+
+                }
+                for (int i = 0; i < min_num; i++)
+                {
+                    sum = sum + Minors[i].check;
+
+                }
+                if(sum1 == sum)
+                { break; }
+            }
+
+            MessageBox.Show("Finito");
 
 
+            return pots_lst;
+
+
+
+        }
+        public int[,] count_unhappy(Agents[,] map, int kuar, int a) /////////Count unhappy agents for excel output
+
+        {
+            rate_check_for_all(map);
+            unhappyloc = 0;
+            unhappymin = 0;
+            for (int r = 0; r < locals_num; r++)
+            {
+                if (((Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound) && Locals[r].type == 1) ||
+                   (Locals[r].rate < Locals[r].lower_bound || Locals[r].rate > upper_bound2) && Locals[r].type == 2)
+
+                {
+                    unhappyloc++;
+                }
+            }
+            for (int r = 0; r < min_num; r++)
+            {
+                if (((Minors[r].rate < Minors[r].lower_bound || Minors[r].rate > upper_bound) && Minors[r].type == 1) ||
+                   ((Minors[r].rate < Minors[r].lower_bound || Minors[r].rate > upper_bound2) && Minors[r].type == 2))
+                {
+                    unhappymin++;
+                }
+            }
+            unhappy_array[kuar, 2 * a] = unhappyloc;
+            unhappy_array[kuar, 2 * a + 1] = unhappymin;
+
+            return unhappy_array;
+
+        }//end of count unhappy agent function
+        public Agents[] AdjacentElements2(Agents[,] node_map, int row, int column, int wsize)
+        {
+            ////// Collect neighbor cells' positions with periodic boundary conditions
+            var w_size1 = wsize;
+            Agents[] w = new Agents[Convert.ToUInt16(Math.Pow(2 * w_size1 + 1, 2) - 1)];
+            int rows = yaxis;
+            int columns = xaxis;
+
+            int r = 0;
+            if (periodic_boundary == 0)
+                for (int j = row - w_size1; j <= row + w_size1; j++)
+                {
+                    for (int i = column - w_size1; i <= column + w_size1; i++)
+                    {
+                        if (!(j == row && i == column))
+                        {
+                            if (j >= 0 && i >= 0 && j < rows && i < columns)
+                            {
+                                w[r] = node_map[j, i];
+                                r = r + 1;
+                            }
+                        }
+                    }
+
+                }
+            else if (periodic_boundary == 1)
+            {
+                for (int j = row - w_size1; j <= row + w_size1; j++)
+                {
+                    for (int i = column - w_size1; i <= column + w_size1; i++)
+                    {
+                        if (!(j == row && i == column))
+                        {
+                            if (j >= 0 && i >= 0)
+                            {
+                                w[r] = node_map[j % xaxis, i % xaxis];
+                                r = r + 1;
+                            }
+                            else if (j >= 0 && i < 0)
+                            {
+                                w[r] = node_map[j % xaxis, i + xaxis];
+                                r = r + 1;
+
+                            }
+                            else if (j < 0 && i < 0)
+                            {
+                                w[r] = node_map[j + xaxis, i + xaxis];
+                                r = r + 1;
+
+                            }
+                            else if (j < 0 && i >= 0)
+                            {
+                                w[r] = node_map[j + xaxis, i % xaxis];
+                                r = r + 1;
+
+                            }
                         }
 
                     }
 
-            }
-            else if (geo_value == 2)// ıf there is a natural boundary diagonal
-            {
-                int ja = 0;
-                for (int i = yaxis - 1; i >= 0; i--)
-                {
-
-                    g.FillRectangle(dbrush, ja * cellSize, i * cellSize, cellSize, cellSize);
-
-                    ja = ja + 1;
                 }
 
             }
-            for (int y = 0; y < yaxis; ++y)
-            {
-                g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
-            }
+            return w;
+        }
 
-            for (int x = 0; x < xaxis; ++x)
-            {
-                g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
-            }
-            return map;
-
-        }   // end of execute function
-        public Matrix<double> AdjacentElements(Matrix<double> map2, int row, int column)
+        public Agents[] AdjacentElements(Agents[,] node_map, int row, int column)
         {
-            // Collect neighbor cells' positions
-            Matrix<double> w = Matrix<double>.Build.Dense(25, 3, 5);
+            ////// Collect neighbor cells' positions with periodic boundary conditions
 
-            int rows = map2.RowCount;
-            int columns = map2.ColumnCount;
+            Agents[] w = new Agents[Convert.ToUInt16(Math.Pow(2 * w_size1 + 1, 2) - 1)];
+            int rows = yaxis;
+            int columns = xaxis;
 
             int r = 0;
-            int s = 0;
-            int p = 0;
-            for (int j = row - 1; j <= row + 1; j++)
-            {
-                for (int i = column - 1; i <= column + 1; i++)
+            if (periodic_boundary == 0)
+                for (int j = row - w_size1; j <= row + w_size1; j++)
                 {
-                    if (i >= 0 && j >= 0 && i < columns && j < rows && !(j == row && i == column))
+                    for (int i = column - w_size1; i <= column + w_size1; i++)
                     {
-                        w[r, 0] = map2[j, i];
-                        r = r + 1;
+                        if (!(j == row && i == column))
+                        {
+                            if (j >= 0 && i >= 0 && j < rows && i < columns)
+                            {
+                                w[r] = node_map[j, i];
+                                r = r + 1;
+                            }
+                        }
+                    }
+
+                }
+            else if (periodic_boundary == 1)
+            {
+                for (int j = row - w_size1; j <= row + w_size1; j++)
+                {
+                    for (int i = column - w_size1; i <= column + w_size1; i++)
+                    {
+                        if (!(j == row && i == column))
+                        {
+                            if (j >= 0 && i >= 0)
+                            {
+                                w[r] = node_map[j % xaxis, i % xaxis];
+                                r = r + 1;
+                            }
+                            else if (j >= 0 && i < 0)
+                            {
+                                w[r] = node_map[j % xaxis, i + xaxis];
+                                r = r + 1;
+
+                            }
+                            else if (j < 0 && i < 0)
+                            {
+                                w[r] = node_map[j + xaxis, i + xaxis];
+                                r = r + 1;
+
+                            }
+                            else if (j < 0 && i >= 0)
+                            {
+                                w[r] = node_map[j + xaxis, i % xaxis];
+                                r = r + 1;
+
+                            }
+                        }
+
                     }
 
                 }
 
             }
-
-            for (int j = row - 2; j <= row + 2; j++)
-            {
-
-                if (j >= 0 && j < rows)
-                {
-                    if (column - 2 >= 0)
-                    {
-                        w[s, 1] = map2[j, column - 2];
-                        s = s + 1;
-                    }
-                    if (column + 2 < column)
-                    {
-                        w[s, 1] = map2[j, column + 2];
-                        s = s + 1;
-                    }
-                }
-            }
-
-            for (int i = column - 2; i <= column + 2; i++)
-            {
-                if (i >= 0 && i < rows)
-                {
-                    if (row - 2 >= 0)
-                    {
-                        w[s, 1] = map2[row - 2, i];
-                        s = s + 1;
-                    }
-                    if (row + 2 < rows)
-                    {
-                        w[s, 1] = map2[row + 2, i];
-                        s = s + 1;
-                    }
-                }
-
-            }
-
-
-            for (int j = row - 3; j <= row + 3; j++)
-            {
-
-                if (j >= 0 && j < rows)
-                {
-                    if (column - 3 >= 0)
-                    {
-                        w[p, 2] = map2[j, column - 3];
-                        p = p + 1;
-                    }
-                    if (column + 3 < columns)
-                    {
-                        w[p, 2] = map2[j, column + 3];
-                        p = p + 1;
-                    }
-                }
-            }
-
-            for (int i = column - 2; i <= column + 2; i++)
-            {
-                if (i >= 0 && i < rows)
-                {
-                    if (row - 3 >= rows)
-                    {
-                        w[p, 2] = map2[row - 3, i];
-                        p = p + 1;
-                    }
-                    if (row + 3 < rows)
-                    {
-                        w[p, 2] = map2[row + 3, i];
-                        p = p + 1;
-                    }
-                }
-
-            }
-
-
-
-
-
-            s = 0;
-            p = 0;
-            if (row == 0 || column == 0 || row == yaxis - 1 || column == xaxis - 1)
-                if (column == 0 && row == 0)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[row, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column];
-
-
-                    w[s, 1] = map2[2, 0];
-                    s = s + 1;
-                    w[s, 1] = map2[2, 1];
-                    s = s + 1;
-                    w[s, 1] = map2[2, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[1, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[0, 2];
-
-
-                    w[p, 2] = map2[3, 0];
-                    p = p + 1;
-                    w[p, 2] = map2[3, 1];
-                    p = p + 1;
-                    w[p, 2] = map2[3, 2];
-                    p = p + 1;
-                    w[p, 2] = map2[3, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[2, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[1, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[0, 3];
-
-                }
-                else if (column == xaxis - 1 && row == 0)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[0, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column - (xaxis - 1)];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row + yaxis - 1, column - 1];
-
-                    w[s, 1] = map2[row, xaxis - 3];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 1, xaxis - 3];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 2, xaxis - 3];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 2, xaxis - 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row + 2, xaxis - 1];
-
-
-                    w[p, 2] = map2[row, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 1, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 2, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 4];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 2];
-                    p = p + 1;
-                    w[p, 2] = map2[row + 3, xaxis - 1];
-                }
-                else if (column == 0 && row == yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1 - 1, xaxis - 1];
-
-                    w[s, 1] = map2[row - 2, 0];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, 1];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 1, 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row, 2];
-
-
-                    w[p, 2] = map2[row - 3, 0];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, 1];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, 2];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 2, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 1, 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row, 3];
-                }
-                else if (column == xaxis - 1 && row == yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[0, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[0, +xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column - 1 - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1 - 1, 0];
-
-                    w[s, 1] = map2[row - 2, column];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, column - 1];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 2, column - 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row - 1, column - 2];
-                    s = s + 1;
-                    w[s, 1] = map2[row, column - 2];
-
-
-                    w[p, 2] = map2[row - 3, column];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, column - 1];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, column - 2];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 3, column - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 2, column - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row - 1, column - 3];
-                    p = p + 1;
-                    w[p, 2] = map2[row, column - 3];
-                }
-                else if (column == 0 && row != 0 && row != yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[row, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row - 1, column + xaxis - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[row + 1, column + xaxis - 1];
-                }
-                else if (column != 0 && row == yaxis - 1 && column != xaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[0, column];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column - 1];
-                    r = r + 1;
-                    w[r, 0] = map2[0, column + 1];
-                }
-                else if (column == xaxis - 1 && row != 0 && row != yaxis - 1)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[row, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row + 1, 0];
-                    r = r + 1;
-                    w[r, 0] = map2[row - 1, 0];
-                }
-                else if (column != 0 && column != xaxis - 1 && row == 0)
-                {
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column + 1];
-                    r = r + 1;
-                    w[r, 0] = map2[yaxis - 1, column - 1];
-                }
-
             return w;
         }// end of adjacent elements function
 
-        public int[,] rate_check(int x_pos, int y_pos, Matrix<double> map)//Count neighbors' types
+        public int[,] rate_check(int x_pos, int y_pos, Agents[,] node_map)//Count neighbors' types
         {
 
-            Matrix<double> map2 = map;
+            Agents[,] map2 = node_map;
             int count1 = 0;
+            int countx = 0;
+            int county = 0;
+            int count2x = 0;
+            int count2y = 0;
             var arr = map2;
             int count2 = 0;
             int count3 = 0;
+            int count4 = 0;
             int count21 = 0;
             int count22 = 0;
             int count31 = 0;
@@ -602,68 +973,125 @@ namespace Gradproject
 
             var results = AdjacentElements(map2, x_pos, y_pos);
 
-            for (int i = 0; i < results.RowCount; i++)
+            for (int i = 0; i < results.GetLength(0); i++)
             {
-                if (results[i, 0] == 1)
+                if (results[i] != null)
                 {
-                    count1 = count1 + 1;
+                    if (results[i].type == 1)
+                    {
+                        count1 = count1 + 1;
+                    }
+                    else if (results[i].type == 2)
+                    {
+                        count2 = count2 + 1;
+                    }
+                    else if (results[i].type == 0)
+                    {
+                        count3 = count3 + 1;
+                    }
+                    else if (results[i].type == 4)
+                    {
+                        count4 = count4 + 1;
+                    }
                 }
-                else if (results[i, 0] == 2)
+                else
                 {
-                    count2 = count2 + 1;
-                }
-                else if (results[i, 0] == 0)
-                {
-                    count3 = count3 + 1;
+                    break;
                 }
             }
 
-            for (int i = 0; i < results.RowCount; i++)
+            for (int i = 0; i < 8; i++)
             {
 
-                if (results[i, 1] == 1)
+                if (results[i]!= null && results[i].type == 1 )
                 {
-                    count21 = count21 + 1;
+                    countx = countx + 1;
                 }
-                else if (results[i, 1] == 2)
+                else if (results[i] != null && results[i].type == 2)
                 {
-                    count22 = count22 + 1;
-                }
-
-                else if (results[i, 1] == 0)
-                {
-                    count20 = count20 + 1;
+                    county = county + 1;
                 }
             }
 
-            for (int i = 0; i < results.RowCount; i++)
+            if (w_size1 > 1)
             {
-                if (results[i, 2] == 1)
+                for (int i = 8; i < 24; i++)
                 {
-                    count31 = count31 + 1;
+
+                    if (results[i].type == 1)
+                    {
+                        count2x = count2x + 1;
+                    }
+                    else if (results[i].type == 2)
+                    {
+                        count2y = count2y + 1;
+                    }
 
 
 
                 }
-                else if (results[i, 2] == 2)
-                {
-
-                    count32 = count32 + 1;
-
-                }
-
-                else if (results[i, 2] == 0)
-                {
-
-                    count30 = count30 + 1;
-
-                }
-
             }
+
+            if (node_map[x_pos, y_pos].type == 1)
+            {
+                node_map[x_pos, y_pos].rate_w1 = countx * 1.00 / (countx + county);
+            }
+            else if (node_map[x_pos, y_pos].type == 2)
+            {
+                node_map[x_pos, y_pos].rate_w1 = county * 1.00 / (countx + county);
+            }
+
+            if (node_map[x_pos, y_pos].type == 1)
+            {
+                node_map[x_pos, y_pos].rate_w2 = count2x * 1.00 / (count2x + count2y);
+            }
+            else if (node_map[x_pos, y_pos].type == 2)
+            {
+                node_map[x_pos, y_pos].rate_w2 = count2y * 1.00 / (count2x + count2y);
+            }
+
+            //for (int i = 0; i < results.GetLength(1); i++)
+            //{
+
+            //    if (results[i, 1].type == 1)
+            //    {
+            //        count21 = count21 + 1;
+            //    }
+            //    else if (results[i, 1].type == 2)
+            //    {
+            //        count22 = count22 + 1;
+            //    }
+
+            //    else if (results[i, 1].type == 0)
+            //    {
+            //        count20 = count20 + 1;
+            //    }
+            //}
+
+            //for (int i = 0; i < results.GetLength(1); i++)
+            //{
+            //    if (results[i, 2].type == 1)
+            //    {continue
+            //        count31 = count31 + 1;
+
+            //    }
+            //    else if (results[i, 2].type == 2)
+            //    {
+            //        count32 = count32 + 1;
+
+            //    }
+
+            //    else if (results[i, 2].type == 0)
+            //    {
+            //        count30 = count30 + 1;
+            //    }
+
+            //}
             int[,] a;
-            a = new int[3, 3];
+            a = new int[4, 3];
             a[0, 0] = count1;
             a[1, 0] = count2;
+            a[3, 0] = count4;
             a[2, 0] = count3;
             a[0, 1] = count21;
             a[1, 1] = count22;
@@ -674,43 +1102,80 @@ namespace Gradproject
             return a;
 
         }// end of rate_check func.
-        public double rate_check_for_one(int lxpos, int lypos, int mxpos, int mypos, Matrix<double> map)
+
+        public double rate_check_for_one(int lxpos, int lypos, Agents[,] map)
+        //Calculate the neigbor type proportions
         {
             int[,] a;
-            int[,] b;
-            double rate_sum;
-            double rate1;
-            double rate2;
+
+            double rate1 = 0;
+
             double c = 1.00;
             a = rate_check(lxpos, lypos, map);
 
-            if (a[0, 0] == 0)
+            if (map[lxpos, lypos].type == 1)
             {
-                rate1 = 0;
-            }
-            else
-            {
-                rate1 = a[0, 0] / c / (a[1, 0] + a[0, 0]);
-            }
-
-
-
-            b = rate_check(mxpos, mypos, map);
-            if (b[1, 0] == 0)
-            {
-                rate2 = 0;
-            }
-            else
-            {
-                rate2 = b[1, 0] / c / (b[1, 0] + b[0, 0]);
+                if (a[0, 0] == 0)
+                {
+                    rate1 = 0;
+                }
+                else
+                {
+                    rate1 = a[0, 0] / c / (a[1, 0] + a[0, 0]);
+                }
             }
 
-            rate_sum = rate1 + rate2;
+            else if (map[lxpos, lypos].type == 2)
+            {
+                if (a[1, 0] == 0)
+                {
+                    rate1 = 0;
+                }
+                else
+                {
+                    rate1 = a[1, 0] / c / (a[1, 0] + a[0, 0]);
+                }
 
-            return rate_sum;
+
+            }
+
+            if(algo_value ==9)
+            {
+
+                if (map[lxpos, lypos].type == 1)
+                {
+                    if (a[0, 0] == 0)
+                    {
+                        rate1 = 0;
+                    }
+                    else
+                    {
+                        rate1 = a[0, 0] / c / (effect * a[1, 0] + a[0, 0]);
+                    }
+                }
+
+                else if (map[lxpos, lypos].type == 2)
+                {
+                    if (a[1, 0] == 0)
+                    {
+                        rate1 = 0;
+                    }
+                    else
+                    {
+                        rate1 = effect * a[1, 0] / c / (effect * a[1, 0] + a[0, 0]);
+                    }
+
+
+                }
+
+
+            }
+
+            return rate1;
         }
 
-        public Matrix<double> rate_check_for_all(Matrix<double> map)//Compute neigbors rate for all agents and statistics
+        public void rate_check_for_all(Agents[,] node_map)//Compute neigbors rate for all agents and statistics
+                                                          // Main function to calculate all agents' happiness in the network, sufficient to use alone.
         {
             Matrix<double> uti_map = Matrix<double>.Build.Dense(xaxis, yaxis, 0);
             double a = 0.0;
@@ -730,7 +1195,7 @@ namespace Gradproject
                 }
                 if (Locals[i] == null)
                 { break; }
-                t = rate_check(Locals[i].xpos, Locals[i].ypos, map);
+                t = rate_check(Locals[i].xpos, Locals[i].ypos, node_map);
                 if (Locals[i].type == 1)
                 {
                     if (t[0, 0] == 0)
@@ -755,7 +1220,37 @@ namespace Gradproject
 
 
                 }
-                uti_map[Locals[i].xpos, Locals[i].ypos] = a;
+
+                if (algo_value == 9)
+                {
+                    if (Locals[i].type == 1)
+                    {
+                        if (t[0, 0] == 0)
+                        {
+                            a = 0;
+                        }
+                        else
+                        {
+                            a = t[0, 0] / c / (effect * t[1, 0] + t[0, 0]);
+                        }
+                    }
+                    else if (Locals[i].type == 2)
+                    {
+                        if (t[1, 0] == 0)
+                        {
+                            a = 0;
+                        }
+                        else
+                        {
+                            a = effect * t[1, 0] / c / (effect * t[1, 0] + t[0, 0]);
+                        }
+
+
+
+
+                    }
+                }
+                    uti_map[Locals[i].xpos, Locals[i].ypos] = a;
 
                 if (t[1, 0] == 0 && Locals[i].type == 1)
                 {
@@ -773,31 +1268,22 @@ namespace Gradproject
                 {
                     Locals[i].seperatist = 0;
                 }
-                if (econ == 1)
-                {
-                    if (economy_check(Locals[i].xpos, Locals[i].ypos) == 2)
-                    {
-                        Locals[i].rate = 2 * a;
-                    }
-                }
 
+                Locals[i].rate = a;
+                Locals[i].mixity = 1 - a;
+                if (Locals[i].type == 1)
+                {
+                    Locals[i].het_neigh = t[1, 0];
+                }
                 else
                 {
-                    Locals[i].rate = a;
-                    Locals[i].mixity = 1 - a;
-                    if (Locals[i].type == 1)
-                    {
-                        Locals[i].het_neigh = t[1, 0];
-                    }
-                    else
-                    {
-                        Locals[i].het_neigh = t[0, 0];
+                    Locals[i].het_neigh = t[0, 0];
 
-                    }
-                    Locals[i].total_neigh = t[0, 0] + t[1, 0];
-                    Locals[i].FSI = (exp_het - Locals[i].het_neigh) / exp_het;
-                    Locals[i].emp_neigh = t[2, 0];
                 }
+                Locals[i].total_neigh = t[0, 0] + t[1, 0];
+                Locals[i].FSI = (exp_het - Locals[i].het_neigh) / exp_het;
+                Locals[i].emp_neigh = t[2, 0];
+
             }
             for (int i = 0; i < min_num; i++)
             {
@@ -807,7 +1293,7 @@ namespace Gradproject
                 {
                     i = i + 1;
                 }
-                t = rate_check(Minors[i].xpos, Minors[i].ypos, map);
+                t = rate_check(Minors[i].xpos, Minors[i].ypos, node_map);
                 if (Minors[i].type == 2)
                 {
                     if (t[1, 0] == 0)
@@ -820,7 +1306,7 @@ namespace Gradproject
                     }
                 }
 
-                //uti_map[Minors[i].xpos, Minors[i].ypos] = a;
+
                 else if (Minors[i].type == 1)
                 {
                     if (t[0, 0] == 0)
@@ -834,6 +1320,36 @@ namespace Gradproject
 
 
                 }
+
+                if (algo_value == 9)
+                {
+                    if (Minors[i].type == 1)
+                    {
+                        if (t[0, 0] == 0)
+                        {
+                            a = 0;
+                        }
+                        else
+                        {
+                            a = t[0, 0] / c / (effect * t[1, 0] + t[0, 0]);
+                        }
+                    }
+                    else if (Minors[i].type == 2)
+                    {
+                        if (t[1, 0] == 0)
+                        {
+                            a = 0;
+                        }
+                        else
+                        {
+                            a = effect * t[1, 0] / c / (effect * t[1, 0] + t[0, 0]);
+                        }
+
+
+
+
+                    }
+                }
                 if (t[1, 0] == 0 && Minors[i].type == 2)
                 {
                     Minors[i].seperatist = 1;
@@ -843,587 +1359,517 @@ namespace Gradproject
 
                 else if (t[0, 0] == 0 && Minors[i].type == 1)
                 {
-
                     Minors[i].seperatist = 1;
-
                 }
                 else
                 {
                     Minors[i].seperatist = 0;
 
-
                 }
-                if (econ == 1)
+
+
+                Minors[i].rate = a;
+                Minors[i].mixity = 1 - a;
+                if (Minors[i].type == 2)
                 {
-                    if (economy_check(Minors[i].xpos, Minors[i].ypos) == 2)
-                    {
-                        Minors[i].rate = 2 * a;
-                    }
+                    Minors[i].het_neigh = t[0, 0];
                 }
-
                 else
                 {
-                    Minors[i].rate = a;
-                    Minors[i].mixity = 1 - a;
-                    if (Minors[i].type == 2)
-                    {
-                        Minors[i].het_neigh = t[0, 0];
+                    Minors[i].het_neigh = t[1, 0];
 
-                    }
-                    else
-                    {
-                        Minors[i].het_neigh = t[1, 0];
-
-                    }
-                    Minors[i].total_neigh = t[0, 0] + t[1, 0];
-                    Minors[i].FSI = (exp_het - Minors[i].het_neigh) / exp_het;
                 }
+                Minors[i].total_neigh = t[0, 0] + t[1, 0];
+                Minors[i].FSI = (exp_het - Minors[i].het_neigh) / exp_het;
+
             }
 
-            return uti_map.Transpose();
+
         }// end of rate_check_for_all func.
 
-        public Matrix<double> continue_to(Matrix<double> map)//Reimplanting
+        public Agents[,] main_algorithm(Agents[,] map)
+        //Reimplanting, basically the "move function" after the happiness check for all agents..
+        ///..
         {
-            Random rnd1 = new Random();
+            Random rnd1 = new Random();  /// pseudo random generator variables
             Random rnd2 = new Random();
             Random rnd3 = new Random();
-            int x;
-            int y;
+            int dice1;
+            int local_index;
+            int minor_index;
 
-            if (no_free_cells == 1)
+            //local_index = rnd2.Next(0, locals_num);
+            //minor_index = rnd2.Next(0, min_num);
+
+
+
+            if (algo_value == 0)/// If it is Kawasaki dynamic
             {
 
-                int local_index;
-                int minor_index;
-                int lxpos;
-                int lypos;
-                int mxpos;
-                int mypos;
-                double rate_sum;
-                double rate_sum1;
-                double chance;
-                local_index = rnd2.Next(0, locals_num);
-                minor_index = rnd2.Next(0, min_num);
-                if (algo_value == 0)
+                for (int j = 0; j < locals_num; j++)
                 {
-
-
-
-                    for (int i = 0; i < xaxis * yaxis; i++)
+                    if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                      ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
                     {
-
-                        local_index = rnd2.Next(0, locals_num);
-                        minor_index = rnd2.Next(0, min_num);
-                        if ((Locals[local_index].rate < lower_bound || Locals[local_index].rate > upper_bound) &&
-                                (Minors[minor_index].rate < lower_bound || Minors[minor_index].rate > upper_bound))
-                        {
-
-
-
-
-                            lxpos = Locals[local_index].xpos;
-                            lypos = Locals[local_index].ypos;
-                            mxpos = Minors[minor_index].xpos;
-                            mypos = Minors[minor_index].ypos;
-
-                            if (utility_check != 0)
-                            {
-                                double a;
-                                double b;
-                                double a2;
-                                double b2;
-                                a = utility(map, Locals[local_index].xpos, Locals[local_index].ypos, Locals[local_index].type);
-                                b = utility(map, Minors[minor_index].xpos, Minors[minor_index].ypos, Minors[minor_index].type);
-                                rate_sum = a + b;
-
-
-                                Locals[local_index].xpos = mxpos;
-                                Locals[local_index].ypos = mypos;
-                                map[mxpos, mypos] = 1;
-                                Minors[minor_index].xpos = lxpos;
-                                Minors[minor_index].ypos = lypos;
-                                map[lxpos, lypos] = 2;
-
-                                a2 = utility(map, Locals[local_index].xpos, Locals[local_index].ypos, Locals[local_index].type);
-                                b2 = utility(map, Minors[minor_index].xpos, Minors[minor_index].ypos, Minors[minor_index].type);
-
-                                //rate_sum1 = a2 + b2;
-                                //if (rate_sum1 < rate_sum)
-                                //{
-                                //    map[lxpos, lypos] = 1;
-                                //    map[mxpos, mypos] = 2;
-                                //    Locals[local_index].xpos = lxpos;
-                                //    Locals[local_index].ypos = lypos;
-                                //    Minors[minor_index].xpos = mxpos;
-                                //    Minors[minor_index].ypos = mypos;
-
-                                //    Locals[local_index].utility = utility(map, lxpos, lypos, 1);
-                                //    Minors[minor_index].utility = utility(map, mxpos, mypos, 2);
-
-                                //    local_index = rnd2.Next(0, locals_num);
-                                //    minor_index = rnd2.Next(0, min_num);
-
-
-
-                                //}
-                                //else
-                                //{
-                                //    Locals[local_index].utility = utility(map, mxpos, mypos, 1);
-                                //    Minors[minor_index].utility = utility(map, lxpos, lypos, 2);
-
-                                //    local_index = rnd2.Next(0, locals_num);
-                                //    minor_index = rnd2.Next(0, min_num);
-
-
-
-                                //}
-
-
-                            }
-                            else
-                            {
-                                rate_sum = Locals[local_index].rate + Minors[minor_index].rate;
-                                Locals[local_index].xpos = mxpos;
-                                Locals[local_index].ypos = mypos;
-                                map[mxpos, mypos] = 1;
-                                Minors[minor_index].xpos = lxpos;
-                                Minors[minor_index].ypos = lypos;
-                                map[lxpos, lypos] = 2;
-
-
-
-                                rate_sum1 = rate_check_for_one(Locals[local_index].xpos, Locals[local_index].ypos,
-                                Minors[minor_index].xpos, Minors[minor_index].ypos, map);
-
-                                if (rate_sum1 < rate_sum)
-                                {
-                                    map[lxpos, lypos] = 1;
-                                    map[mxpos, mypos] = 2;
-                                    Locals[local_index].xpos = lxpos;
-                                    Locals[local_index].ypos = lypos;
-                                    Minors[minor_index].xpos = mxpos;
-                                    Minors[minor_index].ypos = mypos;
-
-                                    Locals[local_index].utility = utility(map, lxpos, lypos, 1);
-                                    Minors[minor_index].utility = utility(map, mxpos, mypos, 2);
-
-                                    local_index = rnd2.Next(0, locals_num);
-                                    minor_index = rnd2.Next(0, min_num);
-
-
-                                }
-                                else
-                                {
-
-                                    Locals[local_index].utility = utility(map, mxpos, mypos, 1);
-                                    Minors[minor_index].utility = utility(map, lxpos, lypos, 2);
-
-                                    local_index = rnd2.Next(0, locals_num);
-                                    minor_index = rnd2.Next(0, min_num);
-
-                                }
-
-                            }
-                        }
-
-
-
-                        else
-                        {
-
-                            minor_index = rnd2.Next(0, min_num);
-                            local_index = rnd2.Next(0, locals_num);
-
-                        }
+                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
 
                     }
 
+                    //else if(Locals[j].rate==0.375)
+                    //{
+
+                    //    unhappy_agents_list.Add(Locals[j]);
+
+                    //}
+
                 }
+                for (int j = 0; j < min_num; j++)
 
-                else if (algo_value == 1)// Chose one unhappy agent then replace it with opposite random one
                 {
-
-                    for (int i = 0; i < xaxis * yaxis; i++)
+                    if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                      ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
                     {
-                        if ((Locals[local_index].rate < lower_bound || Locals[local_index].rate > upper_bound) ||
-                            (Minors[minor_index].rate < lower_bound || Minors[minor_index].rate > upper_bound))
-                        {
-
-
-
-
-                            lxpos = Locals[local_index].xpos;
-                            lypos = Locals[local_index].ypos;
-                            mxpos = Minors[minor_index].xpos;
-                            mypos = Minors[minor_index].ypos;
-
-                            if (utility_check != 0)
-                            {
-                                double a;
-                                double b;
-                                double a2;
-                                double b2;
-                                a = utility(map, Locals[local_index].xpos, Locals[local_index].ypos, Locals[local_index].type);
-                                b = utility(map, Minors[minor_index].xpos, Minors[minor_index].ypos, Minors[minor_index].type);
-                                rate_sum = a + b;
-
-
-                                Locals[local_index].xpos = mxpos;
-                                Locals[local_index].ypos = mypos;
-                                map[mxpos, mypos] = 1;
-                                Minors[minor_index].xpos = lxpos;
-                                Minors[minor_index].ypos = lypos;
-                                map[lxpos, lypos] = 2;
-
-                                a2 = utility(map, Locals[local_index].xpos, Locals[local_index].ypos, Locals[local_index].type);
-                                b2 = utility(map, Minors[minor_index].xpos, Minors[minor_index].ypos, Minors[minor_index].type);
-
-                                rate_sum1 = a2 + b2;
-                                if (rate_sum1 < rate_sum)
-                                {
-                                    map[lxpos, lypos] = 1;
-                                    map[mxpos, mypos] = 2;
-                                    Locals[local_index].xpos = lxpos;
-                                    Locals[local_index].ypos = lypos;
-                                    Minors[minor_index].xpos = mxpos;
-                                    Minors[minor_index].ypos = mypos;
-
-                                    Locals[local_index].utility = utility(map, lxpos, lypos, 1);
-                                    Minors[minor_index].utility = utility(map, mxpos, mypos, 2);
-
-                                    local_index = rnd2.Next(0, locals_num);
-                                    minor_index = rnd2.Next(0, min_num);
-
-
-
-                                }
-                                else
-                                {
-                                    Locals[local_index].utility = utility(map, mxpos, mypos, 1);
-                                    Minors[minor_index].utility = utility(map, lxpos, lypos, 2);
-
-                                    local_index = rnd2.Next(0, locals_num);
-                                    minor_index = rnd2.Next(0, min_num);
-
-
-
-                                }
-
-
-                            }
-                            else
-                            {
-                                rate_sum = Locals[local_index].rate + Minors[minor_index].rate;
-                                Locals[local_index].xpos = mxpos;
-                                Locals[local_index].ypos = mypos;
-                                map[mxpos, mypos] = 1;
-                                Minors[minor_index].xpos = lxpos;
-                                Minors[minor_index].ypos = lypos;
-                                map[lxpos, lypos] = 2;
-
-
-
-                                rate_sum1 = rate_check_for_one(Locals[local_index].xpos, Locals[local_index].ypos,
-                                Minors[minor_index].xpos, Minors[minor_index].ypos, map);
-
-                                if (rate_sum1 < rate_sum)
-                                {
-                                    map[lxpos, lypos] = 1;
-                                    map[mxpos, mypos] = 2;
-                                    Locals[local_index].xpos = lxpos;
-                                    Locals[local_index].ypos = lypos;
-                                    Minors[minor_index].xpos = mxpos;
-                                    Minors[minor_index].ypos = mypos;
-
-                                    Locals[local_index].utility = utility(map, lxpos, lypos, 1);
-                                    Minors[minor_index].utility = utility(map, mxpos, mypos, 2);
-
-                                    local_index = rnd2.Next(0, locals_num);
-                                    minor_index = rnd2.Next(0, min_num);
-
-
-                                }
-                                else
-                                {
-
-                                    Locals[local_index].utility = utility(map, mxpos, mypos, 1);
-                                    Minors[minor_index].utility = utility(map, lxpos, lypos, 2);
-
-                                    local_index = rnd2.Next(0, locals_num);
-                                    minor_index = rnd2.Next(0, min_num);
-
-                                }
-
-                            }
-                        }
-
-
-
-                        else
-                        {
-
-                            minor_index = rnd2.Next(0, min_num);
-                            local_index = rnd2.Next(0, locals_num);
-
-                        }
-
+                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
                     }
+
+                    //else if(Minors[j].rate==0.375)
+                    //{
+                    //    unhappy_agents_list.Add(Minors[j]);
+
+
+                    //}
+
+
+
                 }
 
-                else if (algo_value == 2) // all move randomly independent of happiness
+
+
+                for (int i = 0; i < xaxis * yaxis; i++)
                 {
+
                     local_index = rnd2.Next(0, locals_num);
                     minor_index = rnd2.Next(0, min_num);
-
-
-                    for (int i = 0; i < xaxis * yaxis; i++)
+                    if ((Locals[local_index].rate < lower_bound || Locals[local_index].rate > upper_bound) &&
+                            (Minors[minor_index].rate < lower_bound2 || Minors[minor_index].rate > upper_bound2))
                     {
+
 
                         lxpos = Locals[local_index].xpos;
                         lypos = Locals[local_index].ypos;
                         mxpos = Minors[minor_index].xpos;
                         mypos = Minors[minor_index].ypos;
 
-                        Locals[local_index].xpos = mxpos;
-                        Locals[local_index].ypos = mypos;
-
-                        Minors[minor_index].xpos = lxpos;
-                        Minors[minor_index].ypos = lypos;
-
-                        map[mxpos, mypos] = 1;
-                        map[lxpos, lypos] = 2;
-
-                        Locals[local_index].utility = utility(map, mxpos, mypos, 1);
-                        Minors[minor_index].utility = utility(map, lxpos, lypos, 2);
-
-                        local_index = rnd2.Next(0, locals_num);
-                        minor_index = rnd2.Next(0, min_num);
 
                     }
-
-
-
-
                 }
 
-                else if (algo_value == 3)
-                {
-
-                    for (int i = 0; i < xaxis * yaxis; i++)
-                    {
-                        chance = rnd1.Next(0, index_loc + index_min);
-
-
-                        if (chance <= index_loc)
-                        {
-                            index_loc = 0;
-
-                            for (int j = 0; j < locals_num; j++)
-                            {
-                                if (Locals[j] != null)
-                                {
-                                    Keep_arr[index_loc] = j;
-                                    index_loc = index_loc + 1;
-                                }
-
-
-
-                            }
-                            if (index_loc == 0)
-                            {
-
-                                break;
-                            }
-
-                            local_index = rnd2.Next(0, index_loc);
-
-                            local_index = Keep_arr[local_index];
-
-                            if (Locals[local_index].rate < lower_bound)
-
-                            {
-                                lxpos = Locals[local_index].xpos;
-                                lypos = Locals[local_index].ypos;
-
-                                map[lxpos, lypos] = 2;
-                                // locals_num = locals_num - 1;
-                                min_num = min_num + 1;
-                                Minors[min_num] = new Agents()
-                                {
-                                    xpos = lxpos,
-                                    ypos = lypos,
-
-
-                                };
-                                Locals[local_index] = null;
-
-
-                                if (locals_num < 0)
-                                {
-
-                                    break;
-                                }
-
-
-                            }
-                            else
-                            {
-                                local_index = Keep_arr[local_index];
-
-
-                            }
-                        }
-                        else
-                        {
-                            index_min = 0;
-                            minor_index = rnd2.Next(0, min_num);
-                            for (int j = 0; j < min_num; j++)
-                            {
-                                if (Minors[j] != null)
-                                {
-                                    Keep_arr[index_min] = j;
-                                    index_min = index_min + 1;
-                                }
-
-
-
-                            }
-                            if (index_min == 0)
-                            {
-
-                                break;
-                            }
-
-                            minor_index = rnd2.Next(0, index_min);
-                            minor_index = Keep_arr[minor_index];
-
-                            if (Minors[minor_index].rate < lower_bound)
-                            {
-                                mxpos = Minors[minor_index].xpos;
-                                mypos = Minors[minor_index].ypos;
-
-                                map[mxpos, mypos] = 1;
-                                locals_num = locals_num + 1;
-                                //min_num = min_num - 1;
-
-                                Locals[locals_num] = new Agents()
-                                {
-                                    xpos = mxpos,
-                                    ypos = mypos,
-
-
-                                };
-                                Minors[minor_index] = null;
-                                index_min = 0;
-
-                                if (minor_index < 0)
-                                {
-
-                                    break;
-                                }
-
-                            }
-                            else
-                            {
-
-                                minor_index = Keep_arr[minor_index];
-
-
-
-                            }
-                        }
-
-
-
-                    }
-
-
-
-                }
-
-                else if (algo_value == 4)
-                {
-                    for (int i = 0; i < xaxis * yaxis; i++)
-                    {
-                        chance = rnd1.Next(0, 2);
-                        if (chance == 0)
-                        {
-                            local_index = rnd2.Next(0, locals_num);
-                            while (Locals[i].rate > lower_bound)
-                            {
-                                local_index = rnd2.Next(0, locals_num);
-
-                                Locals[local_index].type = 2;
-                                Locals[local_index].color = "red";
-                                map[Locals[local_index].xpos, Locals[local_index].ypos] = 2;
-
-                            }
-
-
-
-                        }
-
-
-
-
-                    }
-
-
-
-
-                }
 
 
             }
 
-            else if (no_free_cells == 0)
+
+            else if (algo_value == 1)  //If the algorithm is Glauber dynamic (Asyncronous)
             {
+
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                      ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                    {
+                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                    }
+
+                    //else if (Locals[j].rate == 0.5)
+                    // {
+
+                    //     unhappy_agents_list.Add(Locals[j]);
+
+                    // }
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                      ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                    {
+                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                    }
+
+                    //else if (Minors[j].rate == 0.5)
+                    //{
+
+                    //    unhappy_agents_list.Add(Minors[j]);
+
+                    //}
+                }
+
+                var count = unhappy_agents_list.Count;
+                for (int index = 0; index < count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound
+                        || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound) ||
+                            (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound2
+                        || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound2))))
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate < lower_bound || unhappy_agents_list[dice].rate > upper_bound))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                        //else if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate == 0.5))
+                        //{
+                        //    map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                        //    unhappy_agents_list[dice].type = 2;
+                        //    unhappy_agents_list.RemoveAt(dice);
+                        //}
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate < lower_bound2 || unhappy_agents_list[dice].rate > upper_bound2))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+
+                        }
+
+                        //else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate == 0.5))
+                        //{
+                        //    map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                        //    unhappy_agents_list[dice].type = 1;
+                        //    unhappy_agents_list.RemoveAt(dice);
+                        //}
+
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+
+
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+
+            }
+
+            else if (algo_value == 2) //// Syncronous Glauber dynamic
+            {
+
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                      ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                    {
+                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                    }
+
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                      ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                    {
+                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                    }
+
+
+                }
+
+
+                for (int i = 0; i < unhappy_agents_list.Count; i++)
+                {
+                    if (unhappy_agents_list[i].type == 1)
+                    {
+                        unhappy_agents_list[i].type = 2;
+                        unhappy_agents_list.RemoveAt(i);
+                    }
+
+                    else if (unhappy_agents_list[i].type == 2)
+                    {
+                        unhappy_agents_list[i].type = 1;
+                        unhappy_agents_list.RemoveAt(i);
+                    }
+
+                }
+
+            }
+
+            else if (algo_value == 3)
+            {
+
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (((!(Locals[j].rate == 0.5 || (Locals[j].rate == 0.25)) && Locals[j].type == 1) ||
+                      ((!(Locals[j].rate == 0.5 || (Locals[j].rate == 0.25)) && Locals[j].type == 2))))
+                    {
+                        unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                    }
+
+
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (((!(Minors[j].rate == 0.5 || Minors[j].rate == 0.25) && Minors[j].type == 1) ||
+                      (((!(Minors[j].rate == 0.5 || Minors[j].rate == 0.25) && Minors[j].type == 2)))))
+                    {
+                        unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                    }
+
+
+                }
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if (((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && !(rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.5 ||
+                        rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.25))
+                      ) || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && !(rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.5 ||
+                            rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) == 0.25)))
+
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && !(unhappy_agents_list[dice].rate == 0.25 || unhappy_agents_list[dice].rate == 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+
+                        else if (unhappy_agents_list[dice].type == 2 && !(unhappy_agents_list[dice].rate == 0.25 || unhappy_agents_list[dice].rate == 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+
+                        }
+
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+
+
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+
+
+
+                //for (int i = 0; i < unhappy_agents_list.Count; i++)
+                //{
+                //    if (unhappy_agents_list[i].type == 1)
+                //    {
+                //        unhappy_agents_list[i].type = 2;
+                //        unhappy_agents_list.RemoveAt(i);
+                //    }
+
+                //    else if (unhappy_agents_list[i].type == 2)
+                //    {
+                //        unhappy_agents_list[i].type = 1;
+                //        unhappy_agents_list.RemoveAt(i);
+                //    }
+
+
+                //}
+
+            }
+
+            else if (algo_value == 4)
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+
+
+                    if (Locals[j].rate != 0.25)
+                    {
+
+                        unhappy_agents_list.Add(Locals[j]);
+
+                    }
+
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+
+
+                    if (Minors[j].rate != 0.25)
+                    {
+
+                        unhappy_agents_list.Add(Minors[j]);
+
+                    }
+                }
+
+
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+
+
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.25)
+                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.25
+                       )))
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate != 0.25))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+
+
+
+
+                        }
+
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate != 0.25))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+
+                        }
+
+
+
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+
+
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+
+
+
+
+            }
+
+            else if (algo_value == 5)
+            {
+
                 if (utility_check == 0)
 
                 {
-                    for (int i = 0; i < locals_num; i++)
+                    //for (int i = 0; i < locals_num; i++)
+                    //{
+                    //    if (Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)&& Locals[i]
+                    //    {
+                    //        x = rnd1.Next(0, xaxis);
+                    //        y = rnd1.Next(0, yaxis);
+
+                    //        while (map[x, y].type == 1 || map[x, y].type == 2 || map[x, y].type == 3)
+                    //        {
+                    //            x = rnd1.Next(0, xaxis);
+                    //            y = rnd1.Next(0, yaxis);
+                    //        }
+
+                    //        map[Locals[i].xpos, Locals[i].ypos].type = 0; // clear the previous position on the map
+                    //        Locals[i].xpos = x;
+                    //        Locals[i].ypos = y;
+                    //    }
+
+                    //    map[Locals[i].xpos, Locals[i].ypos].type = 1;
+                    //}
+                    //for (int i = 0; i < min_num; i++)
+                    //{
+                    //    if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
+                    //    {
+                    //        x = rnd1.Next(0, xaxis);
+                    //        y = rnd1.Next(0, yaxis);
+
+                    //        while (map[x, y].type == 1 || map[x, y].type == 2 || map[x, y].type == 3)
+                    //        {
+                    //            x = rnd1.Next(0, xaxis);
+                    //            y = rnd1.Next(0, yaxis);
+                    //        }
+
+                    //        map[Minors[i].xpos, Minors[i].ypos].type = 0;// clear the previous position on the map
+                    //        Minors[i].xpos = x;
+                    //        Minors[i].ypos = y;
+                    //    }
+
+
+                    //    map[Minors[i].xpos, Minors[i].ypos].type = 2;
+                    //}
+
+                    for (int j = 0; j < locals_num; j++)
                     {
-                        if (Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)
+                        if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                          ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                        {
+                            unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                        }
+                    }
+                    for (int j = 0; j < min_num; j++)
+                    {
+                        if (((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                          ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2))
+                        {
+                            unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                        }
+
+                    }
+
+
+                    for (int i = 0; i < unhappy_agents_list.Count; ++i)
+                    {
+
+                        x = rnd1.Next(0, xaxis);
+                        y = rnd1.Next(0, yaxis);
+
+                        while (map[x, y].type == 1 || map[x, y].type == 2)
                         {
                             x = rnd1.Next(0, xaxis);
                             y = rnd1.Next(0, yaxis);
 
-                            while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
-                            {
-                                x = rnd1.Next(0, xaxis);
-                                y = rnd1.Next(0, yaxis);
-                            }
-
-                            map[Locals[i].xpos, Locals[i].ypos] = 0; // clear the previous position on the map
-                            Locals[i].xpos = x;
-                            Locals[i].ypos = y;
                         }
 
-                        map[Locals[i].xpos, Locals[i].ypos] = 1;
+                        unhappy_agents_list[i].xpos = x;
+                        unhappy_agents_list[i].ypos = y;
+
+                        map[unhappy_agents_list[i].xpos, unhappy_agents_list[i].ypos].type = 3;
+                        map[x, y].type = unhappy_agents_list[i].type;
+                        node_map[x, y] = unhappy_agents_list[i];
+                        unhappy_agents_list.RemoveAt(i);
                     }
-                    for (int i = 0; i < min_num; i++)
-                    {
-                        if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
-                        {
-                            x = rnd1.Next(0, xaxis);
-                            y = rnd1.Next(0, yaxis);
-
-                            while (map[x, y] == 1 || map[x, y] == 2 || map[x, y] == 3)
-                            {
-                                x = rnd1.Next(0, xaxis);
-                                y = rnd1.Next(0, yaxis);
-                            }
-
-                            map[Minors[i].xpos, Minors[i].ypos] = 0;// clear the previous position on the map
-                            Minors[i].xpos = x;
-                            Minors[i].ypos = y;
-                        }
 
 
-                        map[Minors[i].xpos, Minors[i].ypos] = 2;
-                    }
+                    //else if (Locals[j].rate == 0.5)
+                    // {
+
+                    //     unhappy_agents_list.Add(Locals[j]);
+
+                    // }
+
+
+
+
+                    unhappy_agents_list.Clear();
                 }
+
+
+
+
                 else
                 {
 
@@ -1434,32 +1880,32 @@ namespace Gradproject
 
                         uti[1] = Locals[i].xpos;
                         uti[2] = Locals[i].ypos;
-                        uti[0] = utility(map, Locals[i].xpos, Locals[i].ypos, Locals[i].type);
-                        double s = 0.0;
-                        if (Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)
-                        {
+                        //uti[0] = utility(map, Locals[i].xpos, Locals[i].ypos, Locals[i].type);
+                        //double s = 0.0;
+                        //if (Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)
+                        //{
 
-                            for (int k = 0; k < xaxis; k++)
-                            {
-                                for (int l = 0; l < yaxis; l++)
-                                {
+                        //    for (int k = 0; k < xaxis; k++)
+                        //    {
+                        //        for (int l = 0; l < yaxis; l++)
+                        //        {
 
-                                    if (uti[0] < utility(map, k, l, 0) && (map[k, l] == 0))
-                                    {
-                                        uti[0] = utility(map, k, l, 0);
-                                        uti[1] = k;
-                                        uti[2] = l;
-                                    }
+                        //            if (uti[0] < utility(map, k, l, 0) && (map[k, l] == 0))
+                        //            {
+                        //                uti[0] = utility(map, k, l, 0);
+                        //                uti[1] = k;
+                        //                uti[2] = l;
+                        //            }
 
-                                }
-                            }
+                        //        }
+                        //    }
 
-                            map[Locals[i].xpos, Locals[i].ypos] = 0;
-                            Locals[i].xpos = Convert.ToInt32(uti[1]);
-                            Locals[i].ypos = Convert.ToInt32(uti[2]);
-                            Locals[i].utility = uti[0];
-                            map[Locals[i].xpos, Locals[i].ypos] = 1;
-                        }
+                        //    map[Locals[i].xpos, Locals[i].ypos] = 0;
+                        //    Locals[i].xpos = Convert.ToInt32(uti[1]);
+                        //    Locals[i].ypos = Convert.ToInt32(uti[2]);
+                        //    Locals[i].utility = uti[0];
+                        //    map[Locals[i].xpos, Locals[i].ypos] = 1;
+                        //}
 
 
 
@@ -1470,382 +1916,382 @@ namespace Gradproject
 
                         uti = new double[3];
 
-                        uti[1] = Minors[i].xpos;
-                        uti[2] = Minors[i].ypos;
-                        uti[0] = utility(map, Minors[i].xpos, Minors[i].ypos, Minors[i].type);
-                        double s = 0.0;
-                        if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
-                        {
+                        //        uti[1] = Minors[i].xpos;
+                        //        uti[2] = Minors[i].ypos;
+                        //        uti[0] = utility(map, Minors[i].xpos, Minors[i].ypos, Minors[i].type);
+                        //        double s = 0.0;
+                        //        if (Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)
+                        //        {
 
-                            for (int k = 0; k < xaxis; k++)
-                            {
-                                for (int l = 0; l < yaxis; l++)
-                                {
+                        //            for (int k = 0; k < xaxis; k++)
+                        //            {
+                        //                for (int l = 0; l < yaxis; l++)
+                        //                {
 
-                                    if (uti[0] < utility(map, k, l, 1) && (map[k, l] == 0))
-                                    {
-                                        uti[0] = utility(map, k, l, 1);
-                                        uti[1] = k;
-                                        uti[2] = l;
-                                    }
+                        //                    if (uti[0] < utility(map, k, l, 1) && (map[k, l] == 0))
+                        //                    {
+                        //                        uti[0] = utility(map, k, l, 1);
+                        //                        uti[1] = k;
+                        //                        uti[2] = l;
+                        //                    }
 
-                                }
-                            }
-                            map[Minors[i].xpos, Minors[i].ypos] = 0;
-                            Minors[i].xpos = Convert.ToInt32(uti[1]);
-                            Minors[i].ypos = Convert.ToInt32(uti[2]);
-                            Minors[i].utility = uti[0];
-                            map[Minors[i].xpos, Minors[i].ypos] = 2;
-                        }
-
-
+                        //                }
+                        //            }
+                        //            map[Minors[i].xpos, Minors[i].ypos] = 0;
+                        //            Minors[i].xpos = Convert.ToInt32(uti[1]);
+                        //            Minors[i].ypos = Convert.ToInt32(uti[2]);
+                        //            Minors[i].utility = uti[0];
+                        //            map[Minors[i].xpos, Minors[i].ypos] = 2;
+                        //        }
 
                     }
-
-
-
                 }
 
             }
 
-            else if (no_free_cells == 2)
-
-
+            else if (algo_value == 6)
             {
-
-
                 for (int j = 0; j < locals_num; j++)
                 {
-                    if ((Locals[j].rate < lower_bound && Locals[j].type == 1) ||
-                                     (Locals[j].rate < lower_bound2 && Locals[j].type == 2))
+                    if (Locals[j].rate != 0.25)
                     {
-                        agents.Add(Locals[j]);
-
+                        unhappy_agents_list.Add(Locals[j]);
                     }
-
-
-
                 }
                 for (int j = 0; j < min_num; j++)
                 {
-                    if ((Minors[j].rate < lower_bound2 && Minors[j].type == 2) ||
-                                (Minors[j].rate < lower_bound && Minors[j].type == 1))
+                    if (Minors[j].rate != 0.25)
                     {
-                        agents.Add(Minors[j]);
+                        unhappy_agents_list.Add(Minors[j]);
                     }
                 }
-                int i = 0;
-                while (i < agents.Count)
+
+
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
                 {
-                    dice = rnd3.Next(0, 2);
 
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
 
-                    //if (dice == 0)
-                    //{
-                    local_index = rnd2.Next(0, locals_num);
-
-
-
-                    dice = rnd3.Next(agents.Count);
-
-                    if (agents[dice].type == 1)
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.25)
+                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.25
+                       )))
                     {
-                        map[agents[dice].xpos, agents[dice].ypos] = 2;
-                        agents[dice].type = 2;
-                      
-
-                        agents.Clear();
-
-                        rate_check_for_all(map);
-                        for (int j = 0; j < locals_num; j++)
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate != 0.25))
                         {
-                            if ((Locals[j].rate < lower_bound && Locals[j].type==1) || 
-                                    (Locals[j].rate < lower_bound2 && Locals[j].type == 2))
-                            {
-                                agents.Add(Locals[j]);
-
-                            }
-
-
-
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
                         }
-                        for (int j = 0; j < min_num; j++)
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate != 0.25))
                         {
-                            if ((Minors[j].rate < lower_bound2 && Minors[j].type==2) ||
-                                (Minors[j].rate < lower_bound && Minors[j].type == 1))
-                            {
-                                agents.Add(Minors[j]);
-                            }
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
                         }
-
-                       
-
                     }
-
-                    else if (agents[dice].type == 2)
+                    else
                     {
-                        map[agents[dice].xpos, agents[dice].ypos] = 1;
-                        agents[dice].type = 1;
-                      
-                        rate_check_for_all(map);
-                        agents.Clear();
-
-                        for (int j = 0; j < locals_num; j++)
-                        {
-                            if ((Locals[j].rate < lower_bound && Locals[j].type == 1) ||
-                                     (Locals[j].rate < lower_bound2 && Locals[j].type == 2))
-                            {
-                                agents.Add(Locals[j]);
-
-                            }
-
-
-
-                        }
-                        for (int j = 0; j < min_num; j++)
-                        {
-                            if ((Minors[j].rate < lower_bound2 && Minors[j].type == 2) ||
-                                (Minors[j].rate < lower_bound && Minors[j].type == 1))
-                            {
-                                agents.Add(Minors[j]);
-                            }
-                        }
-
+                        unhappy_agents_list.RemoveAt(dice);
                     }
-                    i = i +1;
-                }///
+                }
+
+                unhappy_agents_list.Clear();
+            }
 
 
-                //    while (Locals[local_index].rate > lower_bound)
+            else if (algo_value == 7)
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (Locals[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Locals[j]);
+                    }
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (Minors[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Minors[j]);
+                    }
+                }
 
+                //for(int index=0; index < unhappy_agents_list.Count;index ++)
+                //{
+
+
+                //    if(unhappy_agents_list[index].type==1)
                 //    {
-                //        local_index = rnd2.Next(0, locals_num);
+                //        unhappy_agents_list[index].type = 2;
+                //        map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                //        unhappy_agents_list.RemoveAt(dice);
                 //    }
-
-                //    if (Locals[local_index].type == 1 && Locals[local_index].rate < lower_bound)
+                //    else
                 //    {
-                //        map[Locals[local_index].xpos, Locals[local_index].ypos] = 2;
-                //        Locals[local_index].type = 2;
-
-
+                //        unhappy_agents_list[index].type = 1;
+                //        map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                //        unhappy_agents_list.RemoveAt(dice);
                 //    }
-                //    else if (Locals[local_index].type == 2 && Locals[local_index].rate < lower_bound)
-                //    {
-
-                //        map[Locals[local_index].xpos, Locals[local_index].ypos] = 1;
-                //        Locals[local_index].type = 1;
-
-                //    }
-
-
 
 
                 //}
-                //else if (dice == 1)
-                //{
-                //    minor_index = rnd2.Next(0, min_num);
-                //    while (Minors[minor_index].rate > lower_bound)
-                //    {
-                //        minor_index = rnd2.Next(0, min_num);
-                //    }
 
 
 
-                //    if (Minors[minor_index].rate < lower_bound && Minors[minor_index].type == 2)
-                //    {
-                //        map[Minors[minor_index].xpos, Minors[minor_index].ypos] = 1;
-                //        Minors[minor_index].type = 1;
-                //    }
+                for (int index = 0; index < unhappy_agents_list.Count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+                {
 
-                //    else if (Minors[minor_index].rate < lower_bound && Minors[minor_index].type == 1)
-                //    {
-                //        map[Minors[minor_index].xpos, Minors[minor_index].ypos] = 2;
-                //        Minors[minor_index].type = 2;
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
 
-                //    }
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.5)
+                        || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.5
+                       )))
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate != 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate != 0.5))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+            }
+
+            else if (algo_value == 8)
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (Locals[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Locals[j]);
+                    }
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    if (Minors[j].rate != 0.5)
+                    {
+                        unhappy_agents_list.Add(Minors[j]);
+                    }
+                }
+
+                hamiltonian = Calculate_hamilton(sim_value);
 
 
+                var count = unhappy_agents_list.Count;
+                for (int indice = 0; indice < count; indice++)
+                {
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);
 
 
-            
-                    
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map)) != 0.5)
+                           || (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.5
+                        )))
+                    {
+
+
+                        if (unhappy_agents_list[dice].type == 1)
+                        {
+                            unhappy_agents_list[dice].type = 2;
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                        }
+                        else
+                        {
+                            unhappy_agents_list[dice].type = 1;
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                        }
+
+                        hamiltonian2 = Calculate_hamilton(sim_value);
+                        double random = rnd3.Next(0, 100);
+                        random = random / 100.0;
+
+                        if (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) != 0.5)
+                        {
+                            if (random > 0.05)
+                            {
+                                if (unhappy_agents_list[dice].type == 1)
+                                {
+                                    unhappy_agents_list[dice].type = 2;
+                                    map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                                }
+                                else
+                                {
+                                    unhappy_agents_list[dice].type = 1;
+                                    map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                                }
+
+
+                            }
+                        }
+
+                    }
+                    unhappy_agents_list.RemoveAt(dice);
+                }
+
+                unhappy_agents_list.Clear();
+            }
+
+            else if (algo_value == 9)  //If the algorithm is diffusion
+            {
+
+                for (int j = 0; j < locals_num; j++)
+                {
+                    if (Locals[j] != null && pots_lst.Contains(Locals[j]))
+                    {
+                        if (((Locals[j].rate < lower_bound || Locals[j].rate > upper_bound) && Locals[j].type == 1) ||
+                          ((Locals[j].rate < lower_bound2 || Locals[j].rate > upper_bound2) && Locals[j].type == 2))
+                        {
+                            unhappy_agents_list.Add(Locals[j]);// Collect unhappy list
+
+                        }
+                    }
+
+                    if (Minors[j] != null && pots_lst.Contains(Minors[j]))
+                    {
+                        if ((((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                          ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2)) && radicals_lst.Contains(Minors[j]) == false)
+                        {
+                            unhappy_agents_list.Add(Minors[j]);// Collect unhappy list
+                        }
+                    }
+                    //else if (Locals[j].rate == 0.5)
+                    // {
+
+                    //     unhappy_agents_list.Add(Locals[j]);
+
+                    // }
+
+                }
+
+                var count = unhappy_agents_list.Count;
+                for (int index = 0; index < count; index++)// Respect to unhappy agent list take random element from the list 
+                                                                               // convert it than take next random element from the list but only if the next agent is still unhappy if not choose next random
+
+                {
+
+                    dice = rnd3.Next(0, unhappy_agents_list.Count);// Roll a dice for random pick
+
+                    if ((unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 1 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound
+                        || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound) ||
+                            (unhappy_agents_list[dice] != null && unhappy_agents_list[dice].type == 2 && (rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) < lower_bound2
+                        || rate_check_for_one(unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos, map) > upper_bound2) && unhappy_agents_list[dice].stub !=1)))
+                    {
+                        if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate < lower_bound || unhappy_agents_list[dice].rate > upper_bound))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                            unhappy_agents_list[dice].type = 2;
+                            unhappy_agents_list.RemoveAt(dice);
+                        }
+                        //else if (unhappy_agents_list[dice].type == 1 && (unhappy_agents_list[dice].rate == 0.5))
+                        //{
+                        //    map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 2;
+                        //    unhappy_agents_list[dice].type = 2;
+                        //    unhappy_agents_list.RemoveAt(dice);
+                        //}
+                        else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate < lower_bound2 || unhappy_agents_list[dice].rate > upper_bound2))
+                        {
+                            map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                            unhappy_agents_list[dice].type = 1;
+                            unhappy_agents_list.RemoveAt(dice);
+
+                        }
+
+                        //else if (unhappy_agents_list[dice].type == 2 && (unhappy_agents_list[dice].rate == 0.5))
+                        //{
+                        //    map[unhappy_agents_list[dice].xpos, unhappy_agents_list[dice].ypos].type = 1;
+                        //    unhappy_agents_list[dice].type = 1;
+                        //    unhappy_agents_list.RemoveAt(dice);
+                        //}
+
+                    }
+                    else
+                    {
+                        unhappy_agents_list.RemoveAt(dice);
+
+
+                    }
+                }
+
+                unhappy_agents_list.Clear();
+            }
+
+            else// Voter model
+            {
+                for (int j = 0; j < locals_num; j++)
+                {
+                    agent_list.Add(Locals[j]);// Collect  list                 
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    agent_list.Add(Minors[j]);// Collect  list                 
                 }
 
 
-                //for (int i = 0; i < locals_num; i++)
-                //{
 
 
-                //    if (((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound))&&( Locals[i].type==1))
+                for (int i = 0; i < agent_list.Count; i++)
+                {
+                    dice = rnd1.Next(0, agent_list.Count);
 
-                //    {
-                //        map[Locals[i].xpos, Locals[i].ypos] = 2;
-                //        Locals[i].type = 2;
+                    var results = AdjacentElements(map, agent_list[dice].xpos, agent_list[dice].ypos);
+                    dice1 = rnd1.Next(0, Convert.ToInt32(Math.Pow((2 * w_size1 + 1), 2)) - 1);
 
-
-                //    }
-                //    else if((((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound)) && (Locals[i].type == 2)))
-                //    {
-                //        map[Locals[i].xpos, Locals[i].ypos] = 1;
-                //        Locals[i].type = 1;
+                    map[agent_list[dice].xpos, agent_list[dice].ypos].type = results[dice1].type;
+                    agent_list[dice].type = results[dice1].type;
 
 
-                //    }
-                //}
-                //for (int i = 0; i < min_num; i++)
-                //{
+                }
 
+                agent_list.Clear();
 
-                //    if (((Minors[i].rate < lower_bound || Minors[i].rate > upper_bound))&& Minors[i].type ==2)
+            }
+            return map;
+        }// end of continue function, it  basically includes the main algorithm of the code
 
-                //    {
-                //        map[Minors[i].xpos, Minors[i].ypos] = 1;
-                //        Minors[i].type = 1;
-                //    }
-                //    else if (((Minors[i].rate < lower_bound || Minors[i].rate > upper_bound)) && Minors[i].type == 1)
-                //    {
-                //        map[Minors[i].xpos, Minors[i].ypos] = 2;
-                //        Minors[i].type = 2;
-
-
-                //    }
-                //}
-
-                return map;
-            }// end of continue function, it  basically includes the main algorithm of the code
-        
-        public double utility(Matrix<double> map, int xpos, int ypos, int type)// calculates 
-                                                                               //the continous utility
+        public void update_map2()// update the visual map
         {
-            double utility_value = 0.0;
-            int[,] t;
-            double c = 1.0;
-            double a = 0.0;
-            t = rate_check(xpos, ypos, map);
-            if (type == 0)
-            {
-                if (t[0, 0] == 0)
-                {
-                    a = 0;
-                }
-                else
-                {
-                    a = t[0, 0] / c / (t[1, 0] + t[0, 0]);
-                }
+            Brush gbrush = (Brush)Brushes.Green;
+            Brush cbrush = (Brush)Brushes.LightGreen;
+            Brush rbrush = (Brush)Brushes.Red;
+            Brush bbrush = (Brush)Brushes.Black;
+            Brush wbrush = (Brush)Brushes.White;
+            Brush ybrush = (Brush)Brushes.Yellow;
+            Pen bluePen = new Pen(Color.Blue, 2);
+            Pen orangePen = new Pen(Color.Orange, 2);
+            Pen aquqPen = new Pen(Color.Aqua, 2);
 
-
-            }
-            else if (type == 1)
-            {
-                if (t[1, 0] == 0)
-                {
-                    a = 0;
-                }
-                else
-                {
-                    a = t[1, 0] / c / (t[1, 0] + t[0, 0]);
-                }
-
-            }
-
-            if (utility_check == 1)   // Triangular Utility function
-            {
-
-                if (lower_bound <= a && a <= 0.5)
-                {
-
-                    utility_value = (a - lower_bound) / (0.5 - lower_bound);
-
-                }
-                else if (a >= 0.5 && a < upper_bound)
-                {
-
-                    utility_value = (upper_bound - a) / (upper_bound - 0.5);
-
-
-                }
-                else if (a < lower_bound)
-                {
-                    utility_value = 0;
-
-                }
-                else if (a > upper_bound)
-                {
-                    utility_value = 0;
-
-                }
-            }
-            else if (utility_check == 2) //Circular utility function
-            {
-
-                if (a < lower_bound)
-                {
-
-                    utility_value = 0;
-                }
-
-                else if (lower_bound <= a && a <= upper_bound)
-                {
-
-                    utility_value = Math.Sqrt(Math.Pow((upper_bound - lower_bound) / 2, 2) - Math.Pow(a - 0.5, 2));
-
-
-                }
-                else
-                {
-                    utility_value = 0;
-
-                }
-
-            }
-            else if (utility_check == 3)// asymmetric favors similarity
-            {
-                if (a <= 0.5)
-                {
-                    utility_value = a / 0.5;
-
-                }
-
-                else if (a > 0.5)
-
-                {
-                    utility_value = ((0.75 - 1) * a + 1 - 0.75 * 0.5) / 0.5;
-                }
-
-
-            }
-
-            else if (utility_check == 4) // asymmetric favors dissimilarity
-            {
-
-                if (a <= 0.5)
-                {
-
-                    utility_value = ((1 - 0.75) * a + 0.75 * 0.5) / 0.5;
-                }
-
-                else if (a > 0.5)
-
-                {
-                    utility_value = 1 - a / 0.5;
-                }
-
-
-
-            }
-
-            return utility_value;
-        }
-        public void update_map()// update the visual map
-        {
-            Brush bbrush = (Brush)Brushes.Green;
-            Brush cbrush = (Brush)Brushes.Red;
-            Brush dbrush = (Brush)Brushes.Black;
-            Brush ebrush = (Brush)Brushes.White;
             Graphics g;
+
             g = this.CreateGraphics();
+
             // g.Clear(Color.White);
-            g.FillRectangle(ebrush, 0, 0, xaxis * yaxis, xaxis * yaxis);
+            //System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0,0,Convert.ToInt16(xaxis/3), Convert.ToInt16(xaxis / 3)) ;
+            //System.Drawing.Rectangle rect1 = new System.Drawing.Rectangle(
+            //    Convert.ToInt16(xaxis-xaxis/4), xaxis-xaxis/4, Convert.ToInt16(xaxis / 2), Convert.ToInt16(xaxis / 2));
+            //System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize * 
+            //    Convert.ToInt16(xaxis - xaxis / 4), cellSize*Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
+            //g.FillRectangle(ebrush, 0, 0, xaxis * yaxis, xaxis * yaxis);
+
+
+
+            // Create rectangle.
+
+
+            // Draw rectangle to screen.
+            // e.Graphics.DrawRectangle(blackPen, rect);
             Pen p = new Pen(Color.Black);
             for (int i = 0; i < locals_num; ++i)
             {
@@ -1857,13 +2303,13 @@ namespace Gradproject
                 }
 
 
-                if (Locals[i].type == 1 && Locals[i] != null)
+                if (Locals[i] != null && Locals[i].type == 1)
                 {
-                    g.FillRectangle(bbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                    g.FillRectangle(gbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
                 }
                 else
                 {
-                    g.FillRectangle(cbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                    g.FillRectangle(rbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
                 }
             }
 
@@ -1871,88 +2317,244 @@ namespace Gradproject
             {
                 while (Minors[i] == null)
                 { i = i + 1; }
-                if (Minors[i].type == 2)
+                if (Minors[i] != null && Minors[i].type == 2)
                 {
-                    g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                    g.FillRectangle(rbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
                 }
                 else
                 {
-                    g.FillRectangle(bbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                    g.FillRectangle(gbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
                 }
             }
-            if (geo_value == 1)
+
+            for (int i = 0; i < stub_num; i++)
             {
-                for (int k = 0; k < xaxis; k++)
-                    for (int l = yaxis / 2; l <= yaxis / 2 + 1; l++)
+                g.FillRectangle(bbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
 
-                    {
-                        {
-                            g.FillRectangle(dbrush, k * cellSize, l * cellSize, cellSize, cellSize);
-
-
-                        }
-
-                    }
             }
-            else if (geo_value == 2)
+
+            for (int i = 0; i < xaxis * yaxis; i++)
             {
-                int ja = 0;
-                for (int i = yaxis - 1; i >= 0; i--)
+
+                if (Locals[i] != null && Locals[i].check == 1)
+                {
+                    g.FillRectangle(cbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                }
+                if (Minors[i] != null && Minors[i].check == 1)
+                {
+                    g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                }
+                if (Stubborn[i] != null && Stubborn[i].check == 1)
+                {
+                    g.FillRectangle(cbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+                }
+
+
+            }
+
+        }
+        public void update_map()// update the visual map
+        {
+            Brush gbrush = (Brush)Brushes.Green;
+            Brush rbrush = (Brush)Brushes.Red;
+            Brush bbrush = (Brush)Brushes.Black;
+            Brush wbrush = (Brush)Brushes.White;
+            Brush ybrush = (Brush)Brushes.Yellow;
+            Brush cbrush = (Brush)Brushes.LightGreen;
+            Pen bluePen = new Pen(Color.Blue, 2);
+            Pen orangePen = new Pen(Color.Orange, 2);
+            Pen aquqPen = new Pen(Color.Aqua, 2);
+
+            Graphics g;
+
+            g = this.CreateGraphics();
+
+            // g.Clear(Color.White);
+            //System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0,0,Convert.ToInt16(xaxis/3), Convert.ToInt16(xaxis / 3)) ;
+            //System.Drawing.Rectangle rect1 = new System.Drawing.Rectangle(
+            //    Convert.ToInt16(xaxis-xaxis/4), xaxis-xaxis/4, Convert.ToInt16(xaxis / 2), Convert.ToInt16(xaxis / 2));
+            //System.Drawing.Rectangle rect2 = new System.Drawing.Rectangle(cellSize * 
+            //    Convert.ToInt16(xaxis - xaxis / 4), cellSize*Convert.ToInt16(xaxis - xaxis / 4), Convert.ToInt16(xaxis / 4), Convert.ToInt16(xaxis / 4));
+            //g.FillRectangle(ebrush, 0, 0, xaxis * yaxis, xaxis * yaxis);
+
+
+
+            // Create rectangle.
+
+
+            // Draw rectangle to screen.
+            // e.Graphics.DrawRectangle(blackPen, rect);
+            Pen p = new Pen(Color.Black);
+            if (algo_value == 9)
+
+
+            {
+                //for (int i = 0; i < xaxis * yaxis; i++)
+                //{
+
+                //    if (Locals[i] != null && Locals[i].check == 1)
+                //    {
+                //        g.FillRectangle(cbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                //    }
+                //    if (Minors[i] != null && Minors[i].check == 1)
+                //    {
+                //        g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                //    }
+                //    if (Stubborn[i] != null && Stubborn[i].check == 1)
+                //    {
+                //        g.FillRectangle(cbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+                //    }
+
+
+                //}
+                for (int i = 0; i < locals_num; ++i)
                 {
 
-                    g.FillRectangle(dbrush, ja * cellSize, i * cellSize, cellSize, cellSize);
+                    while (Locals[i] == null && i < locals_num)
+                    {
+                        i = i + 1;
 
-                    ja = ja + 1;
+                    }
+
+
+                    if (Locals[i] != null && Locals[i].type == 1 && pots_lst.Contains(Locals[i]))
+                    {
+                        g.FillRectangle(cbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                    else if (Locals[i] != null && Locals[i].type == 2)
+                    {
+                        g.FillRectangle(rbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                    }
                 }
 
+                for (int i = 0; i < min_num; ++i)
+                {
+                    while (Minors[i] == null)
+                    { i = i + 1; }
+                    if (Minors[i] != null && Minors[i].type == 2)
+                    {
+                        g.FillRectangle(rbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                    else if (Minors[i] != null && Minors[i].type == 1 && pots_lst.Contains(Minors[i]))
+                    {
+                        g.FillRectangle(cbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                }
+
+                for (int i = 0; i < stub_num; i++)
+                {
+                    g.FillRectangle(bbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+
+                }
+
+
             }
 
-            for (int y = 0; y < yaxis; ++y)
+            else
             {
-                g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
+                for (int i = 0; i < locals_num; ++i)
+                {
+
+                    while (Locals[i] == null && i < locals_num)
+                    {
+                        i = i + 1;
+
+                    }
+
+
+                    if (Locals[i] != null && Locals[i].type == 1)
+                    {
+                        g.FillRectangle(gbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                    else if (Locals[i] != null && Locals[i].type == 2)
+                    {
+                        g.FillRectangle(rbrush, Locals[i].xpos * cellSize, Locals[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                }
+
+                for (int i = 0; i < min_num; ++i)
+                {
+                    while (Minors[i] == null)
+                    { i = i + 1; }
+                    if (Minors[i] != null && Minors[i].type == 2)
+                    {
+                        g.FillRectangle(rbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                    else if (Minors[i] != null && Minors[i].type == 1)
+                    {
+                        g.FillRectangle(gbrush, Minors[i].xpos * cellSize, Minors[i].ypos * cellSize, cellSize, cellSize);
+                    }
+                }
+
+                for (int i = 0; i < stub_num; i++)
+                {
+                    g.FillRectangle(bbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+
+                }
+
+
+
+
+
+
+
+                //for(int i = 0; i < xaxis * yaxis; i++)
+                //{
+
+                //    if(Locals[i]!=null && Locals[i].check == 1)
+                //    {
+                //        g.FillRectangle(bbrush, Locals[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+                //    }
+                //    if (Minors[i]!=null && Minors[i].check == 1)
+                //    {
+                //        g.FillRectangle(bbrush, Minors[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+                //    }
+                //    if (Stubborn[i]!= null && Stubborn[i].check == 1)
+                //    {
+                //        g.FillRectangle(bbrush, Stubborn[i].xpos * cellSize, Stubborn[i].ypos * cellSize, cellSize, cellSize);
+                //    }
+
+
+                //}
+                //for (int y = 0; y < yaxis; ++y)
+                //{
+                //    g.DrawLine(p, 0, y * cellSize, yaxis * cellSize, y * cellSize);
+                //}
+
+                //for (int x = 0; x < xaxis; ++x)
+                //{
+                //    g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
+                //}
+                //g.DrawRectangle(bluePen, rect);
+                //g.DrawRectangle(orangePen, rect1);
+                //g.DrawRectangle(aquqPen, rect2);
             }
-
-            for (int x = 0; x < xaxis; ++x)
-            {
-                g.DrawLine(p, x * cellSize, 0, x * cellSize, xaxis * cellSize);
-            }
-
-
-
-
         }
 
-        public double economy_check(int xpos, int ypos)
-        {
-            int econ_stat = 1;
 
-            if (xpos < xaxis / 5 && ypos < yaxis / 5)
-            {
-                econ_stat = 2;
-            }
-            return econ_stat;
 
-        }
-
-        public Matrix<double> continue_2(Matrix<double> map)
+    
+        public Agents[,] continue_2(Agents[,] map)
         {
 
-            Matrix<double> map1 = map;
+            Agents[,] map1 = map;
             //Draw_World(xaxis, yaxis);
             //update_map();
-            map1 = continue_to(map);
+            map1 = main_algorithm(map);
 
             return map1;
 
         }
+
+
         public void button1_Click(object sender, EventArgs l)
         {
+
 
             //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
             //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
             //Worksheet ws = (Worksheet)xla.ActiveSheet;
             //xla.Visible = true;
-
             double A = 0;
             double B = 0;
             double C = 0;
@@ -1967,16 +2569,29 @@ namespace Gradproject
             double L = 0;
             double M = 0;
             double N = 0;
-
+            final_number_loc = 0;
+            final_number_min = 0;
             int kuar = 0;
-            int say = 0;
+
             for (int a = 0; a <= sim_value - 1; a++)
             {
                 Draw_World(xaxis, yaxis);
                 frac_count = 0;
+                kuar = 0;
+                map = execute();
+                find_potentials(node_map);
+                update_map2();
+                count_unhappy(map, kuar, a);
+                for (int x = 0; x < xaxis; x++)
+                {
+                    for (int y = 0; y < yaxis; y++)
+                    {
+                        map3[x, y] = map[x, y].type;
 
-                Matrix<double> map = execute();
 
+
+                    }
+                }
                 for (int j = 0; j < min_num; j++)
                 {
 
@@ -1990,32 +2605,184 @@ namespace Gradproject
 
                 }
 
-                double sum1 = 1;
-                double sum2 = 1;
+                double sum1 = 100000;
+                double sum2 = 100000;
+                kuar = 1;
 
-                while (sum1 + sum2 != 0)
+                for (int j = 0; j < locals_num; j++)
                 {
+                    for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
+                    {
+                        if (Locals[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
+                        {
+                            rate_histogram2[kuar, i] = rate_histogram2[kuar, i] + 1;
+
+                        }
+                    }
+                }
+                for (int j = 0; j < min_num; j++)
+                {
+                    for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
+                    {
+
+                        z = Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                        if (Minors[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
+                        {
+                            rate_histogram2[kuar, i] = rate_histogram2[kuar, i] + 1;
+
+                        }
+                    }
+                }
+
+                ////************ Until sum of local and minor unhappy agents are zero****************
+                int tr = 0;
+
+                while (sum1 + sum2 > 0 )
+                {
+                    
+                   
+                    // window_keydown(null, new System.Windows.Input.KeyboardEventArgs(null, 1));
+                    Calculate_energy(tr,a);
+                    count_unhappy(map, kuar, a);
                     rate_check_for_all(map);
 
-                    kuar = kuar + 1;
+                    for (int j = 0; j < locals_num; j++)
+                    {
+                        for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
+                        {
+                            if (Locals[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
+                            {
+                                rate_histogram2[kuar, i] = rate_histogram2[kuar, i] + 1;
+
+                            }
+                        }
+                    }
+                    for (int j = 0; j < min_num; j++)
+                    {
+                        for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
+                        {
+
+                            z = Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                            if (Minors[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
+                            {
+                                rate_histogram2[kuar, i] = rate_histogram2[kuar, i] + 1;
+
+                            }
+                        }
+                    }
+
+
+
+                    queue = 0;
+
+
+                    //for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+                    //{
+                    //    queue = queue + 1;
+                    //    for (int e = 0; e <= yaxis - z; e++)
+                    //    {
+
+                    //        for (int k = 0; k <= xaxis - z; k++)
+                    //        {
+                    //            for (int i = k; i < z + k; i++)
+                    //            {
+                    //                for (int j = e; j < z + e; j++)
+                    //                {
+                    //                    if (map[i, j] != null && map[i, j].type == 1 )
+                    //                    {
+                    //                        count_green = count_green + 1;
+                    //                    }
+                    //                    else if ( map[i, j] != null && map[i, j].type == 2 )
+                    //                    {
+                    //                        count_red = count_red + 1;
+                    //                    }
+                    //                }
+                    //            }
+
+                    //            prob_dist2[0, queue] = z;
+                    //            if (count_green / (count_green * 1.00 + count_red) == 0)
+                    //            {
+                    //                prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                    //            }
+                    //            else if (count_green / (count_green * 1.00 + count_red) == 1)
+                    //            {
+                    //                prob_dist2[kuar, queue] = prob_dist2[kuar, queue] + 1;
+                    //            }
+                    //            count_red = 0;
+                    //            count_green = 0;
+                    //        }
+                    //    }
+
+                    //    if (prob_dist2[kuar, queue] == 0)
+                    //    {
+
+                    //        break;
+                    //    }
+
+                    //}
 
                     map = continue_2(map);
+                    kuar = kuar + 1;
 
+
+
+                    ///********** Regarding to algorithm type determine the end condition of the system***********
                     for (int i = 0; i < locals_num; i++)
                     {
 
                         if (Locals[i] != null)
                         {
-                            if (((Locals[i].rate < lower_bound && Locals[i].type==1) || (Locals[i].rate > upper_bound && Locals[i].type == 1)) ||
-                                    ((Locals[i].rate < lower_bound2 && Locals[i].type== 2)  || (Locals[i].rate >upper_bound && Locals[i].type ==2)))
+                            if (!(algo_value == 3 || algo_value == 4 ||algo_value ==6 || algo_value ==7  ))
                             {
-                                Locals[i].s = 1;
+                                if ((((Locals[i].rate < lower_bound || Locals[i].rate > upper_bound) && Locals[i].type == 1) ||
+                                    ((Locals[i].rate < lower_bound2 || Locals[i].rate > upper_bound2) && Locals[i].type == 2)) && radicals_lst.Contains(Locals[i]) == false && pots_lst.Contains(Locals[i]))
+                                {
+                                    Locals[i].s = 1;
 
+                                }
+                                //else if(Locals[i].rate==0.5)
+                                //{
+                                //    Locals[i].s = 1;
+
+                                //}
+                                else
+                                {
+
+                                    Locals[i].s = 0;
+
+                                }
                             }
+
                             else
                             {
+                                if (algo_value == 6)
+                                {
+                                    if (!(Locals[i].rate == 0.25 || Locals[i].rate == 0.25))
+                                    {
+                                        Locals[i].s = 1;
 
-                                Locals[i].s = 0;
+                                    }
+
+                                    else
+                                    {
+
+                                        Locals[i].s = 0;
+                                    }
+                                }
+
+                                else if(algo_value ==7 || algo_value ==8)
+                                {
+                                    if (!(Locals[i].rate == 0.5 || Locals[i].rate == 0.5))
+                                    {
+                                        Locals[i].s = 1;
+                                    }
+                                    else
+                                    {
+
+                                        Locals[i].s = 0;
+                                    }
+
+                                }
 
                             }
                         }
@@ -2024,23 +2791,68 @@ namespace Gradproject
                     {
                         if (Minors[j] != null)
                         {
-                            if (((Minors[j].rate < lower_bound2 && Minors[j].type == 2) || (Minors[j].rate > upper_bound && Minors[j].type == 2)) ||
-                                    ((Minors[j].rate < lower_bound && Minors[j].type == 1) || (Minors[j].rate > upper_bound && Minors[j].type == 1)))
+                            if (!(algo_value == 3 || algo_value == 4 || algo_value == 6 || algo_value == 7))
                             {
-                                Minors[j].s = 1;
+                                if ((((Minors[j].rate < lower_bound || Minors[j].rate > upper_bound) && Minors[j].type == 1) ||
+                                     ((Minors[j].rate < lower_bound2 || Minors[j].rate > upper_bound2) && Minors[j].type == 2)) && radicals_lst.Contains(Minors[j]) == false && pots_lst.Contains(Minors[j]) == true)
+                                {
+                                    Minors[j].s = 1;
 
+                                }
 
+                                //else if (Minors[j].rate == 0.5)
+                                //{
+                                //    Minors[j].s = 1;
+
+                                //}
+                                else
+                                {
+                                    Minors[j].s = 0;
+
+                                }
                             }
+
                             else
                             {
+                                if (algo_value == 6)
+                                {
+                                    if (!(Minors[j].rate == 0.25 || Minors[j].rate == 0.25))
+                                    {
+                                        Minors[j].s = 1;
 
-                                Minors[j].s = 0;
+                                    }
 
+                                    else
+                                    {
 
+                                        Minors[j].s = 0;
+                                    }
+                                }
+
+                                else if(algo_value == 7 || algo_value == 8)
+                                {
+
+                                    if (!(Minors[j].rate == 0.5 || Minors[j].rate == 0.5))
+                                    {
+                                        Minors[j].s = 1;
+
+                                    }
+
+                                    else
+                                    {
+
+                                        Minors[j].s = 0;
+                                    }
+
+                                }
                             }
                         }
                     }
                     sum1 = 0;
+
+                    /////**************End of end condition determiner**************
+
+
                     for (int i = 0; i < locals_num; i++)
                     {
                         if (Locals[i] != null)
@@ -2055,76 +2867,122 @@ namespace Gradproject
                         if (Minors[j] != null)
                             sum2 = sum2 + Minors[j].s;
 
-
-
                     }
 
                     Random rnd4 = new Random();
-                    int candidate_number;
-                    int mypos;
-                    int mxpos;
-                    int lxpos;
-                    int lypos;
 
-                    if (((sum1 == 0 && sum2 > 0) || (sum2 == 0 && sum1 > 0)) && algo_value == 0)
+
+                    final_number_loc = 0;
+                    final_number_min = 0;
+
+                    //************** Count the number of agent types in the network**********************
+                    for (int i = 0; i < locals_num; i++)
                     {
-
-                        say = say + 1;
-                        if (say == 1)
+                        if (Locals[i] != null && Locals[i].type == 1)
                         {
-                            ave_uti.Text = Convert.ToString(sum1 + sum2);
-
+                            final_number_loc = final_number_loc + 1;
                         }
-                        for (int i = 0; i < locals_num; i++)
+
+                        else if (Locals[i] != null && Locals[i].type == 2)
                         {
 
-                            if (Locals[i].s == 1)
-                            {
-                                candidate_number = rnd4.Next(0, min_num);
-                                lxpos = Locals[i].xpos;
-                                lypos = Locals[i].ypos;
-                                mxpos = Minors[candidate_number].xpos;
-                                mypos = Minors[candidate_number].ypos;
-                                Locals[i].xpos = mxpos;
-                                Locals[i].ypos = mypos;
-                                map[mxpos, mypos] = 1;
-                                Minors[candidate_number].xpos = lxpos;
-                                Minors[candidate_number].ypos = lypos;
-                                map[lxpos, lypos] = 2;
-
-                            }
-
-
+                            final_number_min = final_number_min + 1;
                         }
-                        for (int i = 0; i < min_num; i++)
+
+                    }
+                    for (int i = 0; i < min_num; i++)
+                    {
+                        if (Minors[i] != null && Minors[i].type == 1)
                         {
-
-                            if (Minors[i].s == 1)
-                            {
-                                candidate_number = rnd4.Next(0, locals_num);
-                                lxpos = Locals[candidate_number].xpos;
-                                lypos = Locals[candidate_number].ypos;
-                                mxpos = Minors[i].xpos;
-                                mypos = Minors[i].ypos;
-                                Locals[candidate_number].xpos = mxpos;
-                                Locals[candidate_number].ypos = mypos;
-                                map[mxpos, mypos] = 1;
-                                Minors[i].xpos = lxpos;
-                                Minors[i].ypos = lypos;
-                                map[lxpos, lypos] = 2;
-
-                            }
-
+                            final_number_loc = final_number_loc + 1;
 
                         }
 
+                        else if (Minors[i] != null && Minors[i].type == 2)
+                        {
 
+                            final_number_min = final_number_min + 1;
+                        }
 
+                    }
+                    price.Text = Convert.ToString(50000 - 2 * final_number_min);
+                    if (simultaneous == 1)
+                    {
+                        price.Refresh();
+                    }
+                    /////************ end of agent type counting**************
 
+                    if (sum1 + sum2 < 1000)
+                    {
+                        //MessageBox.Show(Convert.ToString(number_loc), Convert.ToString(number_min));
                     }
 
 
+
+                    if (simultaneous == 1)
+                    {
+                        update_map();
+                    }
+
+                    
+                    tr++;
                 }
+                ///***********End of main algorithm************************************************************
+
+                
+
+                
+
+
+                ////****** similar neighbors histogram calculations*************
+                for (int j = 0; j < locals_num; j++)
+                {
+                    for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
+                    {
+                        if (Locals[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
+                        {
+                            rate_histogram[a, i] = rate_histogram[a, i] + 1;
+
+
+                        }
+
+                        if (Locals[j].rate_w1 == Convert.ToDouble((i * 1.00 / 8)))
+                        {
+                            rate_histogram3[a, i] = rate_histogram3[a, i] + 1;
+                        }
+
+                        if (Locals[j].rate_w2 == Convert.ToDouble((i * 1.00 / 16)))
+                        {
+                            rate_histogram4[a, i] = rate_histogram4[a, i] + 1;
+                        }
+                    }
+                }
+
+                for (int j = 0; j < min_num; j++)
+                {
+                    for (int i = 0; i <= Math.Pow(2 * w_size1 + 1, 2) - 1; i++)
+                    {
+
+                        z = Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1)));
+                        if (Minors[j].rate == Convert.ToDouble((i / (Math.Pow(2 * w_size1 + 1, 2) - 1))))
+                        {
+                            rate_histogram[a, i] = rate_histogram[a, i] + 1;
+                        }
+
+                        if (Minors[j].rate_w1 == Convert.ToDouble((i * 1.00 / 8)))
+                        {
+                            rate_histogram3[a, i] = rate_histogram3[a, i] + 1;
+                        }
+
+                        if (Minors[j].rate_w2 == Convert.ToDouble((i * 1.00 / 16)))
+                        {
+                            rate_histogram4[a, i] = rate_histogram4[a, i] + 1;
+                        }
+                    }
+                }
+                /// ********end of similar neighbors histogram calculations************
+
+
 
                 //for (int i = 0; i < 10000; i++)
 
@@ -2141,6 +2999,10 @@ namespace Gradproject
 
                 //}
 
+
+
+
+                ///*********************** NDF Calculations********************************             
                 double[,] ndf;
                 ndf = new double[xaxis * yaxis, 3];
                 double[,] ndf2;
@@ -2156,16 +3018,17 @@ namespace Gradproject
                 double ndf_sum21 = 0;
                 double ndf_sum22 = 0;
                 double ndf_sum23 = 0;
-                int count_empties = 0; 
+                int count_empties = 0;
 
                 int count_locals = 0;
                 int count_minors = 0;
-                for (int i = 0; i < xaxis; i++)  // NDF Calculations
+
+                for (int i = 0; i < xaxis; i++)
                 {
                     for (int j = 0; j < yaxis; j++)
                     {
                         var ndf_matrice = rate_check(i, j, map);
-                        if (map[i, j] == 0)
+                        if (map[i, j].type == 0)
                         {
 
                             ndf[count_empties, 0] = ndf_matrice[2, 0] / ((ndf_matrice[0, 0] + ndf_matrice[1, 0] + ndf_matrice[2, 0]) * 1.00);
@@ -2173,7 +3036,7 @@ namespace Gradproject
                             ndf[count_empties, 2] = ndf_matrice[2, 2] / ((ndf_matrice[0, 2] + ndf_matrice[1, 2] + ndf_matrice[2, 2]) * 1.00);
                             count_empties = count_empties + 1;
                         }
-                        else if (map[i, j] == 1)
+                        else if (map[i, j].type == 1)
                         {
                             ndf2[count_locals, 0] = ndf_matrice[0, 0] / ((ndf_matrice[0, 0] + ndf_matrice[1, 0] + ndf_matrice[2, 0]) * 1.00);
                             ndf2[count_locals, 1] = ndf_matrice[0, 1] / ((ndf_matrice[0, 1] + ndf_matrice[1, 1] + ndf_matrice[2, 1]) * 1.00);
@@ -2182,7 +3045,7 @@ namespace Gradproject
 
 
                         }
-                        else if (map[i, j] == 2)
+                        else if (map[i, j].type == 2)
                         {
                             ndf3[count_minors, 0] = ndf_matrice[1, 0] / ((ndf_matrice[0, 0] + ndf_matrice[1, 0] + ndf_matrice[2, 0]) * 1.00);
                             ndf3[count_minors, 1] = ndf_matrice[1, 1] / ((ndf_matrice[0, 1] + ndf_matrice[1, 1] + ndf_matrice[2, 1]) * 1.00);
@@ -2233,7 +3096,7 @@ namespace Gradproject
                 ndf_sum22 = ndf_sum22 / count_minors;
                 ndf_sum23 = ndf_sum23 / count_minors;
 
-
+                /////****************End of NDF CALCULATIONS*****************************************************
 
                 update_map();
                 double sum_1 = 0;
@@ -2244,39 +3107,36 @@ namespace Gradproject
                 double sum_6 = 0;
                 double sum_7 = 0;
                 double sum_8 = 0;
-                for (int i = 0; i < locals_num; i++) // Segregation index calculations
-                {
-                    while (Locals[i] == null && i <= locals_num)
-                    { i = i + 1; }
-                    sum_1 = sum_1 + Locals[i].utility;
-                    sum_2 = sum_2 + Locals[i].mixity;
-                    sum_3 = sum_3 + Locals[i].rate;
-                    sum_4 = sum_4 + Locals[i].FSI;
-                    sum_5 = sum_5 + Locals[i].het_neigh;
-                    sum_6 = sum_6 + Locals[i].total_neigh;
-                    Locals[i].sim_neigh = Locals[i].het_neigh / Locals[i].total_neigh;
-                    sum_7 = sum_7 + Locals[i].sim_neigh;
-                    sum_8 = sum_8 + Locals[i].seperatist;
+                //for (int i = 0; i < locals_num; i++) // Segregation index calculations
+                //{
+                //    while (Locals[i] == null && i <= locals_num)
+                //    { i = i + 1; }
+                //    sum_1 = sum_1 + Locals[i].utility;
+                //    sum_2 = sum_2 + Locals[i].mixity;
+                //    sum_3 = sum_3 + Locals[i].rate;
+                //    sum_4 = sum_4 + Locals[i].FSI;
+                //    sum_5 = sum_5 + Locals[i].het_neigh;
+                //    sum_6 = sum_6 + Locals[i].total_neigh;
+                //    Locals[i].sim_neigh = Locals[i].het_neigh / Locals[i].total_neigh;
+                //    sum_7 = sum_7 + Locals[i].sim_neigh;
+                //    sum_8 = sum_8 + Locals[i].seperatist;
 
-                }
-                for (int j = 0; j < min_num; j++)
-                {
-                    while (Minors[j] == null && j <= min_num)
-                    { j = j + 1; }
-                    sum_1 = sum_1 + Minors[j].utility;
-                    sum_2 = sum_2 + Minors[j].mixity;
-                    sum_3 = sum_3 + Minors[j].rate;
-                    sum_4 = sum_4 + Minors[j].FSI;
-                    sum_5 = sum_5 + Minors[j].het_neigh;
-                    sum_6 = sum_6 + Minors[j].total_neigh;
-                    Minors[j].sim_neigh = Minors[j].het_neigh / Minors[j].total_neigh;
-                    sum_7 = sum_7 + Minors[j].sim_neigh;
-                    sum_8 = sum_8 + Minors[j].seperatist;
-                }
+                //}
+                //for (int j = 0; j < min_num; j++)
+                //{
+                //    while (Minors[j] == null && j <= min_num)
+                //    { j = j + 1; }
+                //    sum_1 = sum_1 + Minors[j].utility;
+                //    sum_2 = sum_2 + Minors[j].mixity;
+                //    sum_3 = sum_3 + Minors[j].rate;
+                //    sum_4 = sum_4 + Minors[j].FSI;
+                //    sum_5 = sum_5 + Minors[j].het_neigh;
+                //    sum_6 = sum_6 + Minors[j].total_neigh;
+                //    Minors[j].sim_neigh = Minors[j].het_neigh / Minors[j].total_neigh;
+                //    sum_7 = sum_7 + Minors[j].sim_neigh;
+                //    sum_8 = sum_8 + Minors[j].seperatist;
+                //}
 
-                
-
-                
 
                 ave_sim_neigh.Text = Convert.ToString(1 - sum_7 / (locals_num + min_num));
                 ave_FSI.Text = Convert.ToString(sum_4 / (locals_num + min_num));
@@ -2290,7 +3150,7 @@ namespace Gradproject
                 ndf_22.Text = Convert.ToString(Math.Round(ndf_sum22, 3));
                 ndf_23.Text = Convert.ToString(Math.Round(ndf_sum23, 3));
 
-             
+
 
                 exp_het = exp_het * sum_6;
 
@@ -2309,8 +3169,6 @@ namespace Gradproject
                 M = M + ndf_sum22;
                 N = N + ndf_sum23;
                 SEPAR[a] = sum_8;
-                
- 
 
                 FSI_VALUE[a] = (exp_het - sum_5) / exp_het;  // Put segregation indexes to vector
                 AVE_VALUE[a] = (1 - sum_7 / (locals_num + min_num));
@@ -2320,167 +3178,216 @@ namespace Gradproject
                 variance_ASN = AVE_VALUE.Variance();
                 variance_MIX = MIX.Variance();
 
-                for (int i = 0; i < locals_num; i++)  // Count the number of agent types
+                //for (int i = 0; i < locals_num; i++)  // Count the number of agent types
+                //{
+                //    if (Locals[i].type == 1)
+                //    {
+                //        number_loc = number_loc + 1;
+
+
+                //    }
+
+                //    else if (Locals[i].type == 2)
+                //    {
+
+                //        number_min = number_min + 1;
+                //    }
+
+
+                //}
+                //for (int i = 0; i < min_num; i++)
+                //{
+                //    if (Minors[i].type == 1)
+                //    {
+                //        number_loc = number_loc + 1;
+
+
+                //    }
+
+                //    else if (Minors[i].type == 2)
+                //    {
+
+                //        number_min = number_min + 1;
+                //    }
+
+
+                //}
+                local_number.Text = Convert.ToString(final_number_loc);
+                minor_number.Text = Convert.ToString(final_number_min);
+
+
+                if (final_number_min == 0 || final_number_loc == 0)
+                { ground_state++; }
+
+                loc_number[a] = final_number_loc * 1.00;
+                mino_number[a] = final_number_min * 1.00;
+                final_number_loc = 0;
+                final_number_min = 0;
+
+                unhappy_agents_list.Clear();
+                pots_lst.Clear();
+                queue = 0;
+
+                //for (int z = 2; z <= yaxis / 2; z++)//Square analysis counting
+
+                //{
+
+                //    queue = queue + 1;
+                //    for (int e = 0; e <= yaxis - z; e++)
+                //    {
+
+                //        for (int k = 0; k <= xaxis - z; k++)
+                //        {
+                //            for (int i = k; i < z + k; i++)
+
+                //            {
+                //                for (int j = e; j < z + e; j++)
+                //                {
+
+                //                    if (map[i, j].type == 1)
+                //                    {
+
+                //                        count_green = count_green + 1;
+
+                //                    }
+                //                    else if (map[i, j].type == 2)
+                //                    {
+
+                //                        count_red = count_red + 1;
+
+                //                    }
+
+                //                }
+
+                //            }
+                //            //frac_count = frac_count + 1;
+
+                //            //fract[a, frac_count] = count_green / (count_green * 1.00 + count_red);
+
+                //            prob_dist[0, queue] = z;
+
+                //            if (count_green / (count_green * 1.00 + count_red) == 0)
+                //            {
+
+                //                prob_dist[1, queue] = prob_dist[1, queue] + 1;
+                //            }
+
+                //            else if (count_green / (count_green * 1.00 + count_red) > 0 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.1)
+
+                //            {
+                //                prob_dist[2, queue] = prob_dist[2, queue] + 1;
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.1 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.2)
+                //            {
+
+                //                prob_dist[3, queue] = prob_dist[3, queue] + 1;
+
+                //            }
+
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.2 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.3)
+                //            {
+
+                //                prob_dist[4, queue] = prob_dist[4, queue] + 1;
+
+                //            }
+
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.3 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.4)
+                //            {
+
+                //                prob_dist[5, queue] = prob_dist[5, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.4 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.5)
+                //            {
+
+                //                prob_dist[6, queue] = prob_dist[6, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.5 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.6)
+                //            {
+
+                //                prob_dist[7, queue] = prob_dist[7, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.6 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.7)
+                //            {
+
+                //                prob_dist[8, queue] = prob_dist[8, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.7 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.8)
+                //            {
+
+                //                prob_dist[9, queue] = prob_dist[9, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.8 &&
+                //               count_green / (count_green * 1.00 + count_red) < 0.9)
+                //            {
+
+                //                prob_dist[10, queue] = prob_dist[10, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) >= 0.9 &&
+                //               count_green / (count_green * 1.00 + count_red) < 1)
+                //            {
+
+                //                prob_dist[11, queue] = prob_dist[11, queue] + 1;
+
+                //            }
+                //            else if (count_green / (count_green * 1.00 + count_red) == 1)
+
+                //            {
+
+                //                prob_dist[12, queue] = prob_dist[12, queue] + 1;
+
+                //            }
+
+
+
+                //            count_red = 0;
+                //            count_green = 0;
+                //        }
+                //    }
+
+                //    if (prob_dist[12, queue] + prob_dist[1, queue] == 0)
+                //    {
+
+                //        break;
+                //    }
+
+                //}//end of square analysis counting
+
+                update_map();
+
+
+                for (int i = 0; i < locals_num; i++)
                 {
-                    if (Locals[i].type == 1)
-                    {
-                        number_loc = number_loc + 1;
-
-
-                    }
-
-                    else if (Locals[i].type == 2)
-                    {
-
-                        number_min = number_min + 1;
-                    }
-
-
+                    rate_sum = rate_sum + Locals[i].rate_w1;
+                    rate_sum2 = rate_sum2 + Locals[i].rate_w2;
                 }
+
                 for (int i = 0; i < min_num; i++)
                 {
-                    if (Minors[i].type == 1)
-                    {
-                        number_loc = number_loc + 1;
-
-
-                    }
-
-                    else if (Minors[i].type == 2)
-                    {
-
-                        number_min = number_min + 1;
-                    }
-
+                    rate_sum = rate_sum + Minors[i].rate_w1;
+                    rate_sum2 = rate_sum2 + Minors[i].rate_w2;
 
                 }
 
-                simu_number.Text = Convert.ToString(a + 1);
-                local_number.Text = Convert.ToString(number_loc);
-                minor_number.Text = Convert.ToString(number_min);
-                loc_number[a] = number_loc*1.00;
-                mino_number[a] = number_min*1.00;
-                number_loc = 0;
-                number_min = 0;
+                rate_sum = rate_sum / (locals_num + min_num);
 
-                agents.Clear();
+                rate_sum2 = rate_sum2 / (locals_num + min_num);
 
-                for (int t = 0; t < yaxis / 5; t++)
-                {
-
-                    for (int k = 0; k < xaxis / 5; k++)
-                    {
-                        for (int i = 5 * k; i < 5 * k + 5; i++)
-
-                        {
-                            for (int j = 5 * t; j < 5 * t + 5; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[1] = count_green[1] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[1] = count_red[1] + 1;
-
-                                }
-
-
-
-                            }
-
-
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[1] / (count_green[1] * 1.00 + count_red[1]);
-                        count_red[1] = 0;
-                        count_green[1] = 0;
-                    }
-                }
-
-
-                for (int t = 0; t < yaxis / 10; t++)
-                {
-
-                    for (int k = 0; k < xaxis / 10; k++)
-                    {
-                        for (int i = 10 * k; i < 10 * k + 10; i++)
-
-                        {
-                            for (int j = 10* t; j < 10 * t + 10; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[2] = count_green[2] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[2] = count_red[2] + 1;
-
-                                } 
-
-                                 
-
-                            }
-
-
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a, frac_count] = count_green[2] / (count_green[2] * 1.00 + count_red[2]);
-                        count_red[2] = 0;
-                        count_green[2] = 0;
-                    }
-                }
-
-
-                for (int t = 0; t < yaxis/20; t++)
-                {
-
-
-                    for (int k = 0; k < xaxis / 20; k++)
-                    {
-                        for (int i = 20*k; i < 20*k + 20; i++)
-
-                        {
-                            for (int j = 20*t; j < 20*t+20; j++)
-                            {
-
-                                if (map[i, j] == 1)
-                                {
-
-                                    count_green[3] = count_green[3] + 1;
-
-                                }
-                                else if (map[i, j] == 2)
-                                {
-
-                                    count_red[3] = count_red[3] + 1;
-
-                                }
-
-
-
-                            }
-
-                           
-                        }
-                        frac_count = frac_count + 1;
-
-                        fract[a,frac_count] = count_green[3] / (count_green[3] * 1.00 + count_red[3]);
-                        count_red[3] = 0;
-                        count_green[3] = 0;
-                    }
-                }
+                //MessageBox.Show(Convert.ToString(rate_sum2));
+                //MessageBox.Show(Convert.ToString(rate_sum));
 
 
 
@@ -2490,15 +3397,19 @@ namespace Gradproject
             }// end of simulations
 
 
+            if (sim_value > 1)
+            {
+                MessageBox.Show(Convert.ToString(ground_state));
+
+               
+            }
+            Ini_mrk_shr.Text = Convert.ToString((num_ini_adopters*1.00 / xaxis / yaxis) * 100.00);
+            fin_mrk_sh.Text = Convert.ToString((mino_number.Sum()*1.00 / sim_value / xaxis / yaxis) * 100.00);
 
 
-
-
-            
-
-            ave_sim_neigh.Text = Convert.ToString(B / sim_value);
-            ave_mix.Text = Convert.ToString(C / sim_value);
-            ave_FSI.Text = Convert.ToString(D / sim_value);
+            ave_sim_neigh.Text = Convert.ToString(Math.Round(B / sim_value, 3));
+            ave_mix.Text = Convert.ToString(Math.Round(C / sim_value, 3));
+            ave_FSI.Text = Convert.ToString(Math.Round(D / sim_value, 3));
             NDF_emp.Text = Convert.ToString(Math.Round(E, 3) / sim_value);
             NDF_emp_2.Text = Convert.ToString(Math.Round(F, 3) / sim_value);
             NDF_emp_3.Text = Convert.ToString(Math.Round(G, 3) / sim_value);
@@ -2509,27 +3420,72 @@ namespace Gradproject
             ndf_22.Text = Convert.ToString(Math.Round(M, 3) / sim_value);
             ndf_23.Text = Convert.ToString(Math.Round(N, 3) / sim_value);
             sepera.Text = Convert.ToString(H / sim_value);
-            var_asn.Text = Convert.ToString(Math.Round(variance_ASN,5));
-            var_fsi.Text = Convert.ToString(Math.Round(variance_FSI,5));
-            var_mix.Text = Convert.ToString(Math.Round(variance_MIX,5));
-            local_number.Text = Convert.ToString(loc_number.Sum() / sim_value);
-            minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
-            min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(),3));
-            sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(),3));
+            var_asn.Text = Convert.ToString(Math.Round(variance_ASN, 5));
+            var_fsi.Text = Convert.ToString(Math.Round(variance_FSI, 5));
+            var_mix.Text = Convert.ToString(Math.Round(variance_MIX, 5));
+                        //local_number.Text = Convert.ToString(loc_number.Sum() / sim_value);
+            //minor_number.Text = Convert.ToString(mino_number.Sum() / sim_value);
+            min_var.Text = Convert.ToString(Math.Round(mino_number.StandardDeviation(), 3));
+            sep_var.Text = Convert.ToString(Math.Round(SEPAR.StandardDeviation(), 3));
+            unhloc.Text = Convert.ToString(unhappyloc / sim_value);
+            unhmin.Text = Convert.ToString(unhappymin / sim_value);
 
-            //Microsoft.Office.Interop.Excel.Application xla = new Microsoft.Office.Interop.Excel.Application();
-            //Workbook wb = xla.Workbooks.Add(XlSheetType.xlWorksheet);
-            //Worksheet ws = (Worksheet)xla.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Range rng = ws.Cells.get_Resize(fract.GetLength(0));
-
-            //rng.Value2 = fract;
-            //xla.Visible = true;
+           // MessageBox.Show(Convert.ToString(energy_arr.Sum() / sim_value));
 
 
+            if (excel_wnt == 1)
+            {
+                Microsoft.Office.Interop.Excel.Application xlb = new Microsoft.Office.Interop.Excel.Application();//square analysis
+                Workbook wc = xlb.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wt = (Worksheet)xlb.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg = wt.Cells.get_Resize(prob_dist.GetLength(0), prob_dist.GetLength(1));
+
+
+                Microsoft.Office.Interop.Excel.Application xlc = new Microsoft.Office.Interop.Excel.Application();
+                Workbook wd = xlc.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wf = (Worksheet)xlc.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg1 = wf.Cells.get_Resize(unhappy_array.GetLength(0), unhappy_array.GetLength(1));
+
+                Microsoft.Office.Interop.Excel.Application xld = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+                Workbook we = xld.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wg = (Worksheet)xld.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg2 = wg.Cells.get_Resize(rate_histogram.GetLength(0), rate_histogram.GetLength(1));
+                rngg2.Value2 = rate_histogram;
+
+                Microsoft.Office.Interop.Excel.Application xle = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+                Workbook ws = xle.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wr = (Worksheet)xle.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg3 = wr.Cells.get_Resize(rate_histogram3.GetLength(0), rate_histogram3.GetLength(1));
+                rngg3.Value2 = rate_histogram3;
+
+                Microsoft.Office.Interop.Excel.Application xlf = new Microsoft.Office.Interop.Excel.Application();//count mono by time
+                Workbook wk = xlf.Workbooks.Add(XlSheetType.xlWorksheet);
+                Worksheet wn = (Worksheet)xlf.ActiveSheet;
+                Microsoft.Office.Interop.Excel.Range rngg4 = wn.Cells.get_Resize(energy_arr.GetLength(0), energy_arr.GetLength(1));
+                rngg4.Value2 = energy_arr;
+
+                ////rngg1.Value2 = unhappy_array;
+
+                ////rngg.Value2 = prob_dist;
+
+
+                //xlc.Visible = true;
+                //xld.Visible = true;
+                //xle.Visible = true;
+                xlf.Visible = true;
+                //xlb.Visible = true;
+                //xlb.WindowState = XlWindowState.xlMaximized;
+                //xlc.WindowState = XlWindowState.xlMaximized;
+                xld.WindowState = XlWindowState.xlMaximized;
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+
+
+
+
         }
 
 
@@ -2542,17 +3498,23 @@ namespace Gradproject
         public int xpos { get; set; }
         public int ypos { get; set; }
         public double rate { get; set; }
+        public double rate_w1 { get; set; }
+        public double rate_w2 { get; set; }
         public double mixity { get; set; }
         public double het_neigh { get; set; }
         public double total_neigh { get; set; }
 
+        public double lower_bound { get; set; }
         public double emp_neigh { get; set; }
         public double utility { get; set; }
 
+        public double energy { get; set; }
         public double sim_neigh { get; set; }
         public string color { get; set; }
         public int type { get; set; }
 
+        public int check { get; set;}
+        public int stub {get; set; }
         public int seperatist { get; set; }
         public double FSI { get; set; }
         public int s { get; set; }
