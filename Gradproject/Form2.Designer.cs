@@ -64,6 +64,12 @@
             this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
             this.unhloc = new System.Windows.Forms.Label();
             this.unhmin = new System.Windows.Forms.Label();
+            this.Ini_mrk_shr = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.eeeee = new System.Windows.Forms.Label();
+            this.fin_mrk_sh = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.price = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -397,11 +403,71 @@
             this.unhmin.TabIndex = 37;
             this.unhmin.Text = "label10";
             // 
+            // Ini_mrk_shr
+            // 
+            this.Ini_mrk_shr.AutoSize = true;
+            this.Ini_mrk_shr.Location = new System.Drawing.Point(835, 315);
+            this.Ini_mrk_shr.Name = "Ini_mrk_shr";
+            this.Ini_mrk_shr.Size = new System.Drawing.Size(13, 13);
+            this.Ini_mrk_shr.TabIndex = 38;
+            this.Ini_mrk_shr.Text = "0";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(815, 302);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(86, 13);
+            this.label10.TabIndex = 39;
+            this.label10.Text = "Initial Market Sh.";
+            // 
+            // eeeee
+            // 
+            this.eeeee.AutoSize = true;
+            this.eeeee.Location = new System.Drawing.Point(818, 337);
+            this.eeeee.Name = "eeeee";
+            this.eeeee.Size = new System.Drawing.Size(84, 13);
+            this.eeeee.TabIndex = 40;
+            this.eeeee.Text = "Final Market Sh.";
+            // 
+            // fin_mrk_sh
+            // 
+            this.fin_mrk_sh.AutoSize = true;
+            this.fin_mrk_sh.Location = new System.Drawing.Point(835, 361);
+            this.fin_mrk_sh.Name = "fin_mrk_sh";
+            this.fin_mrk_sh.Size = new System.Drawing.Size(13, 13);
+            this.fin_mrk_sh.TabIndex = 41;
+            this.fin_mrk_sh.Text = "0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(818, 265);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(34, 13);
+            this.label9.TabIndex = 42;
+            this.label9.Text = "Price:";
+            // 
+            // price
+            // 
+            this.price.AutoSize = true;
+            this.price.Location = new System.Drawing.Point(835, 283);
+            this.price.Name = "price";
+            this.price.Size = new System.Drawing.Size(13, 13);
+            this.price.TabIndex = 43;
+            this.price.Text = "0";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1112, 411);
+            this.Controls.Add(this.price);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.fin_mrk_sh);
+            this.Controls.Add(this.eeeee);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.Ini_mrk_shr);
             this.Controls.Add(this.unhmin);
             this.Controls.Add(this.unhloc);
             this.Controls.Add(this.cartesianChart1);
@@ -483,5 +549,11 @@
         private LiveCharts.WinForms.CartesianChart cartesianChart1;
         private System.Windows.Forms.Label unhloc;
         private System.Windows.Forms.Label unhmin;
+        private System.Windows.Forms.Label Ini_mrk_shr;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label eeeee;
+        private System.Windows.Forms.Label fin_mrk_sh;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label price;
     }
 }
