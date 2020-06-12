@@ -10,4 +10,6 @@ This project based on my master's thesis about Ising and Schelling models. This 
 6. Algorithm 9 : Glauber dynamic (Only info infected agents can switch)
 7. Else: Voter Model dynamic
 
+You can reach the thesis via the link:
+* http://research.sabanciuniv.edu/36588/1/10209061_IbrahimUtkuArik.pdf
 
