@@ -1,4 +1,4 @@
-# Introduction
+# Introduction - Ising Like Model
 This project based on my master's thesis about Ising and Schelling models. This Ising like model simulator provides an environment for testing different conditions and their consequences which is based on 2D regular lattice environment. Model can be applied as Schelling's segragation model and as well as new product adoption model.
 
 * With the UI you can specify the alorithms and paramters and also UI can visualize the simualtion step by step
