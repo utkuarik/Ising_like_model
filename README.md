@@ -1,6 +1,7 @@
 # Introduction
-This is Ising like model simulator which is based on 2D regular lattice environment. Model can be applied as Schelling's segragation model and as well as new product adoption model.
+This project based on my master's thesis about Ising and Schelling models. This Ising like model simulator provides an environment for testing different conditions and their consequences which is based on 2D regular lattice environment. Model can be applied as Schelling's segragation model and as well as new product adoption model.
 
+* With the UI you can specify the alorithms and paramters and also UI can visualize the simualtion step by step
 1. Algorithm 0 : Kawasaki dynamic
 2. Algorithm 1 : Glauber dynamic (Asyncronous)
 3. Algorithm 2 : Glauber dynamic (Syncronous)
